@@ -1,13 +1,14 @@
 ﻿$(function () {
     var mainCanvas = document.getElementById('mainCanvas'),
-        ctx = mainCanvas.getContext('2d');
+        ctx = mainCanvas.getContext('2d'),
+        headerSize = 65;
 
     $(window).resize(function() {
-        $(mainCanvas).attr('height', $(window).height() + 'px').attr('width', $(window).width() + 'px');
+        $(mainCanvas).attr('height', ($(window).height() - headerSize) + 'px').attr('width', $(window).width() + 'px');
         update();
     });
 
-    $(mainCanvas).attr('height', $(window).height() + 'px').attr('width', $(window).width() + 'px');
+    $(mainCanvas).attr('height', ($(window).height() - headerSize) + 'px').attr('width', $(window).width() + 'px');
     
     function update() {
         ctx.fillStyle = '000000';

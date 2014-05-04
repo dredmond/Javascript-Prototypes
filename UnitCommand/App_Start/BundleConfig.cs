@@ -25,6 +25,7 @@ namespace UnitCommand
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
 
+            
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
@@ -38,6 +39,14 @@ namespace UnitCommand
                         "~/Content/themes/base/jquery.ui.datepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+            
+
+            bundles.Add(new StyleBundle("~/Content/css/bootstrap").Include(
+                        "~/Content/css/bootstrap.css", 
+                        "~/Content/css/bootstrap-theme.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                        "~/Scripts/bootstrap/bootstrap.min.js"));
         }
     }
 }
