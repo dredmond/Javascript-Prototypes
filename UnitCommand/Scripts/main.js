@@ -26,24 +26,39 @@
 
     var mainCanvas = document.getElementById('mainCanvas'),
         ctx = mainCanvas.getContext('2d'),
-        headerSize = 0,
         lastResizeTime = new Date(),
         lastUpdateTime = null,
         updateInterval = 100,
         resizeInterval = 200;
 
+
+    // Hook the window resize event and store 
+    // the time it was last called. This will reduce lag
+    // while resizing the canvas since it can be called multiple times
+    // for a single resize.
     $(window).resize(function () {
         lastResizeTime = new Date();
     });
 
+    // Handle the resize event. We want to size the canvas so it sits 
+    // nicely between all other elements on the page. We do this by calculating the space
+    // above and below the canvas in comparison to the window height.
     function handleResize() {
-        headerSize = mainCanvas.offsetTop;
+        // Get total space above canvas
+        var headerSize = mainCanvas.offsetTop;
 
+        // Calculate the canvas size based on the
+        // current window height.
         var newCanvasSize = $(window).height() - headerSize;
 
+        // Resize the canvas with the new size.
         $(mainCanvas).attr('height', newCanvasSize + 'px').attr('width', $(window).width() + 'px');
+
+        // Calculate the space below the new canvas
+        // using the document's height.
         var footerSize = $(document).height() - (newCanvasSize + headerSize);
 
+        // Do the final resize that removes the footer height from the canvas.
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
     }
 
@@ -63,20 +78,29 @@
     }
     
     function gameLoop(gameTime) {
+        // Request the next update from the browser.
         requestAnimationFrame(gameLoop);
 
+        // If lastUpdateTime isn't set use the current gameTime.
         if (!lastUpdateTime)
             lastUpdateTime = gameTime;
 
+        // Calculate the delta based on the lastUpdateTime and the gameTime.
+        // If it is below our updateInterval do nothing.
         var dt = gameTime - lastUpdateTime;
         if (dt < updateInterval)
             return;
 
+        // Store current gameTime so we can get the delta on the next call.
         lastUpdateTime = gameTime;
 
+        // Run the update logic and 
+        // draw the screen to the canvas.
         update(dt);
         draw();
 
+        // Check if the lastResizeTime is set and check if the delta is above our
+        // resizeInterval. If it is resize the canvas.
         if (lastResizeTime != null && (new Date()) - lastResizeTime >= resizeInterval) {
             lastResizeTime = null;
             handleResize();
