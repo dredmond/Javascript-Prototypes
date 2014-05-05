@@ -28,7 +28,9 @@
         ctx = mainCanvas.getContext('2d'),
         headerSize = 0,
         lastResizeTime = new Date(),
-        lastUpdateTime = null;
+        lastUpdateTime = null,
+        updateInterval = 100,
+        resizeInterval = 200;
 
     $(window).resize(function () {
         lastResizeTime = new Date();
@@ -43,11 +45,13 @@
         var footerSize = $(document).height() - (newCanvasSize + headerSize);
 
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
-
-        update();
     }
 
-    function update() {
+    function update(dt) {
+
+    }
+
+    function draw() {
         ctx.fillStyle = '000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
@@ -65,12 +69,15 @@
             lastUpdateTime = gameTime;
 
         var dt = gameTime - lastUpdateTime;
-        if (dt < 100)
+        if (dt < updateInterval)
             return;
 
         lastUpdateTime = gameTime;
 
-        if (lastResizeTime != null && (new Date()) - lastResizeTime >= 200) {
+        update(dt);
+        draw();
+
+        if (lastResizeTime != null && (new Date()) - lastResizeTime >= resizeInterval) {
             lastResizeTime = null;
             handleResize();
         }
