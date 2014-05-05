@@ -29,8 +29,18 @@
         lastResizeTime = new Date(),
         lastUpdateTime = null,
         updateInterval = 100,
-        resizeInterval = 200;
+        resizeInterval = 200,
+        gridCellSize = 25,
+        gridCells = 25,
+        cells = [],
+        cellMovedElapsed = 0,
+        cellLocation = { x: 0, y: 0 };
 
+    for (var j = 0; j < gridCells; j++) {
+        for (var i = 0; i < gridCells; i++) {
+            cells[j * gridCells + i] = 0;
+        }
+    }
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -63,18 +73,99 @@
     }
 
     function update(dt) {
+        cellMovedElapsed += dt;
 
+        if (cellMovedElapsed > 100) {
+            cellMovedElapsed = 0;
+
+            var prevPrevCell = moveToRelativeCell(cellLocation, -1, 0);
+            var prevCell = moveToRelativeCell(cellLocation, 0, 0);
+            var nextCell = moveToRelativeCell(cellLocation, 1, 0);
+            setCell(prevPrevCell.x, prevPrevCell.y, 0);
+            setCell(nextCell.x, nextCell.y, 1);
+            setCell(prevCell.x, prevCell.y, 2);
+
+            for (var x = 0; x <= 10; x++) {
+                cell = moveToRelativeCell(cellLocation, -x, 0);
+                setCell(cell.x, cell.y, (10.0 - x) / 10.0);
+            }
+
+            cellLocation = nextCell;
+        }
+    }
+
+    function moveToRelativeCell(currentCell, xOffset, yOffset) {
+        var cellLinearLocation = currentCell.y * gridCells + currentCell.x;
+
+        cellLinearLocation += yOffset * gridCells + xOffset;
+        cellLinearLocation = cellLinearLocation % (gridCells * gridCells);
+
+        var y = Math.floor(cellLinearLocation / gridCells),
+            x = cellLinearLocation - y * gridCells;
+
+        return {
+            x: x,
+            y: y,
+            cellLinearLocation: cellLinearLocation
+        };
+    }
+
+    function setCell(x, y, value) {
+        cells[y * gridCells + x] = value;
+    }
+
+    function getCell(x, y) {
+        return cells[y * gridCells + x];
     }
 
     function draw() {
         ctx.fillStyle = '000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
+        var gridXOffset = (mainCanvas.width - gridCells * gridCellSize) / 2,
+            gridYOffset = (mainCanvas.height - gridCells * gridCellSize) / 2;
+
+        for (var i = 0; i <= gridCells; i++) {
+            drawLine(i * gridCellSize + gridXOffset, 0 + gridYOffset, i * gridCellSize + gridXOffset, gridCells * gridCellSize + gridYOffset, '888888');
+            
+            for (var j = 0; j <= gridCells; j++) {
+                drawLine(0 + gridXOffset, j * gridCellSize + gridYOffset, gridCells * gridCellSize + gridXOffset, j * gridCellSize + gridYOffset, '888888');
+
+                if (i < gridCells && j < gridCells && getCell(i, j) > 0) {
+                    ctx.fillStyle = 'rgba(0, 255, 0, ' + getCell(i, j) + ')';
+                    ctx.fillRect(i * gridCellSize + gridXOffset, j * gridCellSize + gridYOffset, gridCellSize, gridCellSize);
+                }
+            }
+        }
+
+        // Left
+        drawLine(gridXOffset - 2.5, gridYOffset - 4.9, gridXOffset - 2.5, gridCells * gridCellSize + gridYOffset + 4.9, 'FF0000', 5);
+
+        // Top
+        drawLine(gridXOffset - 2.5, gridYOffset - 2.5, gridCells * gridCellSize + gridXOffset + 2.5, gridYOffset - 2.5, 'FF0000', 5);
+
+        // Right
+        drawLine(gridCells * gridCellSize + gridXOffset + 2.5, gridYOffset - 4.9, gridCells * gridCellSize + gridXOffset + 2.5, gridCells * gridCellSize + gridYOffset + 4.9, 'FF0000', 5);
+
+        // Bottom
+        drawLine(gridXOffset - 2.5, gridCells * gridCellSize + gridYOffset + 2.5, gridCells * gridCellSize + gridXOffset + 2.5, gridCells * gridCellSize + gridYOffset + 2.5, 'FF0000', 5);
+
         ctx.font = '30px Verdana';
         ctx.fillStyle = 'white';
 
         var fontSize = ctx.measureText('Sample Text');
         ctx.fillText('Sample Text', (mainCanvas.width - fontSize.width) / 2, (mainCanvas.height - 30) / 2);
+    }
+
+    function drawLine(x, y, x1, y1, color, width) {
+        width = width ? width : 1;
+
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x1, y1);
+        ctx.lineWidth = width;
+        ctx.stroke();
     }
     
     function gameLoop(gameTime) {
@@ -96,7 +187,7 @@
 
         // Run the update logic and 
         // draw the screen to the canvas.
-        update(dt);
+        update(gameTime, dt);
         draw();
 
         // Check if the lastResizeTime is set and check if the delta is above our
