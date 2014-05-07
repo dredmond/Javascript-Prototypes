@@ -28,7 +28,7 @@
         ctx = mainCanvas.getContext('2d'),
         lastResizeTime = new Date(),
         lastUpdateTime = null,
-        updateInterval = 100,
+        updateInterval = 10,
         resizeInterval = 200,
         gridCellSize = 25,
         gridCells = 25,
@@ -72,10 +72,10 @@
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
     }
 
-    function update(dt) {
+    function update(gameTime, dt) {
         cellMovedElapsed += dt;
 
-        if (cellMovedElapsed > 100) {
+        if (cellMovedElapsed > 10) {
             cellMovedElapsed = 0;
 
             var prevPrevCell = moveToRelativeCell(cellLocation, -1, 0);
@@ -86,7 +86,7 @@
             setCell(prevCell.x, prevCell.y, 2);
 
             for (var x = 0; x <= 10; x++) {
-                cell = moveToRelativeCell(cellLocation, -x, 0);
+                var cell = moveToRelativeCell(cellLocation, -x, 0);
                 setCell(cell.x, cell.y, (10.0 - x) / 10.0);
             }
 
@@ -95,10 +95,16 @@
     }
 
     function moveToRelativeCell(currentCell, xOffset, yOffset) {
-        var cellLinearLocation = currentCell.y * gridCells + currentCell.x;
+        var cellLinearLocation = currentCell.y * gridCells + currentCell.x,
+            gridSquared = gridCells * gridCells;
 
         cellLinearLocation += yOffset * gridCells + xOffset;
-        cellLinearLocation = cellLinearLocation % (gridCells * gridCells);
+
+        // Make sure we are never negative.
+        if (cellLinearLocation < 0)
+            cellLinearLocation += gridSquared;
+
+        cellLinearLocation = cellLinearLocation % gridSquared;
 
         var y = Math.floor(cellLinearLocation / gridCells),
             x = cellLinearLocation - y * gridCells;
