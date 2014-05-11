@@ -4,7 +4,8 @@
             mapHeight = mapInitData.height ? mapInitData.height : 10,
             mapWidth = mapInitData.width ? mapInitData.width : 10,
             mapName = mapInitData.name ? mapInitData.name : 'NewMap',
-            cells = mapInitData.cells ? mapInitData.cells : [];
+            cells = mapInitData.cells ? mapInitData.cells : [],
+            units = [];
 
         function setName(newName) {
             mapName = newName;
@@ -70,6 +71,46 @@
             return getCell(loc);
         }
 
+        function addUnit(unit) {
+            units.add(unit);
+        }
+
+        function removeUnit(unit) {
+            forEachUnit(function(i, tmpUnit) {
+                if (unit === tmpUnit) {
+                    units.splice(i, 1);
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        function getUnitAt(location) {
+            var foundUnit = null;
+
+            forEachUnit(function (i, tmpUnit) {
+                var currentLoc = tmpUnit.getLocation();
+
+                if (location.x === currentLoc.x && location.y === currentLoc.y) {
+                    foundUnit = tmpUnit;
+                    return false;
+                }
+
+                return true;
+            });
+
+            return foundUnit;
+        }
+
+        function forEachUnit(unitAction) {
+            for (var i = 0; i < units.length; i++) {
+                if (!unitAction(i, units[i])) {
+                    break;
+                }
+            }
+        }
+
         return {
             getWidth: function() {
                  return mapWidth;
@@ -83,7 +124,11 @@
             setCell: setCell,
             getMapData: getMapData,
             getName: getName,
-            setName: setName
+            setName: setName,
+            addUnit: addUnit,
+            getUnitAt: getUnitAt,
+            removeUnit: removeUnit,
+            forEachUnit: forEachUnit
         }
     }
 
