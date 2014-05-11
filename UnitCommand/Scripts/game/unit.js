@@ -5,30 +5,42 @@
         state = 0,
         health = 10,
         equipment = {},
-        carrying = null;
+        carrying = null,
+        cellSize = gameMap.getCellSize(),
+        unitSize = 5,
+        unitSizeDiameter = unitSize + unitSize;
 
     function update(currentGameTime, dt) {
         
     }
 
-    function draw(ctx, mapTranslationFunc) {
+    function draw(ctx) {
         ctx.save();
 
-        var pos = mapTranslationFunc(currentLocation, 8, 8);
+        var pos = centerUnit(gameMap.getDisplayOffset(currentLocation));
 
         ctx.beginPath();
-        ctx.arc(pos.x + 8, pos.y + 8, 8, 0, 2 * Math.PI, false);
+        ctx.arc(pos.x + unitSize, pos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'green';
         ctx.fill();
 
-        pos = mapTranslationFunc(destinationLocation, 8, 8);
+        pos = centerUnit(gameMap.getDisplayOffset(destinationLocation));
 
         ctx.beginPath();
-        ctx.arc(pos.x + 8, pos.y + 8, 8, 0, 2 * Math.PI, false);
+        ctx.arc(pos.x + unitSize, pos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'red';
         ctx.fill();
 
         ctx.restore();
+    }
+
+    function centerUnit(location) {
+        var offset = Math.round((cellSize - unitSizeDiameter) / 2);
+
+        return {
+            x: location.x + offset,
+            y: location.y + offset
+        };
     }
 
     function moveTo(location) {

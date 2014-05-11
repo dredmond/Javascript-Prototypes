@@ -5,6 +5,7 @@
             mapWidth = mapInitData.width ? mapInitData.width : 10,
             mapName = mapInitData.name ? mapInitData.name : 'NewMap',
             cells = mapInitData.cells ? mapInitData.cells : [],
+            cellSize = mapInitData.cellSize ? mapInitData.cellSize : 20,
             units = [];
 
         function setName(newName) {
@@ -72,7 +73,7 @@
         }
 
         function addUnit(unit) {
-            units.add(unit);
+            units.push(unit);
         }
 
         function removeUnit(unit) {
@@ -111,12 +112,22 @@
             }
         }
 
+        function getDisplayOffset(location) {
+            return {
+                x: location.x * cellSize,
+                y: location.y * cellSize
+            };
+        }
+
         return {
             getWidth: function() {
                  return mapWidth;
             },
             getHeight: function() {
                 return mapHeight;
+            },
+            getCellSize: function() {
+                return cellSize;
             },
             normalizeMapLocation: normalizeMapLocation,
             getRelativeCell: getRelativeCell,
@@ -128,7 +139,8 @@
             addUnit: addUnit,
             getUnitAt: getUnitAt,
             removeUnit: removeUnit,
-            forEachUnit: forEachUnit
+            forEachUnit: forEachUnit,
+            getDisplayOffset: getDisplayOffset
         }
     }
 

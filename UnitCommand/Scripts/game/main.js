@@ -5,10 +5,10 @@
         lastUpdateTime = null,
         updateInterval = 1,
         resizeInterval = 200,
-        gridCellSize = 20,
         gameMap = map.createMap({
             height: 20,
-            width: 20
+            width: 20,
+            cellSize: 20
         }),
         cellMovedElapsed = 0,
         tileTypes = {
@@ -22,7 +22,17 @@
             x: 0,
             y: 0
         },
-        units = [];
+        units = [],
+        rightMouseDown = false,
+        mapOffset = {
+            x: 0,
+            y: 0
+        },
+        oldMapOffset = {
+            x: 0,
+            y: 0
+        },
+        mouseDragStart = null;
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -30,6 +40,39 @@
     // for a single resize.
     $(window).resize(function () {
         lastResizeTime = new Date();
+    });
+
+    mainCanvas.addEventListener('contextmenu', function (evt) {
+        evt.preventDefault();
+    });
+
+    mainCanvas.addEventListener('mousedown', function (evt) {
+        evt.preventDefault();
+        console.log(evt);
+
+        if (evt.button === 2) {
+            rightMouseDown = true;
+            mouseDragStart = evt;
+            oldMapOffset.x = mapOffset.x;
+            oldMapOffset.y = mapOffset.y;
+        }
+    });
+
+    mainCanvas.addEventListener('mousemove', function (evt) {
+        evt.preventDefault();
+        //console.log(x);
+
+        if (rightMouseDown) {
+            mapOffset.x = oldMapOffset.x + evt.x - mouseDragStart.x;
+            mapOffset.y = oldMapOffset.y + evt.y - mouseDragStart.y;
+        }
+    });
+
+    mainCanvas.addEventListener('mouseup', function (evt) {
+        evt.preventDefault();
+        console.log(evt);
+
+        rightMouseDown = false;
     });
 
     // Handle the resize event. We want to size the canvas so it sits 
@@ -79,18 +122,19 @@
         ctx.save();
 
         var gridWidth = gameMap.getWidth(),
-            gridHeight = gameMap.getHeight();
+            gridHeight = gameMap.getHeight(),
+            cellSize = gameMap.getCellSize();
 
-        var gridXOffset = Math.round((mainCanvas.width - gridWidth * gridCellSize) / 2),
-            gridYOffset = Math.round((mainCanvas.height - gridHeight * gridCellSize) / 2);
+        var gridXOffset = Math.round((mainCanvas.width - gridWidth * cellSize) / 2),
+            gridYOffset = Math.round((mainCanvas.height - gridHeight * cellSize) / 2);
 
-        ctx.translate(gridXOffset, gridYOffset);
+        ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);
 
         drawMap();
 
-        for (var i = 0; i < units.length; i++) {
-            units[i].draw(ctx);
-        }
+        gameMap.forEachUnit(function(i, unit) {
+            unit.draw(ctx);
+        });
 
         ctx.restore();
     }
@@ -117,18 +161,13 @@
         }
     }
 
-    function getMapOffset(location) {
-        return {
-            x: location.x * gridCellSize,
-            y: location.y * gridCellSize
-        }
-    }
-
     function drawCell(x, y) {
         var location = {
-            x: x,
-            y: y
-        };
+                x: x,
+                y: y
+            },
+            cellSize = gameMap.getCellSize();
+        
 
         switch (gameMap.getCell(location)) {
             case tileTypes.grass:
@@ -148,9 +187,10 @@
                 break;
         }
 
-        location = getMapOffset(location);
+        location = gameMap.getDisplayOffset(location);
+
         ctx.beginPath();
-        ctx.rect(location.x, location.y, gridCellSize, gridCellSize);
+        ctx.rect(location.x, location.y, cellSize, cellSize);
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
         ctx.stroke();
