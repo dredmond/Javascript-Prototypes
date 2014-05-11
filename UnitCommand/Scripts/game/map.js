@@ -70,6 +70,12 @@
         }
 
         return {
+            getWidth: function() {
+                 return mapWidth;
+            },
+            getHeight: function() {
+                return mapHeight;
+            },
             normalizeMapLocation: normalizeMapLocation,
             getRelativeCell: getRelativeCell,
             getCell: getCell,

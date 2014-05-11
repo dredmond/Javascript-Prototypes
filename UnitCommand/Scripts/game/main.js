@@ -1,46 +1,28 @@
 ﻿$(function () {
-    (function () {
-        var lastTime = 0;
-        var vendors = ['ms', 'moz', 'webkit', 'o'];
-        for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-            window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame']
-                                       || window[vendors[x] + 'CancelRequestAnimationFrame'];
-        }
-
-        if (!window.requestAnimationFrame)
-            window.requestAnimationFrame = function (callback) {
-                var currTime = new Date().getTime();
-                var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                var id = window.setTimeout(function () { callback(currTime + timeToCall); },
-                  timeToCall);
-                lastTime = currTime + timeToCall;
-                return id;
-            };
-
-        if (!window.cancelAnimationFrame)
-            window.cancelAnimationFrame = function (id) {
-                clearTimeout(id);
-            };
-    }());
-
     var mainCanvas = document.getElementById('mainCanvas'),
         ctx = mainCanvas.getContext('2d'),
         lastResizeTime = new Date(),
         lastUpdateTime = null,
-        updateInterval = 10,
+        updateInterval = 1,
         resizeInterval = 200,
         gridCellSize = 25,
-        gridCells = 25,
-        cells = [],
-        cellMovedElapsed = 0,
-        cellLocation = { x: 0, y: 0 };
-
-    for (var j = 0; j < gridCells; j++) {
-        for (var i = 0; i < gridCells; i++) {
-            cells[j * gridCells + i] = 0;
-        }
-    }
+        gameMap = map.createMap({
+            height: 10,
+            width: 10,
+            cells: [
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0,
+                0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 0.5,
+                0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                0.0, 0.5, 1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                0.5, 1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+            ]
+        }),
+        cellMovedElapsed = 0;
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -75,10 +57,10 @@
     function update(gameTime, dt) {
         cellMovedElapsed += dt;
 
-        if (cellMovedElapsed > 10) {
+        if (cellMovedElapsed > 1) {
             cellMovedElapsed = 0;
 
-            var prevPrevCell = moveToRelativeCell(cellLocation, -1, 0);
+            /*var prevPrevCell = moveToRelativeCell(cellLocation, -1, 0);
             var prevCell = moveToRelativeCell(cellLocation, 0, 0);
             var nextCell = moveToRelativeCell(cellLocation, 1, 0);
             setCell(prevPrevCell.x, prevPrevCell.y, 0);
@@ -90,77 +72,74 @@
                 setCell(cell.x, cell.y, (10.0 - x) / 10.0);
             }
 
-            cellLocation = nextCell;
+            cellLocation = nextCell;*/
         }
-    }
-
-    function moveToRelativeCell(currentCell, xOffset, yOffset) {
-        var cellLinearLocation = currentCell.y * gridCells + currentCell.x,
-            gridSquared = gridCells * gridCells;
-
-        cellLinearLocation += yOffset * gridCells + xOffset;
-
-        // Make sure we are never negative.
-        if (cellLinearLocation < 0)
-            cellLinearLocation += gridSquared;
-
-        cellLinearLocation = cellLinearLocation % gridSquared;
-
-        var y = Math.floor(cellLinearLocation / gridCells),
-            x = cellLinearLocation - y * gridCells;
-
-        return {
-            x: x,
-            y: y,
-            cellLinearLocation: cellLinearLocation
-        };
-    }
-
-    function setCell(x, y, value) {
-        cells[y * gridCells + x] = value;
-    }
-
-    function getCell(x, y) {
-        return cells[y * gridCells + x];
     }
 
     function draw() {
         ctx.fillStyle = '000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
-        var gridXOffset = (mainCanvas.width - gridCells * gridCellSize) / 2,
-            gridYOffset = (mainCanvas.height - gridCells * gridCellSize) / 2;
+        var gridWidth = gameMap.getWidth(),
+            gridHeight = gameMap.getHeight();
 
-        for (var i = 0; i <= gridCells; i++) {
-            drawLine(i * gridCellSize + gridXOffset, 0 + gridYOffset, i * gridCellSize + gridXOffset, gridCells * gridCellSize + gridYOffset, '888888');
+        var gridXOffset = (mainCanvas.width - gridWidth * gridCellSize) / 2,
+            gridYOffset = (mainCanvas.height - gridHeight * gridCellSize) / 2;
+
+        for (var i = 0; i <= gridWidth; i++) {
+            drawLine(i * gridCellSize + gridXOffset,
+                     0 + gridYOffset,
+                     i * gridCellSize + gridXOffset,
+                     gridHeight * gridCellSize + gridYOffset,
+                     '888888');
             
-            for (var j = 0; j <= gridCells; j++) {
-                drawLine(0 + gridXOffset, j * gridCellSize + gridYOffset, gridCells * gridCellSize + gridXOffset, j * gridCellSize + gridYOffset, '888888');
+            for (var j = 0; j <= gridHeight; j++) {
+                drawLine(0 + gridXOffset,
+                         j * gridCellSize + gridYOffset,
+                         gridWidth * gridCellSize + gridXOffset,
+                         j * gridCellSize + gridYOffset,
+                         '888888');
 
-                if (i < gridCells && j < gridCells && getCell(i, j) > 0) {
-                    ctx.fillStyle = 'rgba(0, 255, 0, ' + getCell(i, j) + ')';
+                if (i < gridWidth && j < gridHeight && gameMap.getCell({ x: i, y: j }) > 0) {
+                    ctx.fillStyle = 'rgba(0, 255, 0, ' + gameMap.getCell({ x: i, y: j }) + ')';
                     ctx.fillRect(i * gridCellSize + gridXOffset, j * gridCellSize + gridYOffset, gridCellSize, gridCellSize);
                 }
             }
         }
 
         // Left
-        drawLine(gridXOffset - 2.5, gridYOffset - 4.9, gridXOffset - 2.5, gridCells * gridCellSize + gridYOffset + 4.9, 'FF0000', 5);
+        /*drawLine(gridXOffset - 2.5, gridYOffset - 4.9,
+                 gridXOffset - 2.5,
+                 gridHeight * gridCellSize + gridYOffset + 4.9,
+                 'FF0000', 5);
 
         // Top
-        drawLine(gridXOffset - 2.5, gridYOffset - 2.5, gridCells * gridCellSize + gridXOffset + 2.5, gridYOffset - 2.5, 'FF0000', 5);
+        drawLine(gridXOffset - 2.5,
+                 gridYOffset - 2.5,
+                 gridWidth * gridCellSize + gridXOffset + 2.5,
+                 gridYOffset - 2.5,
+                 'FF0000', 5);
 
         // Right
-        drawLine(gridCells * gridCellSize + gridXOffset + 2.5, gridYOffset - 4.9, gridCells * gridCellSize + gridXOffset + 2.5, gridCells * gridCellSize + gridYOffset + 4.9, 'FF0000', 5);
+        drawLine(gridWidth * gridCellSize + gridXOffset + 2.5,
+                 gridYOffset - 4.9,
+                 gridWidth * gridCellSize + gridXOffset + 2.5,
+                 gridWidth * gridCellSize + gridYOffset + 4.9,
+                 'FF0000', 5);
 
         // Bottom
-        drawLine(gridXOffset - 2.5, gridCells * gridCellSize + gridYOffset + 2.5, gridCells * gridCellSize + gridXOffset + 2.5, gridCells * gridCellSize + gridYOffset + 2.5, 'FF0000', 5);
+        drawLine(gridXOffset - 2.5,
+                 gridWidth * gridCellSize + gridYOffset + 2.5,
+                 gridWidth * gridCellSize + gridXOffset + 2.5,
+                 gridWidth * gridCellSize + gridYOffset + 2.5,
+                 'FF0000', 5);
+        */
 
         ctx.font = '30px Verdana';
         ctx.fillStyle = 'white';
 
         var fontSize = ctx.measureText('Sample Text');
-        ctx.fillText('Sample Text', (mainCanvas.width - fontSize.width) / 2, (mainCanvas.height - 30) / 2);
+        ctx.fillText('Sample Text', (mainCanvas.width - fontSize.width) / 2, (mainCanvas.height) / 2);
     }
 
     function drawLine(x, y, x1, y1, color, width) {
@@ -193,7 +172,7 @@
 
         // Run the update logic and 
         // draw the screen to the canvas.
-        update(gameTime, dt);
+        //update(gameTime, dt);
         draw();
 
         // Check if the lastResizeTime is set and check if the delta is above our
@@ -218,3 +197,29 @@
         }
     });
 });
+
+// Helper functions for setting up requestAnimationFrame.
+(function () {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame']
+                                   || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function (callback) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function () { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+}());
