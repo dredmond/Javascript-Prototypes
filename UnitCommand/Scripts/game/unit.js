@@ -17,17 +17,18 @@
     function draw(ctx) {
         ctx.save();
 
-        var pos = centerUnit(gameMap.getDisplayOffset(currentLocation));
+        var startPos = centerUnit(gameMap.getDisplayOffset(currentLocation)),
+            endPos = centerUnit(gameMap.getDisplayOffset(destinationLocation));
+
+        debug(ctx, startPos, endPos);
 
         ctx.beginPath();
-        ctx.arc(pos.x + unitSize, pos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
+        ctx.arc(startPos.x + unitSize, startPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'green';
         ctx.fill();
 
-        pos = centerUnit(gameMap.getDisplayOffset(destinationLocation));
-
         ctx.beginPath();
-        ctx.arc(pos.x + unitSize, pos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
+        ctx.arc(endPos.x + unitSize, endPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'red';
         ctx.fill();
 
@@ -53,6 +54,14 @@
 
     function getLocation() {
         return currentLocation;
+    }
+
+    function debug(ctx, startPos, endPos) {
+        ctx.beginPath();
+        ctx.moveTo(startPos.x + unitSize, startPos.y + unitSize);
+        ctx.lineTo(endPos.x + unitSize, endPos.y + unitSize);
+        ctx.strokeStyle = 'blue';
+        ctx.stroke();
     }
 
     return {
