@@ -98,9 +98,9 @@
     }
 
     function update(gameTime, dt) {
-        //cellMovedElapsed += dt;
+        cellMovedElapsed += dt;
 
-        /*if (cellMovedElapsed > 10) {
+        if (cellMovedElapsed > 10) {
             cellMovedElapsed = 0;
             gameMap.setCell(locationXy, tileTypes.none);
 
@@ -108,7 +108,7 @@
             locationXy.y += 1;
 
             gameMap.setCell(locationXy, tileTypes.trees);
-        }*/
+        }
 
         for (var i = 0; i < units.length; i++) {
             units[i].update(gameTime, dt);
