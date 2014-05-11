@@ -32,6 +32,7 @@
         function coordsToArrayIndex(x, y) {
             // Normalize x with width.
             x = x % mapWidth;
+            y = y % mapHeight;
 
             var cellLocation = y * mapHeight + x;
 
