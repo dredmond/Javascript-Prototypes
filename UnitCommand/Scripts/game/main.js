@@ -65,20 +65,6 @@
             locationXy.y += 1;
 
             gameMap.setCell(locationXy, tileTypes.trees);
-
-            /*var prevPrevCell = moveToRelativeCell(cellLocation, -1, 0);
-            var prevCell = moveToRelativeCell(cellLocation, 0, 0);
-            var nextCell = moveToRelativeCell(cellLocation, 1, 0);
-            setCell(prevPrevCell.x, prevPrevCell.y, 0);
-            setCell(nextCell.x, nextCell.y, 1);
-            setCell(prevCell.x, prevCell.y, 2);
-
-            for (var x = 0; x <= 10; x++) {
-                var cell = moveToRelativeCell(cellLocation, -x, 0);
-                setCell(cell.x, cell.y, (10.0 - x) / 10.0);
-            }
-
-            cellLocation = nextCell;*/
         }
     }
 
@@ -86,63 +72,7 @@
         ctx.fillStyle = '000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
-        var gridWidth = gameMap.getWidth(),
-            gridHeight = gameMap.getHeight();
-
-        var gridXOffset = (mainCanvas.width - gridWidth * gridCellSize) / 2,
-            gridYOffset = (mainCanvas.height - gridHeight * gridCellSize) / 2;
-
-        for (var i = 0; i < gridWidth; i++) {
-            /*drawLine(i * gridCellSize + gridXOffset,
-                     0 + gridYOffset,
-                     i * gridCellSize + gridXOffset,
-                     gridHeight * gridCellSize + gridYOffset,
-                     '888888');*/
-            
-            for (var j = 0; j < gridHeight; j++) {
-                /*drawLine(0 + gridXOffset,
-                         j * gridCellSize + gridYOffset,
-                         gridWidth * gridCellSize + gridXOffset,
-                         j * gridCellSize + gridYOffset,
-                         '888888');*/
-
-                drawCell(i, j, gridXOffset, gridYOffset);
-            }
-        }
-
-        // Left
-        /*drawLine(gridXOffset - 2.5, gridYOffset - 4.9,
-                 gridXOffset - 2.5,
-                 gridHeight * gridCellSize + gridYOffset + 4.9,
-                 'FF0000', 5);
-
-        // Top
-        drawLine(gridXOffset - 2.5,
-                 gridYOffset - 2.5,
-                 gridWidth * gridCellSize + gridXOffset + 2.5,
-                 gridYOffset - 2.5,
-                 'FF0000', 5);
-
-        // Right
-        drawLine(gridWidth * gridCellSize + gridXOffset + 2.5,
-                 gridYOffset - 4.9,
-                 gridWidth * gridCellSize + gridXOffset + 2.5,
-                 gridWidth * gridCellSize + gridYOffset + 4.9,
-                 'FF0000', 5);
-
-        // Bottom
-        drawLine(gridXOffset - 2.5,
-                 gridWidth * gridCellSize + gridYOffset + 2.5,
-                 gridWidth * gridCellSize + gridXOffset + 2.5,
-                 gridWidth * gridCellSize + gridYOffset + 2.5,
-                 'FF0000', 5);
-        */
-
-        //ctx.font = '30px Verdana';
-        //ctx.fillStyle = 'white';
-
-        //var fontSize = ctx.measureText('Sample Text');
-        //ctx.fillText('Sample Text', (mainCanvas.width - fontSize.width) / 2, (mainCanvas.height) / 2);
+        drawMap();
     }
 
     function drawLine(x, y, x1, y1, color, width) {
@@ -156,6 +86,20 @@
         ctx.stroke();
     }
    
+    function drawMap() {
+        var gridWidth = gameMap.getWidth(),
+            gridHeight = gameMap.getHeight();
+
+        var gridXOffset = (mainCanvas.width - gridWidth * gridCellSize) / 2,
+            gridYOffset = (mainCanvas.height - gridHeight * gridCellSize) / 2;
+
+        for (var i = 0; i < gridWidth; i++) {
+            for (var j = 0; j < gridHeight; j++) {
+                drawCell(i, j, gridXOffset, gridYOffset);
+            }
+        }
+    }
+
     function drawCell(x, y, xOffset, yOffset) {
         var location = {
             x: x,
