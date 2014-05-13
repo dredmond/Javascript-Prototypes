@@ -1,8 +1,10 @@
 ﻿var map = map || (function() {
     function createMap(mapInitData) {
-        var totalCells = mapInitData.height * mapInitData.width,
-            mapHeight = mapInitData.height ? mapInitData.height : 10,
+        mapInitData = mapInitData || { };
+
+        var mapHeight = mapInitData.height ? mapInitData.height : 10,
             mapWidth = mapInitData.width ? mapInitData.width : 10,
+            totalCells = mapInitData.height * mapInitData.width,
             mapName = mapInitData.name ? mapInitData.name : 'NewMap',
             cells = mapInitData.cells ? mapInitData.cells : [],
             cellSize = mapInitData.cellSize ? mapInitData.cellSize : 20,
