@@ -6,10 +6,13 @@
         updateInterval = 1,
         resizeInterval = 200,
         gameMap = map.createMap({
-            height: 20,
-            width: 20,
-            cellSize: 20
+            tileSize: 20,
+            dataSettings: {
+                height: 20,
+                width: 20
+            }
         }),
+        gameMapData = gameMap.getMapData(),
         cellMovedElapsed = 0,
         tileTypes = {
             none: 0,
@@ -102,12 +105,12 @@
 
         if (cellMovedElapsed > 10) {
             cellMovedElapsed = 0;
-            gameMap.setCell(locationXy, tileTypes.none);
+            gameMapData.setTile(locationXy, tileTypes.none);
 
             locationXy.x += 1;
             locationXy.y += 1;
 
-            gameMap.setCell(locationXy, tileTypes.trees);
+            gameMapData.setTile(locationXy, tileTypes.trees);
         }
 
         for (var i = 0; i < units.length; i++) {
@@ -121,18 +124,18 @@
 
         ctx.save();
 
-        var gridWidth = gameMap.getWidth(),
-            gridHeight = gameMap.getHeight(),
-            cellSize = gameMap.getCellSize();
+        var gridWidth = gameMapData.getWidth(),
+            gridHeight = gameMapData.getHeight(),
+            tileSize = gameMap.getTileSize();
 
-        var gridXOffset = Math.round((mainCanvas.width - gridWidth * cellSize) / 2),
-            gridYOffset = Math.round((mainCanvas.height - gridHeight * cellSize) / 2);
+        var gridXOffset = Math.round((mainCanvas.width - gridWidth * tileSize) / 2),
+            gridYOffset = Math.round((mainCanvas.height - gridHeight * tileSize) / 2);
 
         ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);
 
         drawMap();
 
-        gameMap.forEachUnit(function(i, unit) {
+        gameMapData.forEachUnit(function(i, unit) {
             unit.draw(ctx);
         });
 
@@ -151,25 +154,25 @@
     }
    
     function drawMap() {
-        var gridWidth = gameMap.getWidth(),
-            gridHeight = gameMap.getHeight();
+        var gridWidth = gameMapData.getWidth(),
+            gridHeight = gameMapData.getHeight();
 
         for (var i = 0; i < gridWidth; i++) {
             for (var j = 0; j < gridHeight; j++) {
-                drawCell(i, j);
+                drawTile(i, j);
             }
         }
     }
 
-    function drawCell(x, y) {
+    function drawTile(x, y) {
         var location = {
                 x: x,
                 y: y
             },
-            cellSize = gameMap.getCellSize();
+            tileSize = gameMap.getTileSize();
         
 
-        switch (gameMap.getCell(location)) {
+        switch (gameMapData.getTile(location)) {
             case tileTypes.grass:
                 ctx.fillStyle = 'rgba(0, 255, 0, 1)';
                 break;
@@ -190,7 +193,7 @@
         location = gameMap.getDisplayOffset(location);
 
         ctx.beginPath();
-        ctx.rect(location.x, location.y, cellSize, cellSize);
+        ctx.rect(location.x, location.y, tileSize, tileSize);
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
         ctx.stroke();
@@ -227,7 +230,7 @@
         }
     }
 
-    gameMap.addUnit(unit(gameMap));
+    gameMapData.addUnit(unit(gameMap));
 
     requestAnimationFrame(gameLoop);
 

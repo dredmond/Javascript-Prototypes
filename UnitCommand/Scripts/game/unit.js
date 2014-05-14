@@ -6,7 +6,7 @@
         health = 10,
         equipment = {},
         carrying = null,
-        cellSize = gameMap.getCellSize(),
+        tileSize = gameMap.getTileSize(),
         unitSize = 5,
         unitSizeDiameter = unitSize + unitSize;
 
@@ -36,7 +36,7 @@
     }
 
     function centerUnit(location) {
-        var offset = Math.round((cellSize - unitSizeDiameter) / 2);
+        var offset = Math.round((tileSize - unitSizeDiameter) / 2);
 
         return {
             x: location.x + offset,
