@@ -13,28 +13,7 @@
             }
         }),
         gameMapData = gameMap.getMapData(),
-        cellMovedElapsed = 0,
-        tileTypes = {
-            none: 0,
-            grass: 1,
-            stones: 2,
-            water: 3,
-            trees: 4
-        },
-        locationXy = {
-            x: 0,
-            y: 0
-        },
-        units = [],
-        rightMouseDown = false,
-        mapOffset = {
-            x: 0,
-            y: 0
-        },
-        oldMapOffset = {
-            x: 0,
-            y: 0
-        },
+        oldMapOffset = null,
         mouseDragStart = null;
 
     // Hook the window resize event and store 
@@ -54,20 +33,19 @@
         console.log(evt);
 
         if (evt.button === 2) {
-            rightMouseDown = true;
             mouseDragStart = evt;
-            oldMapOffset.x = mapOffset.x;
-            oldMapOffset.y = mapOffset.y;
+            oldMapOffset = gameMap.getMapOffset();
         }
     });
 
     mainCanvas.addEventListener('mousemove', function (evt) {
         evt.preventDefault();
-        //console.log(x);
 
-        if (rightMouseDown) {
-            mapOffset.x = oldMapOffset.x + evt.x - mouseDragStart.x;
-            mapOffset.y = oldMapOffset.y + evt.y - mouseDragStart.y;
+        if (oldMapOffset !== null) {
+            gameMap.setMapOffset({
+                x: oldMapOffset.x + evt.x - mouseDragStart.x,
+                y: oldMapOffset.y + evt.y - mouseDragStart.y
+            });
         }
     });
 
@@ -75,7 +53,7 @@
         evt.preventDefault();
         console.log(evt);
 
-        rightMouseDown = false;
+        oldMapOffset = null;
     });
 
     // Handle the resize event. We want to size the canvas so it sits 
@@ -101,21 +79,14 @@
     }
 
     function update(gameTime, dt) {
-        cellMovedElapsed += dt;
 
-        if (cellMovedElapsed > 10) {
-            cellMovedElapsed = 0;
-            gameMapData.setTile(locationXy, tileTypes.none);
+        // Update the map.
+        gameMap.update(gameTime, dt);
 
-            locationXy.x += 1;
-            locationXy.y += 1;
-
-            gameMapData.setTile(locationXy, tileTypes.trees);
-        }
-
-        for (var i = 0; i < units.length; i++) {
-            units[i].update(gameTime, dt);
-        }
+        // Update the units.
+        gameMapData.forEachUnit(function (i, unit) {
+            unit.update(gameTime, dt);
+        });
     }
 
     function draw() {
@@ -124,80 +95,15 @@
 
         ctx.save();
 
-        var gridWidth = gameMapData.getWidth(),
-            gridHeight = gameMapData.getHeight(),
-            tileSize = gameMap.getTileSize();
+        // Draw the map
+        gameMap.draw(ctx);
 
-        var gridXOffset = Math.round((mainCanvas.width - gridWidth * tileSize) / 2),
-            gridYOffset = Math.round((mainCanvas.height - gridHeight * tileSize) / 2);
-
-        ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);
-
-        drawMap();
-
+        // Draw the units.
         gameMapData.forEachUnit(function(i, unit) {
             unit.draw(ctx);
         });
 
         ctx.restore();
-    }
-
-    function drawLine(x, y, x1, y1, color, width) {
-        width = width ? width : 1;
-
-        ctx.strokeStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x1, y1);
-        ctx.lineWidth = width;
-        ctx.stroke();
-    }
-   
-    function drawMap() {
-        var gridWidth = gameMapData.getWidth(),
-            gridHeight = gameMapData.getHeight();
-
-        for (var i = 0; i < gridWidth; i++) {
-            for (var j = 0; j < gridHeight; j++) {
-                drawTile(i, j);
-            }
-        }
-    }
-
-    function drawTile(x, y) {
-        var location = {
-                x: x,
-                y: y
-            },
-            tileSize = gameMap.getTileSize();
-        
-
-        switch (gameMapData.getTile(location)) {
-            case tileTypes.grass:
-                ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-                break;
-            case tileTypes.stones:
-                ctx.fillStyle = 'rgba(100, 100, 100, 1)';
-                break;
-            case tileTypes.water:
-                ctx.fillStyle = 'rgba(0, 0, 255, 1)';
-                break;
-            case tileTypes.trees:
-                ctx.fillStyle = 'rgba(0, 125, 0, 1)';
-                break;
-            default:
-                ctx.fillStyle = 'rgba(150, 150, 150, 1)';
-                break;
-        }
-
-        location = gameMap.getDisplayOffset(location);
-
-        ctx.beginPath();
-        ctx.rect(location.x, location.y, tileSize, tileSize);
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.fill();
     }
 
     function gameLoop(gameTime) {
