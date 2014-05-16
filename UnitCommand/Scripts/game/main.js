@@ -12,7 +12,6 @@
                 width: 20
             }
         }),
-        gameMapData = gameMap.getMapData(),
         oldMapOffset = null,
         mouseDragStart = null;
 
@@ -82,11 +81,6 @@
 
         // Update the map.
         gameMap.update(gameTime, dt);
-
-        // Update the units.
-        gameMapData.forEachUnit(function (i, unit) {
-            unit.update(gameTime, dt);
-        });
     }
 
     function draw() {
@@ -97,11 +91,6 @@
 
         // Draw the map
         gameMap.draw(ctx);
-
-        // Draw the units.
-        gameMapData.forEachUnit(function(i, unit) {
-            unit.draw(ctx);
-        });
 
         ctx.restore();
     }
@@ -136,7 +125,7 @@
         }
     }
 
-    gameMapData.addUnit(unit(gameMap));
+    gameMap.addUnit(unit(gameMap));
 
     requestAnimationFrame(gameLoop);
 

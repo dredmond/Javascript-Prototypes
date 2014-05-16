@@ -41,6 +41,10 @@
 
                 mData.setTile(locationXy, tileTypes.trees);
             }
+
+            mData.forEachUnit(function (i, unit) {
+                unit.update(gameTime, dt);
+            });
         }
 
         function drawMap(ctx) {
@@ -59,7 +63,6 @@
                 x: x,
                 y: y
             };
-
 
             switch (mData.getTile(location)) {
                 case tileTypes.grass:
@@ -99,6 +102,10 @@
             ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);
 
             drawMap(ctx);
+
+            mData.forEachUnit(function(i, unit) {
+                unit.draw(ctx);
+            });
         }
 
         return {
@@ -120,6 +127,9 @@
             setMapOffset: function(offset) {
                 mapOffset.x = offset.x;
                 mapOffset.y = offset.y;
+            },
+            addUnit: function(unit) {
+                mData.addUnit(unit);
             }
         };
     }
