@@ -25,7 +25,7 @@
         function update(gameTime, dt) {
             cellMovedElapsed += dt;
 
-            if (cellMovedElapsed > 1000) {
+            if (cellMovedElapsed > 100) {
                 cellMovedElapsed = 0;
                 //mData.setTile(locationXy, tileTypes.none);
 
