@@ -263,6 +263,8 @@
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\game\graphicsUtils.js" />
     <Content Include="Scripts\game\map.js" />
+    <Content Include="Scripts\game\pathFinder.js" />
+    <Content Include="Scripts\game\tileTypes.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

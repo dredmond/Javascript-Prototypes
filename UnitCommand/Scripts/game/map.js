@@ -9,13 +9,6 @@
                 y: 0
             },
             cellMovedElapsed = 0,
-            tileTypes = {
-                none: 0,
-                grass: 1,
-                stones: 2,
-                water: 3,
-                trees: 4
-            },
             mapOffset = {
                 x: 0,
                 y: 0
@@ -32,14 +25,21 @@
         function update(gameTime, dt) {
             cellMovedElapsed += dt;
 
-            if (cellMovedElapsed > 10) {
+            if (cellMovedElapsed > 1000) {
                 cellMovedElapsed = 0;
-                mData.setTile(locationXy, tileTypes.none);
+                //mData.setTile(locationXy, tileTypes.none);
 
-                locationXy.x += 1;
-                locationXy.y += 1;
+
+
+                if (locationXy.y >= mData.getHeight()) {
+                    locationXy.y = 0;
+                    locationXy.x += 1;
+                }
 
                 mData.setTile(locationXy, tileTypes.trees);
+
+                locationXy.x += 0;
+                locationXy.y += 1;
             }
 
             mData.forEachUnit(function (i, unit) {
@@ -124,13 +124,17 @@
                     y: mapOffset.y
                 }
             },
+            setViewSize: function(size) {
+                viewSize = size;
+            },
             setMapOffset: function(offset) {
                 mapOffset.x = offset.x;
                 mapOffset.y = offset.y;
             },
-            addUnit: function(unit) {
-                mData.addUnit(unit);
-            }
+            addUnit: mData.addUnit,
+            getUnitAt: mData.getUnitAt,
+            removeUnit: mData.removeUnit,
+            forEachUnit: mData.forEachUnit
         };
     }
 

@@ -17,7 +17,7 @@
             return mapName;
         }
 
-        function getMapData() {
+        function exportData() {
             return {
                 name: mapName,
                 height: mapHeight,
@@ -124,7 +124,22 @@
             getRelativeTile: getRelativeTile,
             getTile: getTile,
             setTile: setTile,
-            getMapData: getMapData,
+            getWalkableTiles: function() {
+                var wTiles = [];
+
+                for (var x = 0; x < mapWidth; x++) {
+                    for (var y = 0; y < mapHeight; y++) {
+                        var loc = { x: x, y: y },
+                            t = getTile(loc);
+                        if (t === tileTypes.grass || t === tileTypes.none) {
+                            wTiles.push(loc);
+                        }
+                    }
+                }
+
+                return wTiles;
+            },
+            exportData: exportData,
             getName: getName,
             setName: setName,
             addUnit: addUnit,

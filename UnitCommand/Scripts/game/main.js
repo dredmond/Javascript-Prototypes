@@ -75,6 +75,12 @@
 
         // Do the final resize that removes the footer height from the canvas.
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
+
+        // Update the map viewsize settings.
+        gameMap.setViewSize({
+            height: mainCanvas.height,
+            width: mainCanvas.width
+        });
     }
 
     function update(gameTime, dt) {
