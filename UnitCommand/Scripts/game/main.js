@@ -135,6 +135,8 @@
 
     requestAnimationFrame(gameLoop);
 
+    var pFinder = pathFinder(gameMap);
+
     $.ajax({
         url: '/api/UnitLogic/TestContoller',
         method: 'GET',

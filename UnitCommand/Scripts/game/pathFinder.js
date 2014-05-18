@@ -5,6 +5,8 @@
         navigatedTiles = [],
         walkableTiles = mData.getWalkableTiles();
 
+    console.log(walkableTiles);
+
     function createTile(location) {
         return {
             x: location.x,
@@ -27,12 +29,24 @@
         openTiles.push(tile);
 
         while (openTiles.length > 0) {
-            
+            tile = openTiles.pop();
+            closedTiles.add(tile);
+            navigatedTiles.add(tile);
+
+            var neighbors = getNeighborTiles(tile);
+            for (var i = 0; i < neighbors.length; i++) {
+                //neighbors[i]
+            }
+
         }
     }
 
     function getNeighborTiles(currentTile) {
-        
+        var neighbors = [];
+
+
+
+        return neighbors;
     }
 
     // Cheat and just add 10 to the last known g score.
@@ -49,6 +63,6 @@
         
     return {
         calculatePath: calculatePath,
-        changeMap: changeMap
+        //changeMap: changeMap
     };
 });

@@ -128,12 +128,14 @@
                 var wTiles = [];
 
                 for (var x = 0; x < mapWidth; x++) {
+                    wTiles[x] = [];
+
                     for (var y = 0; y < mapHeight; y++) {
                         var loc = { x: x, y: y },
                             t = getTile(loc);
-                        if (t === tileTypes.grass || t === tileTypes.none) {
-                            wTiles.push(loc);
-                        }
+                        loc.value = (t === tileTypes.grass || t === tileTypes.none) ? 1 : 0;
+
+                        wTiles[x].push(loc);
                     }
                 }
 
@@ -145,11 +147,14 @@
             addUnit: addUnit,
             getUnitAt: getUnitAt,
             removeUnit: removeUnit,
-            forEachUnit: forEachUnit
+            forEachUnit: forEachUnit,
+            coordsToArrayIndex: coordsToArrayIndex,
+            arrayIndexToCoords: arrayIndexToCoords
         }
     }
 
     // Map helper functions
+
 
     // Controller save, list, load, delete functions
 
