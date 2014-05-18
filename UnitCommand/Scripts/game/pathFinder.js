@@ -2,13 +2,16 @@
     var mData = gameMap.getMapData(),
         openTiles = [],
         closedTiles = [],
-        navigatedTiles = [],
+        //navigatedTiles = [],
         walkableTiles = mData.getWalkableTiles();
 
-    console.log(walkableTiles);
+    //console.log(walkableTiles);
 
-    function createTile(parent, current) {
+    function createTile(parentTile, tileLoc) {
         return {
+            parent: parentTile,
+            x: tileLoc.x,
+            y: tileLoc.y,
             g: 0,
             h: 0,
             f: function() {
@@ -18,22 +21,27 @@
     }
 
     function calculatePath(start, end) {
-        var goalTile = createTile(end),
-            tile = createTile(start);
+        var tile = createTile(null, start);
 
         tile.g = 0;
-        tile.h = calculateHeuristic(tile, goalTile);
+        tile.h = calculateHeuristic(tile, end);
 
         openTiles.push(tile);
 
         while (openTiles.length > 0) {
-            tile = openTiles.pop();
+            tile = popSmallestTile();
             closedTiles.add(tile);
-            navigatedTiles.add(tile);
 
             var neighbors = getNeighborTiles(tile);
             for (var i = 0; i < neighbors.length; i++) {
-                //neighbors[i]
+                // if neighbor is closed or unwalkable skip it.
+                if(!isWalkable(neighbors[i])) {
+                    continue;
+                }
+
+                // if not in open add to open set parent and calculate values.
+
+                // if in open and G is lower set parent and recalculate values.
             }
 
         }
@@ -45,6 +53,39 @@
 
 
         return neighbors;
+    }
+
+    function popSmallestTile() {
+        if (openTiles.length === 0)
+            return null;
+
+        var smallestScore = openTiles[0].f(),
+            index = 0;
+
+        for (var i = 0; i < openTiles.length; i++) {
+            if (smallestScore >= openTiles[i].f()) {
+                continue;
+            }
+
+            index = i;
+            smallestScore = openTiles[i].f();
+        }
+
+        return openTiles.splice(index, 1);
+    }
+
+    function isWalkable(tileLoc) {
+        if (walkableTiles[tileLoc.x][tileLoc.y] === 0)
+            return false;
+
+        for (var i = 0; i < closedTiles.length; i++) {
+            var t = closedTiles[i];
+
+            if (t.x === tileLoc.x && t.y === tileLoc.y)
+                return false;
+        }
+
+        return true;
     }
 
     // Cheat and just add 10 to the last known g score.
