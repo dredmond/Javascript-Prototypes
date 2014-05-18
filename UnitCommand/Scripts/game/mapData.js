@@ -155,7 +155,6 @@
 
     // Map helper functions
 
-
     // Controller save, list, load, delete functions
 
     return {

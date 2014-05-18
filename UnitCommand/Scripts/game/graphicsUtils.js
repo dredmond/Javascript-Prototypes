@@ -1,7 +1,0 @@
-﻿var graphicsUtils = (function () {
-
-
-    return {
-
-    };
-})();

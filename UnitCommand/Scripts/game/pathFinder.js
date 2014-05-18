@@ -7,10 +7,8 @@
 
     console.log(walkableTiles);
 
-    function createTile(location) {
+    function createTile(parent, current) {
         return {
-            x: location.x,
-            y: location.y,
             g: 0,
             h: 0,
             f: function() {
