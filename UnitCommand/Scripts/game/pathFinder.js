@@ -51,13 +51,15 @@
         var neighbors = [];
 
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
+        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y]);
+        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y - 1]);
+
+        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y + 1]);
+        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y]);
+        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y - 1]);
+
+        neighbors.push(walkableTiles[currentTile.x][currentTile.y + 1]);
+        neighbors.push(walkableTiles[currentTile.x][currentTile.y - 1]);
 
         return neighbors;
     }
