@@ -49,7 +49,7 @@
 
     function getNeighborTiles(currentTile) {
         var neighbors = [];
-
+        // Need to figure this part out.
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y]);
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y - 1]);
