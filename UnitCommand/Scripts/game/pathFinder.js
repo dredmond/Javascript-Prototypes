@@ -41,6 +41,7 @@
 
                 // if not in open add to open set parent and calculate values.
 
+
                 // if in open and G is lower set parent and recalculate values.
             }
 
@@ -81,6 +82,18 @@
         }
 
         return openTiles.splice(index, 1);
+    }
+
+    function isTileInList(tileList, tile) {
+        for (var i = 0; i < tileList.length; i++) {
+            var tmpTile = tileList[i];
+
+            if (tmpTile.x === tile.x && tmpTile.y === tile.y) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function isWalkable(tileLoc) {
