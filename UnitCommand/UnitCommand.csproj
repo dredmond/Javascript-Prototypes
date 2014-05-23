@@ -262,6 +262,7 @@
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\game\map.js" />
+    <Content Include="Scripts\game\pathFind.js" />
     <Content Include="Scripts\game\pathFinder.js" />
     <Content Include="Scripts\game\tileTypes.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
