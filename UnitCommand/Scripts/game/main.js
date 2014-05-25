@@ -159,6 +159,7 @@
     requestAnimationFrame(gameLoop);
 
     var pFinder = pathFinder(gameMap);
+    pFinder.calculatePath({ x: 0, y: 0 }, { x: 10, y: 12 });
 
     $.ajax({
         url: '/api/UnitLogic/TestContoller',

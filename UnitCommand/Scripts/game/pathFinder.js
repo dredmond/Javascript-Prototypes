@@ -7,7 +7,6 @@
 
     function createTile(x, y, walkable) {
         var parent = null,
-            closed = false,
             tileData = {
                 calculateDistance: calculateDistance,
                 setParent: setParent,
@@ -18,12 +17,7 @@
                 getParent: function () {
                     return parent;
                 },
-                isClosed: function () {
-                    return closed;
-                },
-                close: function () {
-                    closed = true;
-                },
+                closed: false,
                 gScore: 0,
                 hScore: 0,
                 fScore: 0
@@ -49,35 +43,40 @@
     }
     
     function calculatePath(start, end) {
-        var tile = createTile(null, start);
+        var tile = walkableTiles[start.x][start.y],
+            endTile = walkableTiles[end.x][end.y];
 
-        //tile.g = 0;
-        //tile.h = calculateHeuristic(tile, end);
-
+        tile.gScore = 0;
+        tile.calculateDistance(endTile);
         openTiles.push(tile);
 
         while (openTiles.length > 0) {
             tile = popSmallestTile();
-            // closedTiles.add(tile);
+            tile.closed = true;
+
+            console.log(tile);
 
             var neighbors = getNeighborTiles(tile);
-            for (var i = 0; i < neighbors.length; i++) {
+            //for (var i = 0; i < neighbors.length; i++) {
                 // if neighbor is closed or unwalkable skip it.
-                if(!isWalkable(neighbors[i])) {
+                //if(!isWalkable(neighbors[i])) {
                     continue;
-                }
+                //}
 
                 // if not in open add to open set parent and calculate values.
 
 
                 // if in open and G is lower set parent and recalculate values.
-            }
+            //}
 
         }
     }
 
     function getNeighborTiles(currentTile) {
         var neighbors = [];
+
+        
+
         // Need to figure this part out.
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
         neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y]);
@@ -97,19 +96,21 @@
         if (openTiles.length === 0)
             return null;
 
-        var smallestScore = openTiles[0].f(),
+        var smallestTile = openTiles[0],
             index = 0;
 
         for (var i = 0; i < openTiles.length; i++) {
-            if (smallestScore >= openTiles[i].f()) {
+            if (smallestTile.fScore >= openTiles[i].fScore) {
                 continue;
             }
 
             index = i;
-            smallestScore = openTiles[i].f();
+            smallestTile = openTiles[i];
         }
 
-        return openTiles.splice(index, 1);
+        openTiles.splice(index, 1);
+
+        return smallestTile;
     }
 
     /*
@@ -163,7 +164,6 @@
 
             for (var y = 0; y < mDataWalkable[x].length; y++) {
                 walkableTiles[x][y] = createTile(x, y, mDataWalkable[x][y]);
-                walkableTiles[x][y].calculateDistance({ x: 19, y: 10 });
             }
         }
     }
