@@ -1,21 +1,54 @@
 ﻿var pathFinder = pathFinder || (function(gameMap) {
     var mData = gameMap.getMapData(),
         openTiles = [],
-        closedTiles = [],
-        //navigatedTiles = [],
         walkableTiles = mData.getWalkableTiles();
 
     //console.log(walkableTiles);
 
-    function createTile(parentTile, tileLoc) {
+    function createTile(x, y, isWalkable) {
+        var parent = null,
+            gScore = 0,
+            hScore = 0,
+            fScore = 0,
+            closed = false;
+
+        function calculateDistance(destTile) {
+            
+        }
+
+        function setParent(parentTile) {
+            parent = parentTile;
+            gScore = parent.gScore() + 10;
+        }
+
+        function calculateTotal() {
+            fScore = gScore + hScore;
+        }
+
         return {
-            parent: parentTile,
-            x: tileLoc.x,
-            y: tileLoc.y,
-            g: 0,
-            h: 0,
-            f: function() {
-                return this.g + this.h;
+            calculateDistance: calculateDistance,
+            setParent: setParent,
+            calculateTotal: calculateTotal,
+            x: x,
+            y: y,
+            isWalkable: isWalkable,
+            getParent: function() {
+                 return parent;
+            },
+            isClosed: function() {
+                return closed;
+            },
+            close: function() {
+                closed = true;
+            },
+            gScore: function() {
+                return gScore;
+            },
+            hScore: function() {
+                return hScore;
+            },
+            fScore: function() {
+                return fScore;
             }
         }
     }
