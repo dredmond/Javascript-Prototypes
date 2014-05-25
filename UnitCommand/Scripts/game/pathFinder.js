@@ -1,69 +1,64 @@
 ﻿var pathFinder = pathFinder || (function(gameMap) {
-    var mData = gameMap.getMapData(),
-        openTiles = [],
-        walkableTiles = mData.getWalkableTiles();
+    var openTiles = [],
+        walkableTiles = null;
 
-    //console.log(walkableTiles);
+    setMap(gameMap);
+    console.log(walkableTiles);
 
-    function createTile(x, y, isWalkable) {
+    function createTile(x, y, walkable) {
         var parent = null,
-            gScore = 0,
-            hScore = 0,
-            fScore = 0,
-            closed = false;
+            closed = false,
+            tileData = {
+                calculateDistance: calculateDistance,
+                setParent: setParent,
+                calculateTotal: calculateTotal,
+                x: x,
+                y: y,
+                isWalkable: walkable,
+                getParent: function () {
+                    return parent;
+                },
+                isClosed: function () {
+                    return closed;
+                },
+                close: function () {
+                    closed = true;
+                },
+                gScore: 0,
+                hScore: 0,
+                fScore: 0
+            };
 
         function calculateDistance(destTile) {
-            
+            var xDist = Math.abs(x - destTile.x),
+                yDist = Math.abs(y - destTile.y);
+
+            tileData.hScore = 10 * (xDist + yDist);
         }
 
         function setParent(parentTile) {
             parent = parentTile;
-            gScore = parent.gScore() + 10;
+            tileData.gScore = parent.gScore() + 10;
         }
 
         function calculateTotal() {
-            fScore = gScore + hScore;
+            tileData.fScore = tileData.gScore + tileData.hScore;
         }
 
-        return {
-            calculateDistance: calculateDistance,
-            setParent: setParent,
-            calculateTotal: calculateTotal,
-            x: x,
-            y: y,
-            isWalkable: isWalkable,
-            getParent: function() {
-                 return parent;
-            },
-            isClosed: function() {
-                return closed;
-            },
-            close: function() {
-                closed = true;
-            },
-            gScore: function() {
-                return gScore;
-            },
-            hScore: function() {
-                return hScore;
-            },
-            fScore: function() {
-                return fScore;
-            }
-        }
+        return tileData;
     }
-
+    
     function calculatePath(start, end) {
         var tile = createTile(null, start);
 
-        tile.g = 0;
-        tile.h = calculateHeuristic(tile, end);
+        //tile.g = 0;
+        //tile.h = calculateHeuristic(tile, end);
 
         openTiles.push(tile);
 
         while (openTiles.length > 0) {
             tile = popSmallestTile();
-            closedTiles.add(tile);
+            // closedTiles.add(tile);
 
             var neighbors = getNeighborTiles(tile);
             for (var i = 0; i < neighbors.length; i++) {
@@ -117,6 +112,7 @@
         return openTiles.splice(index, 1);
     }
 
+    /*
     function isTileInList(tileList, tile) {
         for (var i = 0; i < tileList.length; i++) {
             var tmpTile = tileList[i];
@@ -153,10 +149,27 @@
             yDist = Math.abs(currentTile.y - endTile.y);
 
         return 10 * Math.max(xDist, yDist);
+    }*/
+     
+    function setMap(map) {
+        var mData = map.getMapData(),
+            mDataWalkable = mData.getWalkableTiles();
+
+        // Reset the tile array.
+        walkableTiles = [];
+
+        for (var x = 0; x < mDataWalkable.length; x++) {
+            walkableTiles[x] = [];
+
+            for (var y = 0; y < mDataWalkable[x].length; y++) {
+                walkableTiles[x][y] = createTile(x, y, mDataWalkable[x][y]);
+                walkableTiles[x][y].calculateDistance({ x: 19, y: 10 });
+            }
+        }
     }
-        
+
     return {
         calculatePath: calculatePath,
-        //changeMap: changeMap
+        setMap: setMap
     };
 });

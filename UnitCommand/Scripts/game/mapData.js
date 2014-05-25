@@ -133,9 +133,8 @@
                     for (var y = 0; y < mapHeight; y++) {
                         var loc = { x: x, y: y },
                             t = getTile(loc);
-                        loc.value = (t === tileTypes.grass || t === tileTypes.none) ? 1 : 0;
 
-                        wTiles[x].push(loc);
+                        wTiles[x].push((t === tileTypes.grass || t === tileTypes.none));
                     }
                 }
 
