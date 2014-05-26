@@ -27,12 +27,12 @@
             var xDist = Math.abs(x - destTile.x),
                 yDist = Math.abs(y - destTile.y);
 
-            tileData.hScore = 10 * (xDist + yDist);
+            tileData.hScore = xDist + yDist;
         }
 
         function setParent(parentTile) {
             parent = parentTile;
-            tileData.gScore = parent.gScore() + 10;
+            tileData.gScore = parent.gScore() + 1;
         }
 
         function calculateTotal() {
