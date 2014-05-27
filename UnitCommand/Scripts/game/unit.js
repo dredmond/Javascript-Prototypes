@@ -68,11 +68,13 @@
     }
 
     function debug(ctx, startPos, endPos) {
-        pFinder.draw(ctx, tileSize);
-
         var tileSizeMid = Math.round(tileSize / 2);
         if (navigationTiles.length > 1) {
             ctx.beginPath();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = 'rgba(255, 0, 0, .5)';
+            ctx.lineWidth = 5;
 
             var tile = navigationTiles[0];
             ctx.moveTo(tile.x * tileSize + tileSizeMid, tile.y * tileSize + tileSizeMid);
@@ -81,10 +83,12 @@
                 var tile2 = navigationTiles[i];
 
                 ctx.lineTo(tile2.x * tileSize + tileSizeMid, tile2.y * tileSize + tileSizeMid);
-                ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
+
             }
             ctx.stroke();
         }
+
+        pFinder.draw(ctx, tileSize);
 
         //ctx.beginPath();
         //ctx.moveTo(startPos.x + unitSize, startPos.y + unitSize);

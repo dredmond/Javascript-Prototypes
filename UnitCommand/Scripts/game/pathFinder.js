@@ -136,9 +136,13 @@
         for (var x in walkableTiles) {
             for (var y in walkableTiles[x]) {
                 var tile = walkableTiles[x][y];
+
                 ctx.font = '10px Georgia';
                 ctx.fillStyle = 'ffffff';
                 ctx.fillText(tile.isWalkable ? '1' : '0', x * tileSize + 2, y * tileSize + 8);
+
+                if (tile.fScore === 0)
+                    continue;
 
                 ctx.fillStyle = '000000';
                 var textSize = ctx.measureText(tile.fScore);
