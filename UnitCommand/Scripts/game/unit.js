@@ -8,7 +8,18 @@
         carrying = null,
         tileSize = gameMap.getTileSize(),
         unitSize = 5,
-        unitSizeDiameter = unitSize + unitSize;
+        unitSizeDiameter = unitSize + unitSize,
+        navigationTiles = [],
+        pFinder = pathFinder(gameMap);
+
+    function navigate() {
+        navigationTiles = pFinder.calculatePath(currentLocation, destinationLocation);
+
+        console.log('Path Info: ');
+        for (var x in navigationTiles) {
+            console.log(navigationTiles[x].debug());
+        }
+    }
 
     function update(currentGameTime, dt) {
         
@@ -57,6 +68,22 @@
     }
 
     function debug(ctx, startPos, endPos) {
+        var tileSizeMid = Math.round(tileSize / 2);
+        if (navigationTiles.length > 1) {
+            ctx.beginPath();
+
+            var tile = navigationTiles[0];
+            ctx.moveTo(tile.x * tileSize + tileSizeMid, tile.y * tileSize + tileSizeMid);
+
+            for (var i = 1; i < navigationTiles.length; i++) {
+                var tile2 = navigationTiles[i];
+
+                ctx.lineTo(tile2.x * tileSize + tileSizeMid, tile2.y * tileSize + tileSizeMid);
+                ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
+            }
+            ctx.stroke();
+        }
+
         //ctx.beginPath();
         //ctx.moveTo(startPos.x + unitSize, startPos.y + unitSize);
         //ctx.lineTo(endPos.x + unitSize, endPos.y + unitSize);
@@ -69,6 +96,7 @@
         draw: draw,
         setLocation: setLocation,
         getLocation: getLocation,
-        moveTo: moveTo
+        moveTo: moveTo,
+        navigate: navigate
     };
 });

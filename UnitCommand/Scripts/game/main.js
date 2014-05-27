@@ -6,7 +6,7 @@
         updateInterval = 1,
         resizeInterval = 200,
         gameMap = map.createMap({
-            tileSize: 20,
+            tileSize: 30,
             dataSettings: {
                 height: 20,
                 width: 20,
@@ -20,23 +20,22 @@
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 1, 1, 1, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 1, 1, 1, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 2, 2, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 2, 3, 3, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0
                 ]
             }
         }),
         oldMapOffset = null,
-        mouseDragStart = null,
-        navigationTiles = [];
+        mouseDragStart = null;
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -121,23 +120,6 @@
         // Draw the map
         gameMap.draw(ctx);
 
-        var tileSize = gameMap.getTileSize();
-        if (navigationTiles.length > 1) {
-            ctx.beginPath();
-
-            tile = navigationTiles[0];
-            ctx.moveTo(tile.x * tileSize + 10, tile.y * tileSize + 10);
-
-            for (var i = 1; i < navigationTiles.length; i++) {
-                //var tile = navigationTiles[i],
-                var tile2 = navigationTiles[i];
-
-                ctx.lineTo(tile2.x * tileSize + 10, tile2.y * tileSize + 10);
-                ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
-            }
-            ctx.stroke();
-        }
-
         ctx.restore();
     }
 
@@ -171,17 +153,14 @@
         }
     }
 
-    gameMap.addUnit(unit(gameMap));
+    var u = unit(gameMap);
+    u.setLocation({ x: 2, y: 14 });
+    u.moveTo({ x: 15, y: 19 });
+    u.navigate();
+
+    gameMap.addUnit(u);
 
     requestAnimationFrame(gameLoop);
-
-    var pFinder = pathFinder(gameMap);
-    navigationTiles = pFinder.calculatePath({ x: 19, y: 19 }, { x: 6, y: 14 });
-
-    console.log('Path Info: ');
-    for (var x in navigationTiles) {
-        console.log(navigationTiles[x].debug());
-    }
 
     $.ajax({
         url: '/api/UnitLogic/TestContoller',
