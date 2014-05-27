@@ -68,6 +68,8 @@
     }
 
     function debug(ctx, startPos, endPos) {
+        pFinder.draw(ctx, tileSize);
+
         var tileSizeMid = Math.round(tileSize / 2);
         if (navigationTiles.length > 1) {
             ctx.beginPath();

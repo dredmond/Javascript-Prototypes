@@ -115,8 +115,6 @@
                     continue;
                 }
             }
-
-            console.log('');
         }
 
         if (pathFound) {
@@ -132,6 +130,26 @@
         }
 
         return navigationTiles;
+    }
+
+    function draw(ctx, tileSize) {
+        for (var x in walkableTiles) {
+            for (var y in walkableTiles[x]) {
+                var tile = walkableTiles[x][y];
+                ctx.font = '10px Georgia';
+                ctx.fillStyle = 'ffffff';
+                ctx.fillText(tile.isWalkable ? '1' : '0', x * tileSize + 2, y * tileSize + 8);
+
+                ctx.fillStyle = '000000';
+                var textSize = ctx.measureText(tile.fScore);
+                ctx.fillText(tile.fScore, x * tileSize + (tileSize - textSize.width - 2), y * tileSize + 8);
+
+                ctx.fillText(tile.gScore, x * tileSize + 2, y * tileSize + (tileSize - 4));
+
+                textSize = ctx.measureText(tile.hScore);
+                ctx.fillText(tile.hScore, x * tileSize + (tileSize - textSize.width - 2), y * tileSize + (tileSize - 4));
+            }
+        }
     }
 
     function calculateGScore(parent, child) {
@@ -213,6 +231,7 @@
 
     return {
         calculatePath: calculatePath,
-        setMap: setMap
+        setMap: setMap,
+        draw: draw
     };
 });
