@@ -57,11 +57,11 @@
     }
 
     function debug(ctx, startPos, endPos) {
-        ctx.beginPath();
-        ctx.moveTo(startPos.x + unitSize, startPos.y + unitSize);
-        ctx.lineTo(endPos.x + unitSize, endPos.y + unitSize);
-        ctx.strokeStyle = 'blue';
-        ctx.stroke();
+        //ctx.beginPath();
+        //ctx.moveTo(startPos.x + unitSize, startPos.y + unitSize);
+        //ctx.lineTo(endPos.x + unitSize, endPos.y + unitSize);
+        //ctx.strokeStyle = 'blue';
+        //ctx.stroke();
     }
 
     return {

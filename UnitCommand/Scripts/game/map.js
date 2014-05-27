@@ -24,12 +24,10 @@
 
         function update(gameTime, dt) {
             cellMovedElapsed += dt;
-
+            /*
             if (cellMovedElapsed > 100) {
                 cellMovedElapsed = 0;
                 //mData.setTile(locationXy, tileTypes.none);
-
-
 
                 if (locationXy.y >= mData.getHeight()) {
                     locationXy.y = 0;
@@ -40,7 +38,7 @@
 
                 locationXy.x += 0;
                 locationXy.y += 1;
-            }
+            }*/
 
             mData.forEachUnit(function (i, unit) {
                 unit.update(gameTime, dt);
@@ -134,7 +132,8 @@
             addUnit: mData.addUnit,
             getUnitAt: mData.getUnitAt,
             removeUnit: mData.removeUnit,
-            forEachUnit: mData.forEachUnit
+            forEachUnit: mData.forEachUnit,
+            inBounds: mData.inBounds
         };
     }
 

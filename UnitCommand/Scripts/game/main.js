@@ -36,7 +36,8 @@
             }
         }),
         oldMapOffset = null,
-        mouseDragStart = null;
+        mouseDragStart = null,
+        navigationTiles = [];
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -121,6 +122,23 @@
         // Draw the map
         gameMap.draw(ctx);
 
+        var tileSize = gameMap.getTileSize();
+        if (navigationTiles.length > 1) {
+            ctx.beginPath();
+
+            tile = navigationTiles[0];
+            ctx.moveTo(tile.x * tileSize + 10, tile.y * tileSize + 10);
+
+            for (var i = 1; i < navigationTiles.length; i++) {
+                //var tile = navigationTiles[i],
+                var tile2 = navigationTiles[i];
+
+                ctx.lineTo(tile2.x * tileSize + 10, tile2.y * tileSize + 10);
+                ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
+            }
+            ctx.stroke();
+        }
+
         ctx.restore();
     }
 
@@ -159,7 +177,7 @@
     requestAnimationFrame(gameLoop);
 
     var pFinder = pathFinder(gameMap);
-    pFinder.calculatePath({ x: 0, y: 0 }, { x: 10, y: 12 });
+    navigationTiles = pFinder.calculatePath({ x: 19, y: 19 }, { x: 6, y: 14 });
 
     $.ajax({
         url: '/api/UnitLogic/TestContoller',

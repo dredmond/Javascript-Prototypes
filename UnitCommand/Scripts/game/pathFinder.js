@@ -1,6 +1,7 @@
 ﻿var pathFinder = pathFinder || (function(gameMap) {
-    var openTiles = [],
-        walkableTiles = null;
+    var openTiles = null,
+        walkableTiles = null,
+        navigationTiles = null;
 
     setMap(gameMap);
     console.log(walkableTiles);
@@ -8,6 +9,7 @@
     function createTile(x, y, walkable) {
         var parent = null,
             tileData = {
+                debug: debug,
                 calculateDistance: calculateDistance,
                 setParent: setParent,
                 calculateTotal: calculateTotal,
@@ -32,62 +34,128 @@
 
         function setParent(parentTile) {
             parent = parentTile;
-            tileData.gScore = parent.gScore() + 1;
+            tileData.gScore = calculateGScore(parentTile, tileData);
         }
 
         function calculateTotal() {
             tileData.fScore = tileData.gScore + tileData.hScore;
         }
 
+        function debug() {
+            return 'x: ' + tileData.x + '\r\n' +
+                'y: ' + tileData.y + '\r\n' +
+                'gScore: ' + tileData.gScore + '\r\n' +
+                'hScore: ' + tileData.hScore + '\r\n' +
+                'fScore: ' + tileData.fScore + '\r\n';
+        }
+
         return tileData;
     }
     
     function calculatePath(start, end) {
+        openTiles = [];
+        navigationTiles = [];
+
         var tile = walkableTiles[start.x][start.y],
-            endTile = walkableTiles[end.x][end.y];
+            endTile = walkableTiles[end.x][end.y],
+            pathFound = false;
 
         tile.gScore = 0;
         tile.calculateDistance(endTile);
+        tile.calculateTotal();
+
         openTiles.push(tile);
 
         while (openTiles.length > 0) {
             tile = popSmallestTile();
+
+            // Some kind of error occured?
+            if (tile === null || typeof tile === 'undefined')
+                break;
+
             tile.closed = true;
 
-            console.log(tile);
+            if (tile === endTile) {
+                pathFound = true;
+                break;
+            }
+
+            console.log('Parent Tile: \r\n' + tile.debug());
 
             var neighbors = getNeighborTiles(tile);
-            //for (var i = 0; i < neighbors.length; i++) {
+            for (var i = 0; i < neighbors.length; i++) {
+                var neighborTile = neighbors[i];
+
                 // if neighbor is closed or unwalkable skip it.
-                //if(!isWalkable(neighbors[i])) {
+                if (neighborTile.closed || !neighborTile.isWalkable) {
                     continue;
-                //}
+                }
+
+                var inOpenSet = isTileInList(openTiles, neighborTile);
 
                 // if not in open add to open set parent and calculate values.
+                if (!inOpenSet) {
+                    neighborTile.setParent(tile);
+                    neighborTile.calculateDistance(endTile);
+                    neighborTile.calculateTotal();
 
+                    openTiles.push(neighborTile);
+
+                    console.log('Neighbor Tile (Added): \r\n' + neighborTile.debug());
+                    continue;
+                }
 
                 // if in open and G is lower set parent and recalculate values.
-            //}
+                var gScore = calculateGScore(tile, neighborTile);
+                if (neighborTile.gScore > gScore) {
+                    neighborTile.setParent(tile);
+                    neighborTile.calculateTotal();
 
+                    console.log('Neighbor Tile (Updated): \r\n' + neighborTile.debug());
+                    continue;
+                }
+            }
+
+            console.log('');
         }
+
+        if (pathFound) {
+            console.log('PATH FOUND!');
+
+            var pathTile = endTile;
+            while (pathTile != null) {
+                navigationTiles.unshift(pathTile);
+                pathTile = pathTile.getParent();
+            }
+        } else {
+            console.log('NO PATH FOUND!');
+        }
+
+        return navigationTiles;
+    }
+
+    function calculateGScore(parent, child) {
+        return child.gScore = parent.gScore + 1;
     }
 
     function getNeighborTiles(currentTile) {
         var neighbors = [];
 
-        
+        var startX = currentTile.x - 1,
+            startY = currentTile.y - 1,
+            finalX = currentTile.x + 1,
+            finalY = currentTile.y + 1;
 
-        // Need to figure this part out.
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y]);
-        neighbors.push(walkableTiles[currentTile.x - 1][currentTile.y - 1]);
+        for (var x = startX; x <= finalX; x++) {
+            for (var y = startY; y <= finalY; y++) {
+                if (x === currentTile.x && y === currentTile.y)
+                    continue;
 
-        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y]);
-        neighbors.push(walkableTiles[currentTile.x + 1][currentTile.y - 1]);
-
-        neighbors.push(walkableTiles[currentTile.x][currentTile.y + 1]);
-        neighbors.push(walkableTiles[currentTile.x][currentTile.y - 1]);
+                if (gameMap.inBounds(x, y)) {
+                    neighbors.push(walkableTiles[x][y]);
+                }
+            }
+        }
 
         return neighbors;
     }
@@ -100,7 +168,7 @@
             index = 0;
 
         for (var i = 0; i < openTiles.length; i++) {
-            if (smallestTile.fScore >= openTiles[i].fScore) {
+            if (smallestTile.fScore < openTiles[i].fScore) {
                 continue;
             }
 
@@ -113,44 +181,17 @@
         return smallestTile;
     }
 
-    /*
     function isTileInList(tileList, tile) {
         for (var i = 0; i < tileList.length; i++) {
             var tmpTile = tileList[i];
 
-            if (tmpTile.x === tile.x && tmpTile.y === tile.y) {
+            if (tmpTile === tile) {
                 return true;
             }
         }
 
         return false;
     }
-
-    function isWalkable(tileLoc) {
-        if (walkableTiles[tileLoc.x][tileLoc.y] === 0)
-            return false;
-
-        for (var i = 0; i < closedTiles.length; i++) {
-            var t = closedTiles[i];
-
-            if (t.x === tileLoc.x && t.y === tileLoc.y)
-                return false;
-        }
-
-        return true;
-    }
-
-    // Cheat and just add 10 to the last known g score.
-    function calculateStartDistance(startTile) {
-        return 10 + startTile.g;
-    }
-
-    function calculateHeuristic(currentTile, endTile) {
-        var xDist = Math.abs(currentTile.x - endTile.x),
-            yDist = Math.abs(currentTile.y - endTile.y);
-
-        return 10 * Math.max(xDist, yDist);
-    }*/
      
     function setMap(map) {
         var mData = map.getMapData(),

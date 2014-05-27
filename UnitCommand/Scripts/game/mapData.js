@@ -26,6 +26,10 @@
             }
         }
 
+        function inBounds(x, y) {
+            return (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight);
+        }
+
         function normalizeMapLocation(x, y) {
             // Get cell location in the array.
             var cellIndex = coordsToArrayIndex(x, y);
@@ -148,7 +152,8 @@
             removeUnit: removeUnit,
             forEachUnit: forEachUnit,
             coordsToArrayIndex: coordsToArrayIndex,
-            arrayIndexToCoords: arrayIndexToCoords
+            arrayIndexToCoords: arrayIndexToCoords,
+            inBounds: inBounds
         }
     }
 
