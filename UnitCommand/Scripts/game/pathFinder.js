@@ -29,7 +29,7 @@
             var xDist = Math.abs(x - destTile.x),
                 yDist = Math.abs(y - destTile.y);
 
-            tileData.hScore = (xDist + yDist) * 10;
+            tileData.hScore = (xDist + yDist);
         }
 
         function setParent(parentTile) {
@@ -157,7 +157,7 @@
     }
 
     function calculateGScore(parent, child) {
-        var weight = (parent.x === child.x || parent.y === child.y) ? 10 : 10.5;
+        var weight = (parent.x === child.x || parent.y === child.y) ? 1 : 1.5;
 
         return parent.gScore + (weight);
     }
