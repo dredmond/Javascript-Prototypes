@@ -4,10 +4,6 @@
 
         var mData = settings.mapData ? settings.mapData : mapData.createMap(settings.dataSettings),
             tileSize = settings.tileSize ? settings.tileSize : 20,
-            locationXy = {
-                x: 0,
-                y: 0
-            },
             cellMovedElapsed = 0,
             mapOffset = {
                 x: 0,
@@ -106,8 +102,16 @@
             });
         }
 
+        function canvasToMapCoords() {
+            
+        }
+
+        function mapToCanvasCoors() {
+            
+        }
+
         return {
-            getTileSize: function () {
+            getTileSize: function() {
                 return tileSize;
             },
             getDisplayOffset: getDisplayOffset,
@@ -133,8 +137,10 @@
             getUnitAt: mData.getUnitAt,
             removeUnit: mData.removeUnit,
             forEachUnit: mData.forEachUnit,
-            inBounds: mData.inBounds
-        };
+            inBounds: mData.inBounds,
+            canvasToMapCoords: canvasToMapCoords,
+            mapToCanvasCoords: mapToCanvasCoords
+    };
     }
 
     return {

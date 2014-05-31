@@ -35,7 +35,8 @@
             }
         }),
         oldMapOffset = null,
-        mouseDragStart = null;
+        mouseDragStart = null,
+        selectedUnits = [];
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -45,7 +46,7 @@
         lastResizeTime = new Date();
     });
 
-    mainCanvas.addEventListener('contextmenu', function (evt) {
+    window.addEventListener('contextmenu', function (evt) {
         evt.preventDefault();
     });
 
@@ -56,10 +57,20 @@
         if (evt.button === 2) {
             mouseDragStart = evt;
             oldMapOffset = gameMap.getMapOffset();
+            return;
+        }
+
+        if (evt.button === 0) {
+            for (var i in selectedUnits) {
+                var unit = selectedUnits[i];
+                unit.moveTo({ x: evt.x, y: evt.y });
+                unit.navigate();
+            }
+            return;
         }
     });
 
-    mainCanvas.addEventListener('mousemove', function (evt) {
+    window.addEventListener('mousemove', function (evt) {
         evt.preventDefault();
 
         if (oldMapOffset !== null) {
@@ -70,7 +81,7 @@
         }
     });
 
-    mainCanvas.addEventListener('mouseup', function (evt) {
+    window.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
         console.log(evt);
 
@@ -158,6 +169,7 @@
     u.moveTo({ x: 19, y: 17 });
     u.navigate();
 
+    selectedUnits.push(u);
     gameMap.addUnit(u);
 
     requestAnimationFrame(gameLoop);
