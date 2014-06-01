@@ -63,7 +63,7 @@
         if (evt.button === 0) {
             for (var i in selectedUnits) {
                 var unit = selectedUnits[i];
-                unit.moveTo({ x: evt.x, y: evt.y });
+                unit.moveTo(gameMap.canvasToMapCoords(evt.x, evt.y));
                 unit.navigate();
             }
             return;

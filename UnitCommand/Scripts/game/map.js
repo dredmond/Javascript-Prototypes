@@ -4,6 +4,7 @@
 
         var mData = settings.mapData ? settings.mapData : mapData.createMap(settings.dataSettings),
             tileSize = settings.tileSize ? settings.tileSize : 20,
+            halfTileSize = Math.round(tileSize / 2),
             cellMovedElapsed = 0,
             mapOffset = {
                 x: 0,
@@ -102,17 +103,26 @@
             });
         }
 
-        function canvasToMapCoords() {
-            
+        function canvasToMapCoords(x, y) {
+            return {
+                x: Math.floor((x - mapOffset.x) / tileSize),
+                y: Math.floor((y - mapOffset.y) / tileSize)
+            };
         }
 
-        function mapToCanvasCoors() {
-            
+        function mapToCanvasCoords(x, y) {
+            return {
+                x: x * tileSize + mapOffset.x + halfTileSize,
+                y: y * tileSize + mapOffset.y + halfTileSize
+            }
         }
 
         return {
             getTileSize: function() {
                 return tileSize;
+            },
+            getHalfTileSize: function() {
+                return halfTileSize;
             },
             getDisplayOffset: getDisplayOffset,
             getMapData: function() {

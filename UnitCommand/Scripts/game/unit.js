@@ -68,7 +68,7 @@
     }
 
     function debug(ctx, startPos, endPos) {
-        var tileSizeMid = Math.round(tileSize / 2);
+        var tileSizeMid = gameMap.getHalfTileSize();
         if (navigationTiles.length > 1) {
             ctx.beginPath();
             ctx.lineCap = 'round';
