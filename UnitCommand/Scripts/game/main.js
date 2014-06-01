@@ -36,7 +36,11 @@
         }),
         oldMapOffset = null,
         mouseDragStart = null,
-        selectedUnits = [];
+        selectedUnits = [],
+        canvasOffsets = {
+            top: mainCanvas.offsetTop,
+            left: mainCanvas.offsetLeft
+        };
 
     // Hook the window resize event and store 
     // the time it was last called. This will reduce lag
@@ -61,10 +65,20 @@
         }
 
         if (evt.button === 0) {
+            evt.x -= canvasOffsets.left;
+            evt.y -= canvasOffsets.top;
+            
+            console.log(evt);
+
             for (var i in selectedUnits) {
                 var unit = selectedUnits[i];
-                unit.moveTo(gameMap.canvasToMapCoords(evt.x, evt.y));
+                var loc = gameMap.canvasToMapCoords(evt.x, evt.y);
+
+                unit.moveTo(loc);
                 unit.navigate();
+
+                console.log(loc);
+                console.log(gameMap.getMapOffset());
             }
             return;
         }
@@ -92,8 +106,13 @@
     // nicely between all other elements on the page. We do this by calculating the space
     // above and below the canvas in comparison to the window height.
     function handleResize() {
+        canvasOffsets = {
+            top: mainCanvas.offsetTop,
+            left: mainCanvas.offsetLeft
+        };
+
         // Get total space above canvas
-        var headerSize = mainCanvas.offsetTop;
+        var headerSize = canvasOffsets.top;
 
         // Calculate the canvas size based on the
         // current window height.

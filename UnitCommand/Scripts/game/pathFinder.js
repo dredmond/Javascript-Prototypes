@@ -13,6 +13,7 @@
                 calculateDistance: calculateDistance,
                 setParent: setParent,
                 calculateTotal: calculateTotal,
+                reset: reset,
                 x: x,
                 y: y,
                 isWalkable: walkable,
@@ -49,12 +50,29 @@
                 'fScore: ' + tileData.fScore + '\r\n';
         }
 
+        function reset() {
+            parent = null;
+            tileData.closed = false;
+            tileData.gScore = 0;
+            tileData.fScore = 0;
+            tileData.hScore = 0;
+        }
+
         return tileData;
     }
     
     function calculatePath(start, end) {
         openTiles = [];
         navigationTiles = [];
+
+        for (var x in walkableTiles) {
+            for (var y in walkableTiles[x]) {
+                walkableTiles[x][y].reset();
+            }
+        }
+
+        if (!(gameMap.inBounds(start.x, start.y) && gameMap.inBounds(end.x, end.y)))
+            return navigationTiles;
 
         var tile = walkableTiles[start.x][start.y],
             endTile = walkableTiles[end.x][end.y],

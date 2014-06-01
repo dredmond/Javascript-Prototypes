@@ -88,13 +88,15 @@
         }
 
         function draw(ctx) {
-            var gridWidth = mData.getWidth(),
+            /*var gridWidth = mData.getWidth(),
                 gridHeight = mData.getHeight();
 
             var gridXOffset = Math.round((viewSize.width - gridWidth * tileSize) / 2),
                 gridYOffset = Math.round((viewSize.height - gridHeight * tileSize) / 2);
 
-            ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);
+            ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);*/
+
+            ctx.translate(mapOffset.x, mapOffset.y);
 
             drawMap(ctx);
 
@@ -138,6 +140,15 @@
             },
             setViewSize: function(size) {
                 viewSize = size;
+
+                var gridWidth = mData.getWidth(),
+                    gridHeight = mData.getHeight();
+
+                var gridXOffset = Math.round((viewSize.width - gridWidth * tileSize) / 2),
+                    gridYOffset = Math.round((viewSize.height - gridHeight * tileSize) / 2);
+
+                mapOffset.x = gridXOffset;
+                mapOffset.y = gridYOffset;
             },
             setMapOffset: function(offset) {
                 mapOffset.x = offset.x;
