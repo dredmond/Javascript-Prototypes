@@ -1,7 +1,10 @@
 ﻿var pathFinder = pathFinder || (function(gameMap) {
     var openTiles = null,
         walkableTiles = null,
-        navigationTiles = null;
+        currentTile = null,
+        endTile = null,
+        searchStatusTypes = pathFinder.searchStatusTypes,
+        currentStatus = searchStatusTypes.searching;
 
     setMap(gameMap);
     console.log(walkableTiles);
@@ -63,7 +66,6 @@
     
     function calculatePath(start, end) {
         openTiles = [];
-        navigationTiles = [];
 
         for (var x in walkableTiles) {
             for (var y in walkableTiles[x]) {
@@ -71,83 +73,84 @@
             }
         }
 
-        if (!(gameMap.inBounds(start.x, start.y) && gameMap.inBounds(end.x, end.y)))
-            return navigationTiles;
+        if (!(gameMap.inBounds(start.x, start.y) && gameMap.inBounds(end.x, end.y))) {
+            currentStatus = searchStatusTypes.noPath;
+            return;
+        }
 
-        var tile = walkableTiles[start.x][start.y],
-            endTile = walkableTiles[end.x][end.y],
-            pathFound = false;
+        var tile = walkableTiles[start.x][start.y];
+        endTile = walkableTiles[end.x][end.y];
+        currentStatus = searchStatusTypes.searching;
 
         tile.gScore = 0;
         tile.calculateDistance(endTile);
         tile.calculateTotal();
 
         openTiles.push(tile);
+    }
 
-        while (openTiles.length > 0) {
-            tile = popSmallestTile();
+    function nextStep() {
+        if (currentStatus !== searchStatusTypes.searching)
+            return true;
 
-            // Some kind of error occured?
-            if (tile === null || typeof tile === 'undefined')
-                break;
+        if (openTiles.length === 0) {
+            currentStatus = searchStatusTypes.noPath;
+            return true;
+        }
 
-            tile.closed = true;
+        var tile = popSmallestTile();
 
-            if (tile === endTile) {
-                pathFound = true;
-                break;
+        // Some kind of error occured?
+        if (tile === null || typeof tile === 'undefined') {
+            currentStatus = searchStatusTypes.noPath;
+            return true;
+        }
+
+        currentTile = tile;
+        tile.closed = true;
+
+        if (tile === endTile) {
+            currentStatus = searchStatusTypes.pathFound;
+            return true;
+        }
+
+        console.log('Parent Tile: \r\n' + tile.debug());
+
+        var neighbors = getNeighborTiles(tile);
+        for (var i = 0; i < neighbors.length; i++) {
+            var neighborTile = neighbors[i];
+
+            // if neighbor is closed or unwalkable skip it.
+            if (neighborTile.closed || !neighborTile.isWalkable) {
+                continue;
             }
 
-            console.log('Parent Tile: \r\n' + tile.debug());
+            var inOpenSet = isTileInList(openTiles, neighborTile);
 
-            var neighbors = getNeighborTiles(tile);
-            for (var i = 0; i < neighbors.length; i++) {
-                var neighborTile = neighbors[i];
+            // if not in open add to open set parent and calculate values.
+            if (!inOpenSet) {
+                neighborTile.setParent(tile);
+                neighborTile.calculateDistance(endTile);
+                neighborTile.calculateTotal();
 
-                // if neighbor is closed or unwalkable skip it.
-                if (neighborTile.closed || !neighborTile.isWalkable) {
-                    continue;
-                }
+                openTiles.push(neighborTile);
 
-                var inOpenSet = isTileInList(openTiles, neighborTile);
+                console.log('Neighbor Tile (Added): \r\n' + neighborTile.debug());
+                continue;
+            }
 
-                // if not in open add to open set parent and calculate values.
-                if (!inOpenSet) {
-                    neighborTile.setParent(tile);
-                    neighborTile.calculateDistance(endTile);
-                    neighborTile.calculateTotal();
+            // if in open and G is lower set parent and recalculate values.
+            var gScore = calculateGScore(tile, neighborTile);
+            if (neighborTile.gScore > gScore) {
+                neighborTile.setParent(tile);
+                neighborTile.calculateTotal();
 
-                    openTiles.push(neighborTile);
-
-                    console.log('Neighbor Tile (Added): \r\n' + neighborTile.debug());
-                    continue;
-                }
-
-                // if in open and G is lower set parent and recalculate values.
-                var gScore = calculateGScore(tile, neighborTile);
-                if (neighborTile.gScore > gScore) {
-                    neighborTile.setParent(tile);
-                    neighborTile.calculateTotal();
-
-                    console.log('Neighbor Tile (Updated): \r\n' + neighborTile.debug());
-                    continue;
-                }
+                console.log('Neighbor Tile (Updated): \r\n' + neighborTile.debug());
+                continue;
             }
         }
 
-        if (pathFound) {
-            console.log('PATH FOUND!');
-
-            var pathTile = endTile;
-            while (pathTile != null) {
-                navigationTiles.unshift(pathTile);
-                pathTile = pathTile.getParent();
-            }
-        } else {
-            console.log('NO PATH FOUND!');
-        }
-
-        return navigationTiles;
+        return false;
     }
 
     function draw(ctx, tileSize) {
@@ -180,17 +183,17 @@
         return parent.gScore + (weight);
     }
 
-    function getNeighborTiles(currentTile) {
+    function getNeighborTiles(tile) {
         var neighbors = [];
 
-        var startX = currentTile.x - 1,
-            startY = currentTile.y - 1,
-            finalX = currentTile.x + 1,
-            finalY = currentTile.y + 1;
+        var startX = tile.x - 1,
+            startY = tile.y - 1,
+            finalX = tile.x + 1,
+            finalY = tile.y + 1;
 
         for (var x = startX; x <= finalX; x++) {
             for (var y = startY; y <= finalY; y++) {
-                if (x === currentTile.x && y === currentTile.y)
+                if (x === tile.x && y === tile.y)
                     continue;
 
                 if (gameMap.inBounds(x, y)) {
@@ -253,7 +256,28 @@
 
     return {
         calculatePath: calculatePath,
+        nextStep: nextStep,
         setMap: setMap,
-        draw: draw
+        draw: draw,
+        currentStatus: function() {
+            return currentStatus;
+        },
+        getCurrentPath: function () {
+            var navigationTiles = [];
+
+            var pathTile = currentTile;
+            while (pathTile != null) {
+                navigationTiles.unshift(pathTile);
+                pathTile = pathTile.getParent();
+            }
+
+            return navigationTiles;
+        }
     };
 });
+
+pathFinder.searchStatusTypes = {
+    searching: 0,
+    pathFound: 1,
+    noPath: 2
+};

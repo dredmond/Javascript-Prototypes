@@ -10,19 +10,42 @@
         unitSize = 5,
         unitSizeDiameter = unitSize + unitSize,
         navigationTiles = [],
-        pFinder = pathFinder(gameMap);
+        pFinder = pathFinder(gameMap),
+        lastNavigationTime = 0,
+        lastSearchState = pathFinder.searchStatusTypes.searching;
 
     function navigate() {
-        navigationTiles = pFinder.calculatePath(currentLocation, destinationLocation);
+        pFinder.calculatePath(currentLocation, destinationLocation);
+        lastSearchState = pathFinder.searchStatusTypes.searching;
+    }
 
-        console.log('Path Info: ');
+    function debugNavData() {
+        console.log('Path Info: (State: ' + lastSearchState + ')');
         for (var x in navigationTiles) {
             console.log(navigationTiles[x].debug());
         }
     }
 
     function update(currentGameTime, dt) {
-        
+        lastNavigationTime += dt;
+
+        if (lastNavigationTime >= 1000) {
+            lastNavigationTime = 0;
+
+            pFinder.nextStep();
+
+            var s = pFinder.currentStatus();
+
+            if (s === pathFinder.searchStatusTypes.searching) {
+                navigationTiles = pFinder.getCurrentPath();
+            }
+
+            if (s !== lastSearchState) {
+                navigationTiles = pFinder.getCurrentPath();
+                lastSearchState = s;
+                debugNavData();
+            }
+        }
     }
 
     function draw(ctx) {
