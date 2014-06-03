@@ -1,4 +1,4 @@
-﻿var tileTypes = {
+﻿mapData.tileTypes = {
     none: 0,
     grass: 1,
     stones: 2,

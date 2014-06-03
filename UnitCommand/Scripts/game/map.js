@@ -45,16 +45,16 @@
             };
 
             switch (mData.getTile(location)) {
-                case tileTypes.grass:
+                case mapData.tileTypes.grass:
                     ctx.fillStyle = 'rgba(0, 195, 0, 1)';
                     break;
-                case tileTypes.stones:
+                case mapData.tileTypes.stones:
                     ctx.fillStyle = 'rgba(100, 100, 100, 1)';
                     break;
-                case tileTypes.water:
+                case mapData.tileTypes.water:
                     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
                     break;
-                case tileTypes.trees:
+                case mapData.tileTypes.trees:
                     ctx.fillStyle = 'rgba(0, 125, 0, 1)';
                     break;
                 default:
@@ -150,7 +150,7 @@
             canvasToMapCoords: canvasToMapCoords,
             mapToCanvasCoords: mapToCanvasCoords,
             worldToMapCoords: worldToMapCoords
-        };
+    };
     }
 
     return {

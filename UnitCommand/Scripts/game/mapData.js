@@ -138,7 +138,7 @@
                         var loc = { x: x, y: y },
                             t = getTile(loc);
 
-                        wTiles[x].push((t === tileTypes.grass || t === tileTypes.none));
+                        wTiles[x].push((t === mapData.tileTypes.grass || t === mapData.tileTypes.none));
                     }
                 }
 
