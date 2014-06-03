@@ -65,20 +65,15 @@
         }
 
         if (evt.button === 0) {
-            evt.x -= canvasOffsets.left;
-            evt.y -= canvasOffsets.top;
-            
-            console.log(evt);
+            var x = evt.x - canvasOffsets.left,
+                y = evt.y - canvasOffsets.top;
 
             for (var i in selectedUnits) {
-                var unit = selectedUnits[i];
-                var loc = gameMap.canvasToMapCoords(evt.x, evt.y);
+                var unit = selectedUnits[i],
+                    loc = gameMap.canvasToMapCoords(x, y);
 
                 unit.moveTo(loc);
                 unit.navigate();
-
-                console.log(loc);
-                console.log(gameMap.getMapOffset());
             }
             return;
         }
