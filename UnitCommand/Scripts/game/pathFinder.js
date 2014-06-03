@@ -4,7 +4,8 @@
         currentTile = null,
         endTile = null,
         searchStatusTypes = pathFinder.searchStatusTypes,
-        currentStatus = searchStatusTypes.searching;
+        currentStatus = searchStatusTypes.searching,
+        walkedTiles = null;
 
     setMap(gameMap);
     console.log(walkableTiles);
@@ -66,6 +67,7 @@
     
     function calculatePath(start, end) {
         openTiles = [];
+        walkedTiles = [];
 
         for (var x in walkableTiles) {
             for (var y in walkableTiles[x]) {
@@ -108,6 +110,9 @@
 
         currentTile = tile;
         tile.closed = true;
+
+        // Push current tile to the walked tile list.
+        walkedTiles.push(tile);
 
         if (tile === endTile) {
             currentStatus = searchStatusTypes.pathFound;
