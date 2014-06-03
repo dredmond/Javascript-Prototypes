@@ -84,6 +84,11 @@
         endTile = walkableTiles[end.x][end.y];
         currentStatus = searchStatusTypes.searching;
 
+        if (!tile.isWalkable || !endTile.isWalkable) {
+            currentStatus = searchStatusTypes.noPath;
+            return;
+        }
+
         tile.gScore = 0;
         tile.calculateDistance(endTile);
         tile.calculateTotal();
