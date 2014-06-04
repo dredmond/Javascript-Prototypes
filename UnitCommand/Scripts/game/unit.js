@@ -14,6 +14,8 @@
         lastNavigationTime = 0,
         lastSearchState = pathFinder.searchStatusTypes.searching;
 
+    pFinder.setAllowDiagonals(true);
+
     function navigate() {
         pFinder.calculatePath(currentLocation, destinationLocation);
         lastSearchState = pathFinder.searchStatusTypes.searching;
@@ -29,7 +31,7 @@
     function update(currentGameTime, dt) {
         lastNavigationTime += dt;
 
-        if (lastNavigationTime >= 1000) {
+        if (lastNavigationTime >= 500) {
             lastNavigationTime = 0;
 
             pFinder.nextStep();

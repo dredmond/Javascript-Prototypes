@@ -5,7 +5,8 @@
         endTile = null,
         searchStatusTypes = pathFinder.searchStatusTypes,
         currentStatus = searchStatusTypes.searching,
-        walkedTiles = null;
+        walkedTiles = null,
+        allowDiagonals = false;
 
     setMap(gameMap);
     console.log(walkableTiles);
@@ -183,6 +184,11 @@
 
                 textSize = ctx.measureText(tile.hScore);
                 ctx.fillText(tile.hScore, x * tileSize + (tileSize - textSize.width - 2), y * tileSize + (tileSize - 4));
+
+                if (tile.closed) {
+                    ctx.fillStyle = 'rgba(255, 0, 0, .25)';
+                    ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
             }
         }
     }
@@ -206,6 +212,9 @@
                 if (x === tile.x && y === tile.y)
                     continue;
 
+                if (!allowDiagonals && !(x === tile.x || y === tile.y))
+                    continue;
+
                 if (gameMap.inBounds(x, y)) {
                     neighbors.push(walkableTiles[x][y]);
                 }
@@ -223,7 +232,9 @@
             index = 0;
 
         for (var i = 0; i < openTiles.length; i++) {
-            if (smallestTile.fScore < openTiles[i].fScore) {
+            if (smallestTile.fScore === openTiles[i].fScore && smallestTile.hScore < openTiles[i].hScore) {
+                continue;
+            } else if (smallestTile.fScore < openTiles[i].fScore) {
                 continue;
             }
 
@@ -264,6 +275,10 @@
         }
     }
 
+    function setAllowDiagonals(value) {
+        allowDiagonals = value;
+    }
+
     return {
         calculatePath: calculatePath,
         nextStep: nextStep,
@@ -282,7 +297,8 @@
             }
 
             return navigationTiles;
-        }
+        },
+        setAllowDiagonals: setAllowDiagonals
     };
 });
 
