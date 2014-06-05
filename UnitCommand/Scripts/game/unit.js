@@ -1,7 +1,7 @@
 ﻿var unit = unit || (function (gameMap) {
     var currentLocation = { x: 0, y: 0 },
         destinationLocation = { x: 19, y: 19 },
-        speed = 1.5,
+        speed = .4,
         state = 0,
         health = 10,
         equipment = {},
@@ -14,7 +14,9 @@
         lastNavigationTime = 0,
         lastSearchState = pathFinder.searchStatusTypes.searching,
         currentWorldPosition = { x: 0, y: 0 },
-        nextWorldPosition = null;
+        nextWorldPosition = null,
+        piOver = Math.PI / 180,
+        piUnder = 180 / Math.PI;
 
     pFinder.setAllowDiagonals(true);
 
@@ -33,10 +35,10 @@
     function update(currentGameTime, dt) {
         lastNavigationTime += dt;
 
-        if (lastNavigationTime >= 500) {
-            lastNavigationTime = 0;
+        pFinder.nextStep();
 
-            pFinder.nextStep();
+        if (lastNavigationTime >= 100) {
+            lastNavigationTime = 0;
 
             var s = pFinder.currentStatus();
 
@@ -87,11 +89,13 @@
     }
 
     function moveTo(location) {
-        destinationLocation = location;
+        destinationLocation.x = location.x;
+        destinationLocation.y = location.y;
     }
 
     function setLocation(location) {
-        currentLocation = location;
+        currentLocation.x = location.x;
+        currentLocation.y = location.y;
         currentWorldPosition = centerUnit(gameMap.getDisplayOffset(currentLocation));
     }
 
@@ -114,9 +118,9 @@
                 dist = Math.sqrt(x2 + y2),
                 angle = y / x;
 
-            if (dist > 0.1) {
-                currentWorldPosition.x = Math.cos(angle) * dt * speed;
-                currentWorldPosition.y = Math.sin(angle) * dt * speed;
+            if (dist > 5) {
+                currentWorldPosition.x += Math.cos(angle) * dt * speed;
+                currentWorldPosition.y += Math.sin(angle) * dt * speed;
             } else {
                 setLocation(nextTile);
 
