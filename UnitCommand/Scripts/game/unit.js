@@ -12,7 +12,9 @@
         navigationTiles = [],
         pFinder = pathFinder(gameMap),
         lastNavigationTime = 0,
-        lastSearchState = pathFinder.searchStatusTypes.searching;
+        lastSearchState = pathFinder.searchStatusTypes.searching,
+        currentWorldPosition = { x: 0, y: 0 },
+        nextWorldPosition = null;
 
     pFinder.setAllowDiagonals(true);
 
@@ -47,13 +49,17 @@
                 lastSearchState = s;
                 debugNavData();
             }
+
+            if (lastSearchState === pathFinder.searchStatusTypes.pathFound) {
+                followPath(dt);
+            }
         }
     }
 
     function draw(ctx) {
         ctx.save();
 
-        var startPos = centerUnit(gameMap.getDisplayOffset(currentLocation)),
+        var startPos = currentWorldPosition,
             endPos = centerUnit(gameMap.getDisplayOffset(destinationLocation));
 
         debug(ctx, startPos, endPos);
@@ -86,10 +92,38 @@
 
     function setLocation(location) {
         currentLocation = location;
+        currentWorldPosition = centerUnit(gameMap.getDisplayOffset(currentLocation));
     }
 
     function getLocation() {
         return currentLocation;
+    }
+
+    function followPath(dt) {
+        if (navigationTiles.length > 0) {
+            var nextTile = navigationTiles[0];
+            
+            if (nextWorldPosition === null) {
+                nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
+            }
+
+            var x = currentWorldPosition.x - nextWorldPosition.x,
+                y = currentWorldPosition.y - nextWorldPosition.y,
+                x2 = x * x,
+                y2 = y * y,
+                dist = Math.sqrt(x2 + y2),
+                angle = y / x;
+
+            if (dist > 0.1) {
+                currentWorldPosition.x = Math.cos(angle) * dt * speed;
+                currentWorldPosition.y = Math.sin(angle) * dt * speed;
+            } else {
+                setLocation(nextTile);
+
+                navigationTiles.splice(0, 1);
+                nextWorldPosition = null;
+            }
+        }
     }
 
     function debug(ctx, startPos, endPos) {
