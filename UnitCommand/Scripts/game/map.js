@@ -61,7 +61,7 @@
 
             switch (mData.getTile(location)) {
                 case tileTypes.grass:
-                    ctx.fillStyle = 'rgba(0, 255, 0, 1)';
+                    ctx.fillStyle = 'rgba(0, 195, 0, 1)';
                     break;
                 case tileTypes.stones:
                     ctx.fillStyle = 'rgba(100, 100, 100, 1)';
