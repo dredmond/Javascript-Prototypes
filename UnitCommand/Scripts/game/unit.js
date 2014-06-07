@@ -49,9 +49,9 @@
 
     function debugNavData() {
         //console.log('Path Info: (State: ' + lastSearchState + ')');
-        for (var x in navigationTiles) {
+        //for (var x in navigationTiles) {
             //console.log(navigationTiles[x].debug());
-        }
+        //}
     }
 
     function update(currentGameTime, dt) {
@@ -69,10 +69,6 @@
             lastNavigationStepTime -= 300;
 
             var s = pFinder.currentStatus();
-
-            if (s === pathFinder.searchStatusTypes.searching) {
-                navigationTiles = pFinder.getCurrentPath();
-            }
 
             if (s !== lastSearchState) {
                 navigationTiles = pFinder.getCurrentPath();
@@ -104,12 +100,18 @@
             ctx.arc(endPos.x + unitSize, endPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
             ctx.fillStyle = 'red';
             ctx.fill();
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 5;
+            ctx.stroke();
         }
 
         ctx.beginPath();
         ctx.arc(startPos.x + unitSize, startPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
         ctx.fillStyle = 'rgba(50, 225, 50, 1)';
         ctx.fill();
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 5;
+        ctx.stroke();
 
         ctx.restore();
     }
@@ -124,14 +126,15 @@
     }
 
     function moveTo(location) {
-        needsToRecalculatePath = true;
         destinationLocation.x = location.x;
         destinationLocation.y = location.y;
+        needsToRecalculatePath = true;
     }
 
     function setLocation(location) {
         currentLocation.x = location.x;
         currentLocation.y = location.y;
+        moveTo(location);
         currentWorldPosition = centerUnit(gameMap.getDisplayOffset(currentLocation));
     }
 
@@ -161,7 +164,7 @@
         var cosAngle = Math.cos(angle),
             sinAngle = Math.sin(angle);
 
-        var speedModifier = Math.min(finalDist * .9, maxSpeedMod);
+        var speedModifier = Math.min(finalDist * .95, maxSpeedMod);
 
         var movementX = cosAngle * speed * dt * speedModifier,
             movementY = sinAngle * speed * dt * speedModifier;
@@ -169,9 +172,6 @@
         var nextX = currentWorldPosition.x + movementX / 1000,
             nextY = currentWorldPosition.y + movementY / 1000;
 
-        //console.log('x: ' + nextX);
-        //console.log('y: ' + nextY);
-        //console.log('dist: ' + dist);
         currentWorldPosition.x = nextX;
         currentWorldPosition.y = nextY;
 
@@ -179,9 +179,6 @@
             pathIndex++;
             nextWorldPosition = null;
         }
-
-        //currentWorldPosition.x += Math.cos(angle) * dt * speed;
-        //currentWorldPosition.y += Math.sin(angle) * dt * speed;
     }
 
     function debug(ctx, startPos, endPos) {
