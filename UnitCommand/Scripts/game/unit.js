@@ -16,7 +16,7 @@
         lastSearchState = pathFinder.searchStatusTypes.searching,
         currentWorldPosition = { x: 0, y: 0 },
         nextWorldPosition = null,
-        isMoving = false,
+        needsToRecalculatePath = false,
         pathIndex = 1;
 
     pFinder.setAllowDiagonals(true);
@@ -38,8 +38,13 @@
         lastNavigationStepTime += dt;
         lastMovementTime += dt;
 
-        while (lastNavigationStepTime >= 1000) {
-            lastNavigationStepTime -= 1000;
+        if (needsToRecalculatePath && nextWorldPosition == null) {
+            needsToRecalculatePath = false;
+            navigate();
+        }
+
+        while (lastNavigationStepTime >= 300) {
+            lastNavigationStepTime -= 300;
 
             pFinder.nextStep();
 
@@ -97,6 +102,7 @@
     }
 
     function moveTo(location) {
+        needsToRecalculatePath = true;
         destinationLocation.x = location.x;
         destinationLocation.y = location.y;
     }
@@ -113,16 +119,18 @@
 
     function followPath(dt) {
         if (pathIndex >= navigationTiles.length) {
+            pFinder.clear();
             navigationTiles = [];
             return;
         }
 
-        isMoving = true;
-
-        var nextTile = navigationTiles[pathIndex];
+        if (nextWorldPosition === null) {
+            var nextTile = navigationTiles[pathIndex];
+            nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
+            console.log(nextTile.x, nextTile.y);
+        }
 
         currentLocation = gameMap.worldToMapCoords(currentWorldPosition.x, currentWorldPosition.y);
-        nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
 
         var x = currentWorldPosition.x - nextWorldPosition.x,
             y = currentWorldPosition.y - nextWorldPosition.y,
@@ -138,7 +146,7 @@
             nextY = currentWorldPosition.y + sinAngle * speed * dt;
         console.log(nextWorldPosition);
         console.log(currentLocation);
-        console.log(nextTile.x, nextTile.y);
+
         console.log('x: ' + nextX);
         console.log('y: ' + nextY);
         console.log('dist: ' + dist);
@@ -147,7 +155,7 @@
 
         if (dist <= 5) {
             pathIndex++;
-            isMoving = false;
+            nextWorldPosition = null;
         }
 
         //currentWorldPosition.x += Math.cos(angle) * dt * speed;
@@ -189,7 +197,6 @@
         draw: draw,
         setLocation: setLocation,
         getLocation: getLocation,
-        moveTo: moveTo,
-        navigate: navigate
+        moveTo: moveTo
     };
 });

@@ -67,14 +67,7 @@
     }
     
     function calculatePath(start, end) {
-        openTiles = [];
-        walkedTiles = [];
-
-        for (var x in walkableTiles) {
-            for (var y in walkableTiles[x]) {
-                walkableTiles[x][y].reset();
-            }
-        }
+        clear();
 
         if (!(gameMap.inBounds(start.x, start.y) && gameMap.inBounds(end.x, end.y))) {
             currentStatus = searchStatusTypes.noPath;
@@ -279,6 +272,17 @@
         allowDiagonals = value;
     }
 
+    function clear() {
+        openTiles = [];
+        walkedTiles = [];
+
+        for (var x in walkableTiles) {
+            for (var y in walkableTiles[x]) {
+                walkableTiles[x][y].reset();
+            }
+        }
+    }
+
     return {
         calculatePath: calculatePath,
         nextStep: nextStep,
@@ -298,7 +302,8 @@
 
             return navigationTiles;
         },
-        setAllowDiagonals: setAllowDiagonals
+        setAllowDiagonals: setAllowDiagonals,
+        clear: clear
     };
 });
 

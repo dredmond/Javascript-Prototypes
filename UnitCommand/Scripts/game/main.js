@@ -181,7 +181,6 @@
     var u = unit(gameMap);
     u.setLocation({ x: 2, y: 14 });
     u.moveTo({ x: 19, y: 17 });
-    u.navigate();
 
     selectedUnits.push(u);
     gameMap.addUnit(u);
