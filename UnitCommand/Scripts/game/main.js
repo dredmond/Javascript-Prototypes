@@ -56,7 +56,7 @@
 
     mainCanvas.addEventListener('mousedown', function (evt) {
         evt.preventDefault();
-        console.log(evt);
+        //console.log(evt);
 
         if (evt.button === 2) {
             mouseDragStart = evt;
@@ -92,7 +92,7 @@
 
     window.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
-        console.log(evt);
+        //console.log(evt);
 
         oldMapOffset = null;
     });

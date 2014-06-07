@@ -1,7 +1,7 @@
 ﻿var unit = unit || (function (gameMap) {
     var currentLocation = { x: 0, y: 0 },
         destinationLocation = { x: 19, y: 19 },
-        speed = .4,
+        speed = 50,
         state = 0,
         health = 10,
         equipment = {},
@@ -11,34 +11,37 @@
         unitSizeDiameter = unitSize + unitSize,
         navigationTiles = [],
         pFinder = pathFinder(gameMap),
-        lastNavigationTime = 0,
+        lastNavigationStepTime = 0,
+        lastMovementTime = 0,
         lastSearchState = pathFinder.searchStatusTypes.searching,
         currentWorldPosition = { x: 0, y: 0 },
         nextWorldPosition = null,
-        piOver = Math.PI / 180,
-        piUnder = 180 / Math.PI;
+        isMoving = false,
+        pathIndex = 1;
 
     pFinder.setAllowDiagonals(true);
 
     function navigate() {
+        pathIndex = 1;
         pFinder.calculatePath(currentLocation, destinationLocation);
         lastSearchState = pathFinder.searchStatusTypes.searching;
     }
 
     function debugNavData() {
-        console.log('Path Info: (State: ' + lastSearchState + ')');
+        //console.log('Path Info: (State: ' + lastSearchState + ')');
         for (var x in navigationTiles) {
-            console.log(navigationTiles[x].debug());
+            //console.log(navigationTiles[x].debug());
         }
     }
 
     function update(currentGameTime, dt) {
-        lastNavigationTime += dt;
+        lastNavigationStepTime += dt;
+        lastMovementTime += dt;
 
-        pFinder.nextStep();
+        while (lastNavigationStepTime >= 1000) {
+            lastNavigationStepTime -= 1000;
 
-        if (lastNavigationTime >= 100) {
-            lastNavigationTime = 0;
+            pFinder.nextStep();
 
             var s = pFinder.currentStatus();
 
@@ -51,9 +54,14 @@
                 lastSearchState = s;
                 debugNavData();
             }
+        }
+
+        while (lastMovementTime >= 10) {
+            var updateTime = 10;
+            lastMovementTime -= 10;
 
             if (lastSearchState === pathFinder.searchStatusTypes.pathFound) {
-                followPath(dt);
+                followPath(updateTime / 1000);
             }
         }
     }
@@ -67,13 +75,13 @@
         debug(ctx, startPos, endPos);
 
         ctx.beginPath();
-        ctx.arc(startPos.x + unitSize, startPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'green';
+        ctx.arc(endPos.x + unitSize, endPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(endPos.x + unitSize, endPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'red';
+        ctx.arc(startPos.x + unitSize, startPos.y + unitSize, unitSize, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'green';
         ctx.fill();
 
         ctx.restore();
@@ -104,30 +112,46 @@
     }
 
     function followPath(dt) {
-        if (navigationTiles.length > 0) {
-            var nextTile = navigationTiles[0];
-            
-            if (nextWorldPosition === null) {
-                nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
-            }
-
-            var x = currentWorldPosition.x - nextWorldPosition.x,
-                y = currentWorldPosition.y - nextWorldPosition.y,
-                x2 = x * x,
-                y2 = y * y,
-                dist = Math.sqrt(x2 + y2),
-                angle = y / x;
-
-            if (dist > 5) {
-                currentWorldPosition.x += Math.cos(angle) * dt * speed;
-                currentWorldPosition.y += Math.sin(angle) * dt * speed;
-            } else {
-                setLocation(nextTile);
-
-                navigationTiles.splice(0, 1);
-                nextWorldPosition = null;
-            }
+        if (pathIndex >= navigationTiles.length) {
+            navigationTiles = [];
+            return;
         }
+
+        isMoving = true;
+
+        var nextTile = navigationTiles[pathIndex];
+
+        currentLocation = gameMap.worldToMapCoords(currentWorldPosition.x, currentWorldPosition.y);
+        nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
+
+        var x = currentWorldPosition.x - nextWorldPosition.x,
+            y = currentWorldPosition.y - nextWorldPosition.y,
+            x2 = x * x,
+            y2 = y * y,
+            dist = Math.sqrt(x2 + y2),
+            angle = Math.atan2(y, x) + Math.PI;
+
+        var cosAngle = Math.cos(angle),
+            sinAngle = Math.sin(angle);
+
+        var nextX = currentWorldPosition.x + cosAngle * speed * dt,
+            nextY = currentWorldPosition.y + sinAngle * speed * dt;
+        console.log(nextWorldPosition);
+        console.log(currentLocation);
+        console.log(nextTile.x, nextTile.y);
+        console.log('x: ' + nextX);
+        console.log('y: ' + nextY);
+        console.log('dist: ' + dist);
+        currentWorldPosition.x = nextX;
+        currentWorldPosition.y = nextY;
+
+        if (dist <= 5) {
+            pathIndex++;
+            isMoving = false;
+        }
+
+        //currentWorldPosition.x += Math.cos(angle) * dt * speed;
+        //currentWorldPosition.y += Math.sin(angle) * dt * speed;
     }
 
     function debug(ctx, startPos, endPos) {

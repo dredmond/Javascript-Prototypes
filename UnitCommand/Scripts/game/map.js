@@ -112,6 +112,13 @@
             };
         }
 
+        function worldToMapCoords(x, y) {
+            return {
+                x: Math.round(x / tileSize),
+                y: Math.round(y / tileSize)
+            };
+        }
+
         function mapToCanvasCoords(x, y) {
             return {
                 x: x * tileSize + mapOffset.x + halfTileSize,
@@ -160,8 +167,9 @@
             forEachUnit: mData.forEachUnit,
             inBounds: mData.inBounds,
             canvasToMapCoords: canvasToMapCoords,
-            mapToCanvasCoords: mapToCanvasCoords
-    };
+            mapToCanvasCoords: mapToCanvasCoords,
+            worldToMapCoords: worldToMapCoords
+        };
     }
 
     return {

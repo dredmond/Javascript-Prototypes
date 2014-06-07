@@ -9,7 +9,7 @@
         allowDiagonals = false;
 
     setMap(gameMap);
-    console.log(walkableTiles);
+    //console.log(walkableTiles);
 
     function createTile(x, y, walkable) {
         var parent = null,
@@ -125,7 +125,7 @@
             return true;
         }
 
-        console.log('Parent Tile: \r\n' + tile.debug());
+        //console.log('Parent Tile: \r\n' + tile.debug());
 
         var neighbors = getNeighborTiles(tile);
         for (var i = 0; i < neighbors.length; i++) {
@@ -146,7 +146,7 @@
 
                 openTiles.push(neighborTile);
 
-                console.log('Neighbor Tile (Added): \r\n' + neighborTile.debug());
+                //console.log('Neighbor Tile (Added): \r\n' + neighborTile.debug());
                 continue;
             }
 
@@ -156,7 +156,7 @@
                 neighborTile.setParent(tile);
                 neighborTile.calculateTotal();
 
-                console.log('Neighbor Tile (Updated): \r\n' + neighborTile.debug());
+                //console.log('Neighbor Tile (Updated): \r\n' + neighborTile.debug());
                 continue;
             }
         }
