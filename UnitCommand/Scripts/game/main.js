@@ -6,7 +6,7 @@
         updateInterval = 10,
         resizeInterval = 200,
         gameMap = map.createMap({
-            tileSize: 35,
+            tileSize: 45,
             dataSettings: {
                 height: 15,
                 width: 15,

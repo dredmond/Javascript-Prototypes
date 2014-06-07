@@ -21,21 +21,6 @@
 
         function update(gameTime, dt) {
             cellMovedElapsed += dt;
-            /*
-            if (cellMovedElapsed > 100) {
-                cellMovedElapsed = 0;
-                //mData.setTile(locationXy, tileTypes.none);
-
-                if (locationXy.y >= mData.getHeight()) {
-                    locationXy.y = 0;
-                    locationXy.x += 1;
-                }
-
-                mData.setTile(locationXy, tileTypes.trees);
-
-                locationXy.x += 0;
-                locationXy.y += 1;
-            }*/
 
             mData.forEachUnit(function (i, unit) {
                 unit.update(gameTime, dt);
@@ -88,14 +73,6 @@
         }
 
         function draw(ctx) {
-            /*var gridWidth = mData.getWidth(),
-                gridHeight = mData.getHeight();
-
-            var gridXOffset = Math.round((viewSize.width - gridWidth * tileSize) / 2),
-                gridYOffset = Math.round((viewSize.height - gridHeight * tileSize) / 2);
-
-            ctx.translate(gridXOffset + mapOffset.x, gridYOffset + mapOffset.y);*/
-
             ctx.translate(mapOffset.x, mapOffset.y);
 
             drawMap(ctx);
