@@ -194,6 +194,10 @@
     });
 });
 
+var button = (function(name, x, y, w, h) {
+
+});
+
 // Helper functions for setting up requestAnimationFrame.
 (function () {
     var lastTime = 0;
