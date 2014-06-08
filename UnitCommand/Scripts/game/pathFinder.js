@@ -158,8 +158,8 @@
     }
 
     function draw(ctx, tileSize) {
-        for (var x in walkableTiles) {
-            for (var y in walkableTiles[x]) {
+        for (var x = 0; x < walkableTiles.length; x++) {
+            for (var y = 0; y < walkableTiles[x].length; y++) {
                 var tile = walkableTiles[x][y];
 
                 ctx.font = '10px Georgia';
@@ -276,8 +276,8 @@
         openTiles = [];
         walkedTiles = [];
 
-        for (var x in walkableTiles) {
-            for (var y in walkableTiles[x]) {
+        for (var x = 0; x < walkableTiles.length; x++) {
+            for (var y = 0; y < walkableTiles[x].length; y++) {
                 walkableTiles[x][y].reset();
             }
         }
