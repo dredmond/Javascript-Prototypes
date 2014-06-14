@@ -198,8 +198,8 @@ var button = (function (name, options) {
     if (!name)
         throw 'A button must have a name.';
 
-    function obj() { }
-    var result = new obj();
+    function buttonObj() { }
+    var result = new buttonObj();
 
     function doClickEvent() {
         if (options.click === null)
@@ -217,11 +217,11 @@ var button = (function (name, options) {
     options = options || {};
     options.click = (typeof (options.click) === 'function') ? options.click : null;
     
-    obj.prototype.getName = function () {
+    buttonObj.prototype.getName = function () {
         return name;
     };
 
-    obj.prototype.click = doClickEvent;
+    buttonObj.prototype.click = doClickEvent;
 
     return result;
 });
