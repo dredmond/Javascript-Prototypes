@@ -194,9 +194,58 @@
     });
 });
 
-var button = (function(name, x, y, w, h) {
+var button = (function (name, options) {
+    if (!name)
+        throw 'A button must have a name.';
 
+    function obj() { }
+    var result = new obj();
+
+    function doClickEvent() {
+        if (options.click === null)
+            return;
+
+        options.click(result);
+    }
+
+    // click event
+    // name
+    // location (x, y)
+    // size (w, h)
+    // image
+    // text
+    options = options || {};
+    options.click = (typeof (options.click) === 'function') ? options.click : null;
+    
+    obj.prototype.getName = function () {
+        return name;
+    };
+
+    obj.prototype.click = doClickEvent;
+
+    return result;
 });
+
+var btn = button('test', {
+    click: function(evt) {
+        alert('button clicked.');
+        console.log(evt, evt.getName());
+    }
+});
+
+var btn2 = button('test2', {
+    click: function (evt) {
+        alert('button 2 clicked.');
+        console.log(evt, evt.getName());
+    }
+});
+
+btn.click = function () {
+    console.log('Overridden!');
+};
+
+btn.click();
+btn2.click();
 
 // Helper functions for setting up requestAnimationFrame.
 (function () {

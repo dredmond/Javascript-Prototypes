@@ -24,6 +24,7 @@
     pFinder.setAllowDiagonals(false);
 
     function navigate() {
+        navigationTiles = [];
         pathIndex = 1;
         needsToRecalculatePath = false;
         pFinder.calculatePath(currentLocation, destinationLocation);
@@ -72,10 +73,11 @@
             var s = pFinder.currentStatus();
 
             if (s !== lastSearchState) {
-                navigationTiles = pFinder.getCurrentPath();
-
                 if (s === pathFinder.searchStatusTypes.pathFound) {
-                    console.log('Finished Recalculating new Path.');
+                    navigationTiles = pFinder.getCurrentPath();
+                } else if (s === pathFinder.searchStatusTypes.noPath) {
+                    navigationTiles = [];
+                    pFinder.clear();
                 }
 
                 lastSearchState = s;
