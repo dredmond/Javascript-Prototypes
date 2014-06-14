@@ -265,6 +265,9 @@
     <Content Include="Scripts\game\map.js" />
     <Content Include="Scripts\game\pathFinder.js" />
     <Content Include="Scripts\game\tileTypes.js" />
+    <Content Include="Scripts\game\ui.button.js" />
+    <Content Include="Scripts\game\ui.component.js" />
+    <Content Include="Scripts\game\ui.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
