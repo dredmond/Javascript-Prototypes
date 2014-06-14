@@ -25,6 +25,7 @@
 
     function navigate() {
         pathIndex = 1;
+        needsToRecalculatePath = false;
         pFinder.calculatePath(currentLocation, destinationLocation);
         lastSearchState = pathFinder.searchStatusTypes.searching;
     }
@@ -59,19 +60,24 @@
         lastMovementTime += dt;
 
         if (needsToRecalculatePath && nextWorldPosition == null) {
-            needsToRecalculatePath = false;
             navigate();
+            console.log('Recalculating Path.');
         }
 
         pFinder.nextStep();
 
-        while (lastNavigationStepTime >= 300) {
-            lastNavigationStepTime -= 300;
+        while (lastNavigationStepTime >= 100) {
+            lastNavigationStepTime -= 100;
 
             var s = pFinder.currentStatus();
 
             if (s !== lastSearchState) {
                 navigationTiles = pFinder.getCurrentPath();
+
+                if (s === pathFinder.searchStatusTypes.pathFound) {
+                    console.log('Finished Recalculating new Path.');
+                }
+
                 lastSearchState = s;
                 debugNavData();
             }
@@ -82,8 +88,16 @@
             lastMovementTime -= 10;
 
             if (lastSearchState === pathFinder.searchStatusTypes.pathFound) {
+                if (needsToRecalculatePath)
+                    console.log('lastMovementTime: ' + lastMovementTime);
+
                 followPath(updateTime);
             }
+            
+            // Must exit loop here if we need to recalculate to avoid loading the 
+            // next world position in the event that the lastMovementTime is larger than our updateTime.
+            if (needsToRecalculatePath && nextWorldPosition === null)
+                break;
         }
     }
 
@@ -143,6 +157,9 @@
     }
 
     function followPath(dt) {
+        if (navigationTiles.length === 0)
+            return;
+
         if (pathIndex >= navigationTiles.length) {
             pFinder.clear();
             navigationTiles = [];
@@ -150,6 +167,9 @@
         }
 
         if (nextWorldPosition === null) {
+            if (needsToRecalculatePath)
+                console.log('pathIndex: ' + pathIndex);
+
             var nextTile = navigationTiles[pathIndex];
             nextWorldPosition = centerUnit(gameMap.getDisplayOffset(nextTile));
         }
@@ -175,9 +195,13 @@
         currentWorldPosition.x = nextX;
         currentWorldPosition.y = nextY;
 
+        if (needsToRecalculatePath)
+            console.log('Distance: ' + dist);
+
         if (dist <= 1) {
             pathIndex++;
             nextWorldPosition = null;
+            console.log('nextWorldPosition Reset');
         }
     }
 
