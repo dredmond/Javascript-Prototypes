@@ -9,7 +9,16 @@ namespace UnitCommand
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/game").Include(
-                        "~/Scripts/game/*.js"));
+                        "~/Scripts/game/eventHandlers.js",
+                        "~/Scripts/game/ui.js",
+                        "~/Scripts/game/ui.component.js",
+                        "~/Scripts/game/ui.button.js",
+                        "~/Scripts/game/tileTypes.js",
+                        "~/Scripts/game/unit.js",
+                        "~/Scripts/game/mapData.js",
+                        "~/Scripts/game/map.js",
+                        "~/Scripts/game/pathFinder.js",
+                        "~/Scripts/game/main.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));

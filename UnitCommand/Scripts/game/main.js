@@ -194,46 +194,14 @@
     });
 });
 
-var button = (function (name, options) {
-    if (!name)
-        throw 'A button must have a name.';
-
-    function buttonObj() { }
-    var result = new buttonObj();
-
-    function doClickEvent() {
-        if (options.click === null)
-            return;
-
-        options.click(result);
-    }
-
-    // click event
-    // name
-    // location (x, y)
-    // size (w, h)
-    // image
-    // text
-    options = options || {};
-    options.click = (typeof (options.click) === 'function') ? options.click : null;
-    
-    buttonObj.prototype.getName = function () {
-        return name;
-    };
-
-    buttonObj.prototype.click = doClickEvent;
-
-    return result;
-});
-
-var btn = button('test', {
+var btn = ui.button('test', {
     click: function(evt) {
         alert('button clicked.');
         console.log(evt, evt.getName());
     }
 });
 
-var btn2 = button('test2', {
+var btn2 = ui.button('test2', {
     click: function (evt) {
         alert('button 2 clicked.');
         console.log(evt, evt.getName());
