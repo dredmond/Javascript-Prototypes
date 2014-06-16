@@ -18,6 +18,8 @@
     // size (w, h)
     // image
     // text
+    // font
+    // color
     options = options || {};
     options.click = (typeof (options.click) === 'function') ? options.click : null;
 
