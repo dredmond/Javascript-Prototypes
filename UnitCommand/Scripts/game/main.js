@@ -51,7 +51,6 @@
 
     mainCanvas.addEventListener('mousedown', function (evt) {
         evt.preventDefault();
-        //console.log(evt);
 
         if (evt.button === 2) {
             mouseDragStart = evt;
@@ -60,12 +59,16 @@
         }
 
         if (evt.button === 0) {
-            var x = evt.x - canvasOffsets.left,
-                y = evt.y - canvasOffsets.top;
+            var component = ui.getComponentFromPoint(ui.mousePos.x, ui.mousePos.y);
+
+            if (component != null) {
+                component.click();
+                return;
+            }
 
             for (var i in selectedUnits) {
                 var unit = selectedUnits[i],
-                    loc = gameMap.canvasToMapCoords(x, y);
+                    loc = gameMap.canvasToMapCoords(ui.mousePos.x, ui.mousePos.y);
 
                 unit.moveTo(loc);
             }
@@ -81,12 +84,14 @@
                 x: oldMapOffset.x + evt.x - mouseDragStart.x,
                 y: oldMapOffset.y + evt.y - mouseDragStart.y
             });
+        } else {
+            ui.mousePos.x = evt.x - canvasOffsets.left;
+            ui.mousePos.y = evt.y - canvasOffsets.top;
         }
     });
 
     window.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
-        //console.log(evt);
 
         oldMapOffset = null;
     });
@@ -128,20 +133,18 @@
 
         // Update the map.
         gameMap.update(gameTime, dt);
+
+        ui.update(gameTime, dt);
     }
 
     function draw() {
         ctx.fillStyle = '000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
-        ctx.save();
-
         // Draw the map
         gameMap.draw(ctx);
 
-        btn.draw(ctx);
-
-        ctx.restore();
+        ui.draw(ctx);
     }
 
     function gameLoop(gameTime) {
@@ -210,12 +213,15 @@ var btn2 = ui.button('test2', {
     }
 });
 
-btn.click = function () {
-    console.log('Overridden!');
-};
+ui.addComponent(btn);
+ui.addComponent(btn2);
 
-btn.click();
-btn2.click();
+//btn.click = function () {
+//    console.log('Overridden!');
+//};
+
+//btn.click();
+//btn2.click();
 
 // Helper functions for setting up requestAnimationFrame.
 (function () {

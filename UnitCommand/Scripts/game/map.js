@@ -73,6 +73,8 @@
         }
 
         function draw(ctx) {
+            ctx.save();
+
             ctx.translate(mapOffset.x, mapOffset.y);
 
             drawMap(ctx);
@@ -80,6 +82,8 @@
             mData.forEachUnit(function(i, unit) {
                 unit.draw(ctx);
             });
+
+            ctx.restore();
         }
 
         function canvasToMapCoords(x, y) {
