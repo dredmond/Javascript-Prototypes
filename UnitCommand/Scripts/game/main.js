@@ -139,6 +139,8 @@
         // Draw the map
         gameMap.draw(ctx);
 
+        btn.draw(ctx);
+
         ctx.restore();
     }
 
