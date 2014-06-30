@@ -261,6 +261,7 @@
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
+    <Content Include="Scripts\game\extendableObject.js" />
     <Content Include="Scripts\game\eventHandlers.js" />
     <Content Include="Scripts\game\map.js" />
     <Content Include="Scripts\game\pathFinder.js" />
@@ -268,6 +269,7 @@
     <Content Include="Scripts\game\ui.button.js" />
     <Content Include="Scripts\game\ui.component.js" />
     <Content Include="Scripts\game\ui.js" />
+    <Content Include="Scripts\game\ui.progressbar.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

@@ -200,18 +200,25 @@
 });
 
 var btn = ui.button('test', {
+    text: 'Button 1',
     click: function(evt) {
         alert('button clicked.');
         console.log(evt, evt.getName());
     }
 });
 
+btn.setLocation(50, 50);
+btn.setSize(50, 300);
+
 var btn2 = ui.button('test2', {
+    text: 'Button 2',
     click: function (evt) {
         alert('button 2 clicked.');
         console.log(evt, evt.getName());
     }
 });
+
+btn2.setLocation(50, 110);
 
 ui.addComponent(btn);
 ui.addComponent(btn2);

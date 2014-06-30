@@ -5,12 +5,14 @@
     function buttonObj() { }
 
     var result = new buttonObj(),
-        location = { x: 0, y: 0 },
-        size = { width: 100, height: 50 },
-        text = 'Button',
-        color = 'black',
+        location = options.location || { x: 0, y: 0 },
+        size = options.size || { width: 100, height: 50 },
+        text = options.text || '',
+        color = options.color || 'black',
         borderColor = 'gray',
-        hasFocus = false;
+        hasFocus = false,
+        font = '15px Georgia',
+        borderWidth = 4;
 
     function handleClickEvent() {
         if (options.click === null)
@@ -22,7 +24,9 @@
     function handleDrawEvent(ctx) {
         ctx.save();
 
-        ctx.translate(2.5, 2.5);
+        var translateBorder = borderWidth / 2;
+
+        ctx.translate(translateBorder, translateBorder);
 
         if (hasFocus) {
             ctx.fillStyle = 'rgb(200,200,200)';
@@ -32,10 +36,10 @@
 
         ctx.fillRect(location.x, location.y, size.width, size.height);
         ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = borderWidth;
         ctx.strokeRect(location.x, location.y, size.width, size.height);
-       
-        ctx.font = '15px Georgia';
+
+        ctx.font = font;
 
         if (hasFocus) {
             ctx.fillStyle = 'rgb(255,0,0)';
@@ -57,26 +61,28 @@
     }
 
     function containsPoint(x, y) {
-        return (x >= location.x &&
+        return (x >= location.x + borderWidth &&
             x < location.x + size.width &&
-            y >= location.y &&
+            y >= location.y + borderWidth &&
             y < location.y + size.height);
     }
 
     function setLocation(x, y) {
-        
+        location.x = x;
+        location.y = y;
     }
 
     function setSize(height, width) {
-        
+        size.height = height;
+        size.width = width;
     }
 
     function setText(value) {
         text = value;
     }
 
-    function setFont(font) {
-
+    function setFont(value) {
+        font = value;
     }
 
     function setColor(value) {
