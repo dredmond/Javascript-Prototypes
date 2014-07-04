@@ -13,6 +13,7 @@ namespace UnitCommand
                         "~/Scripts/game/ui.js",
                         "~/Scripts/game/ui.component.js",
                         "~/Scripts/game/ui.button.js",
+                        "~/Scripts/game/ui.progressbar.js",
                         "~/Scripts/game/tileTypes.js",
                         "~/Scripts/game/unit.js",
                         "~/Scripts/game/mapData.js",

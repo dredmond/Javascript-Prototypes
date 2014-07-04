@@ -24,7 +24,7 @@
     }
 
     progressbarObj.prototype.getProgress = function () {
-
+        return currentProgress;
     };
 
     progressbarObj.prototype.incProgress = function (value) {
@@ -65,5 +65,21 @@
         return currentProgress >= maxProgress;
     };
 
+    function handleDrawEvent(ctx) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(300, 300, 100, 12);
+
+        ctx.fillStyle = 'green';
+        ctx.fillRect(302, 302, 96, 8);
+    }
+
+    function handleUpdateEvent(currentGameTime, dt) {
+        
+    }
+
+    progressbarObj.prototype.draw = handleDrawEvent;
+
+    progressbarObj.prototype.update = handleUpdateEvent;
+    
     return result;
 });

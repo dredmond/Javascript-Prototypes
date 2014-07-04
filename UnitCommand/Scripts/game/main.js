@@ -223,6 +223,9 @@ btn2.setLocation(50, 110);
 ui.addComponent(btn);
 ui.addComponent(btn2);
 
+var prog = ui.progressbar('progress');
+ui.addComponent(prog);
+
 //btn.click = function () {
 //    console.log('Overridden!');
 //};
