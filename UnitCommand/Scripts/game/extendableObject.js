@@ -7,13 +7,19 @@
         return hasOwnProperty.call(this, propertyName);
     }
 
+    function createPrototype(source, destination) {
+        function f() { }
+
+        f.prototype = source;
+        destination.prototype = new f();
+        destination.prototype.constructor = prototype;
+    }
+
     extendable.prototype.extend = function (obj) {
-        var base = this,
-            tmp = new Object();
-
-        tmp.prototype.constructor = obj;
-
-        return tmp;
+        var base = this;
+        createPrototype(base.constructor.prototype, obj);
+        obj.prototype.parent = base.constructor.prototype;
+        return obj;
     };
 
     extendable.prototype.parent = function () {
@@ -21,7 +27,7 @@
     };
 
     return new extendable();
-})();
+});
 
 var x1 = extendableObject();
 

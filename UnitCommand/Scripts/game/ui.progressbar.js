@@ -78,7 +78,6 @@
     }
 
     progressbarObj.prototype.draw = handleDrawEvent;
-
     progressbarObj.prototype.update = handleUpdateEvent;
     
     return result;

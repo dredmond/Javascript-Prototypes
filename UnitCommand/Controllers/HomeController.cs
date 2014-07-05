@@ -12,5 +12,10 @@ namespace UnitCommand.Controllers
         {
             return View();
         }
+
+        public ActionResult PrototypeTest()
+        {
+            return View();
+        }
     }
 }
