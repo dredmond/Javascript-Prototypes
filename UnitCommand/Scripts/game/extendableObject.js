@@ -7,11 +7,22 @@
         return hasOwnProperty.call(this, propertyName);
     }
 
+    function copyProperties(source, destination) {
+        for (var p in source) {
+            if (!hasOwnProperty.call(source, p))
+                continue;
+
+            console.log('Property:' + p);
+        }
+    }
+
     function createPrototype(source, destination) {
         function f() { }
 
         f.prototype = source;
         destination.prototype = new f();
+
+        copyProperties(source, destination);
 
         destination.prototype.constructor = destination;
     }
@@ -49,3 +60,17 @@ x1Extender.prototype.test = function () {
 var x2 = new x1Extender('donny', '8/22/1984');
 x2.test();
 
+function x2Extender(name, birthday, age) {
+    this.parent.constructor(name, birthday);
+    this.age = age;
+}
+
+extendableObject.extend(x1Extender, x2Extender);
+
+x2Extender.prototype.test = function() {
+    console.log(this.age);
+    this.parent.test();
+};
+
+var x3 = new x2Extender('donny', '8/22/1984', '29');
+x3.test();
