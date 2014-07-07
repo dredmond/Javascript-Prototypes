@@ -103,10 +103,9 @@ x1Extender.prototype.test = function () {
 var x2 = new x1Extender('donny', '8/22/1984');
 x2.test();
 
-
 console.log('x2Extender inherits x1Extender');
 function x2Extender(name, birthday, age) {
-    this.parent.constructor.call(this, name, birthday);
+    this.parent.constructor(name, birthday);
     this.age = age;
 }
 
@@ -186,7 +185,7 @@ var jsonObj2 = {
     },
     constructor: function (a, b, c) {
         console.log('Calling constructor in jsonObj2.');
-        this.parent.constructor.call(this, a, b);
+        this.parent.constructor(a, b);
         this.c = c;
     }
 };
