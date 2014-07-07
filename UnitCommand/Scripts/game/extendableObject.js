@@ -1,10 +1,16 @@
 ﻿var extendableObject = extendableObject || (function() {
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var extendableInstance = new extendable();
+    var hasOwnProperty = Object.prototype.hasOwnProperty,
+        getOwnPropertyNames = Object.prototype.getOwnPropertyNames,
+        extendableInstance = new extendable();
+
     function extendable() { }
 
     extendable.prototype.hasOwnProperty = function(obj, propertyName) {
         return hasOwnProperty.call(obj, propertyName);
+    }
+
+    extendable.prototype.getOwnPropertyNames = function (obj, propertyName) {
+        return getOwnPropertyNames.call(obj, propertyName);
     }
 
     function copyProperties(source, destination) {
@@ -12,7 +18,11 @@
             if (!extendableInstance.hasOwnProperty(source, p))
                 continue;
 
-            console.log('Property: ' + p);
+            // Don't copy the parent constructor if the child already has a constructor.
+            if (p === 'constructor' && extendableObject.hasOwnProperty(destination, p))
+                continue;
+
+            destination[p] = source[p];
         }
     }
 
@@ -22,19 +32,44 @@
         f.prototype = source;
         destination.prototype = new f();
 
-        copyProperties(source, destination);
+        //copyProperties(source, destination);
 
         destination.prototype.constructor = destination;
     }
 
+    function objToFunc(obj) {
+        function f() { }
+        f.prototype = obj;
+        return f;
+    }
+
     extendable.prototype.extend = function (source, destination) {
+        if (typeof (source) === 'object') {
+            source = objToFunc(source);
+        }
         var base = source.prototype;
-        if (typeof (source) !== 'function' || typeof (base) === 'undefined' || base == null) {
-            base = source;
+
+        if (typeof (destination) === 'undefined' || destination == null) {
+            if (typeof (base.constructor) === 'function')
+                destination = base.constructor;
+            else
+                destination = function() { };
         }
 
-        createPrototype(base, destination);
-        destination.prototype.parent = base;
+        if (typeof (destination) !== 'function') {
+            var oldDestination = destination;
+            // copyProperties(source, oldDestination);
+            destination = oldDestination.constructor || base.constructor || function() { };
+            copyProperties(base, oldDestination);
+            createPrototype(oldDestination, destination);
+
+            destination.prototype.parent = base;
+        } else {
+            createPrototype(base, destination);
+            destination.prototype.parent = base;
+        }
+
+        return destination;
     };
 
     return extendableInstance;
@@ -71,7 +106,7 @@ x2.test();
 
 console.log('x2Extender inherits x1Extender');
 function x2Extender(name, birthday, age) {
-    this.parent.constructor(name, birthday);
+    this.parent.constructor.call(this, name, birthday);
     this.age = age;
 }
 
@@ -119,3 +154,45 @@ for (var p in x4) {
 
     console.log('Property: ' + p);
 }
+
+console.log('jSON Extension #2');
+var jsonObj = {
+    testFunc: function () {
+        console.log('Testing testFunc in jsonObj. [a: ' + this.a + ' b: ' + this.b + ']');
+    },
+    constructor: function (a, b) {
+        console.log('Calling constructor in jsonObj.');
+        this.a = a;
+        this.b = b;
+    }
+};
+
+var testJsonExtend2 = extendableObject.extend(jsonObj);
+
+var x5 = new testJsonExtend2(1, 2);
+x5.testFunc();
+
+for (var p in x5) {
+    //if (!extendableObject.hasOwnProperty(x2Extender, p))
+    //    continue;
+
+    console.log('Property: ' + p);
+}
+
+console.log('jSON Extension #3');
+var jsonObj2 = {
+    testFunc2: function() {
+        console.log('Testing testFunc in jsonObj2.');
+    },
+    constructor: function (a, b, c) {
+        console.log('Calling constructor in jsonObj2.');
+        this.parent.constructor.call(this, a, b);
+        this.c = c;
+    }
+};
+
+var testJsonExtend3 = extendableObject.extend(jsonObj, jsonObj2);
+
+var x6 = new testJsonExtend3(1, 2, 3);
+x6.testFunc();
+x6.testFunc2();
