@@ -29,6 +29,10 @@
 
     extendable.prototype.extend = function (source, destination) {
         var base = source.prototype;
+        if (typeof (source) !== 'function' || typeof (base) === 'undefined' || base == null) {
+            base = source;
+        }
+
         createPrototype(base, destination);
         destination.prototype.parent = base;
     };
@@ -83,6 +87,33 @@ var x3 = new x2Extender('donny', '8/22/1984', '29');
 x3.test();
 
 for (var p in x3) {
+    //if (!extendableObject.hasOwnProperty(x2Extender, p))
+    //    continue;
+
+    console.log('Property: ' + p);
+}
+
+console.log('jSON Extension');
+function testJsonExtend(data) {
+    this.data = data;
+}
+
+var jsonObj = {
+    testFunc: function() {
+        console.log('Testing testFunc in jsonObj.');
+    },
+    constructor: function(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+};
+
+extendableObject.extend(jsonObj, testJsonExtend);
+
+var x4 = new testJsonExtend({ something: 1 });
+x4.testFunc();
+
+for (var p in x4) {
     //if (!extendableObject.hasOwnProperty(x2Extender, p))
     //    continue;
 
