@@ -58,7 +58,7 @@
 
         if (typeof (destination) !== 'function') {
             var oldDestination = destination;
-            // copyProperties(source, oldDestination);
+
             destination = oldDestination.constructor || base.constructor || function() { };
             copyProperties(base, oldDestination);
             createPrototype(oldDestination, destination);
