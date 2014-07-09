@@ -22,7 +22,11 @@
             if (p === 'constructor' && extendableObject.hasOwnProperty(destination, p))
                 continue;
 
-            destination[p] = source[p];
+            if (extendableObject.hasOwnProperty(destination, p)) {
+                destination.prototype[p] = source[p];
+            } else {
+                destination[p] = source[p];
+            }
         }
     }
 
@@ -51,16 +55,30 @@
         if (typeof (source) === 'object') {
             source = objToFunc(source);
         }
-        var base = source.prototype;
 
-        if (typeof (destination) === 'undefined' || destination == null) {
-            if (typeof (base.constructor) === 'function')
-                destination = base.constructor;
-            else
-                destination = function() { };
+        if (typeof (destination) === 'object') {
+            destination = objToFunc(destination);
         }
 
-        if (typeof (destination) !== 'function') {
+        if (typeof (source) === 'undefined' || source == null ||
+            typeof (source.prototype) === 'undefined' || source.prototype == null) {
+            source = function () { };
+        }
+        var base = source.prototype;
+        
+
+        if (typeof (destination) === 'undefined' || destination == null) {
+            if (typeof (base.constructor) === 'function') 
+                destination = base.constructor;
+        }
+
+        if (typeof (destination) === 'undefined' || destination == null) {
+            destination = function () { };
+        }
+
+        var originalDest = destination.prototype;
+
+        /*if (typeof (destination) !== 'function') {
             var oldDestination = destination;
 
             destination = oldDestination.constructor || base.constructor || function() { };
@@ -68,10 +86,13 @@
             createPrototype(oldDestination, destination);
 
             destination.prototype.parent = base;
-        } else {
-            createPrototype(base, destination);
-            destination.prototype.parent = base;
-        }
+        } else {*/
+        destination = originalDest.constructor || base.constructor || function () { };
+        copyProperties(base, originalDest);
+        createPrototype(originalDest, destination);
+
+        destination.prototype.parent = base;
+        //}
 
         return destination;
     };
