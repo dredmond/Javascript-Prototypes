@@ -32,8 +32,6 @@
         f.prototype = source;
         destination.prototype = new f();
 
-        //copyProperties(source, destination);
-
         destination.prototype.constructor = destination;
     }
 
@@ -44,6 +42,12 @@
     }
 
     extendable.prototype.extend = function (source, destination) {
+        /* Ideas:
+           Copy all objects to new functional prototypes
+           Use the functional prototypes to build a inherited new prototype.
+           If the source or destination is a function just do everything the standard way.
+         */
+
         if (typeof (source) === 'object') {
             source = objToFunc(source);
         }
