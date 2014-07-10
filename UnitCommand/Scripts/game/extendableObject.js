@@ -66,7 +66,6 @@
         }
         var base = source.prototype;
         
-
         if (typeof (destination) === 'undefined' || destination == null) {
             if (typeof (base.constructor) === 'function') 
                 destination = base.constructor;
