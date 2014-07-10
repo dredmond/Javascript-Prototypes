@@ -115,7 +115,7 @@ function x1Extender(name, birthday) {
     this.birthday = birthday;
 }
 
-extendableObject.extend(x1, x1Extender);
+x1Extender = extendableObject.extend(x1, x1Extender);
 
 x1Extender.prototype.test = function () {
     console.log('test called in x1Extender.');
@@ -133,7 +133,7 @@ function x2Extender(name, birthday, age) {
     this.age = age;
 }
 
-extendableObject.extend(x1Extender, x2Extender);
+x2Extender = extendableObject.extend(x1Extender, x2Extender);
 
 x2Extender.prototype.test = function () {
     console.log('test called in x2Extender.');
@@ -166,7 +166,7 @@ var jsonObj = {
     }
 };
 
-extendableObject.extend(jsonObj, testJsonExtend);
+testJsonExtend = extendableObject.extend(jsonObj, testJsonExtend);
 
 var x4 = new testJsonExtend({ something: 1 });
 x4.testFunc();
@@ -234,6 +234,7 @@ var aa = new a(1);
 aa.debugX();
 
 function b(x, y) {
+    a.call(this, x);
     this.y = y;
 }
 
@@ -251,6 +252,7 @@ bb.debugX();
 bb.debugY();
 
 function c(x, y, z) {
+    b.call(this, x, y);
     this.z = z;
 }
 
