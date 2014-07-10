@@ -219,3 +219,51 @@ var testJsonExtend3 = extendableObject.extend(jsonObj, jsonObj2);
 var x6 = new testJsonExtend3(1, 2, 3);
 x6.testFunc();
 x6.testFunc2();
+
+function a(x) {
+    this.x = x;
+}
+
+a.prototype.debugX = function() {
+    console.log(this.x);
+}
+
+function F() {};
+
+var aa = new a(1);
+aa.debugX();
+
+function b(x, y) {
+    this.y = y;
+}
+
+F.prototype = a.prototype;
+
+b.prototype = new F();
+b.prototype.constructor = b;
+
+b.prototype.debugY = function () {
+    console.log(this.y);
+}
+
+var bb = new b(1, 2);
+bb.debugX();
+bb.debugY();
+
+function c(x, y, z) {
+    this.z = z;
+}
+
+F.prototype = b.prototype;
+
+c.prototype = new F();
+c.prototype.constructor = c;
+
+c.prototype.debugZ = function () {
+    console.log(this.z);
+}
+
+var cc = new c(1, 2, 3);
+cc.debugX();
+cc.debugY();
+cc.debugZ();
