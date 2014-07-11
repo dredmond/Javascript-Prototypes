@@ -1,6 +1,7 @@
 ﻿var extendableObject = extendableObject || (function() {
     var hasOwnProperty = Object.prototype.hasOwnProperty,
         getOwnPropertyNames = Object.getOwnPropertyNames,
+        objectConstructor = Object.prototype.constructor,
         extendableInstance = new extendable();
 
     function extendable() { }
@@ -71,7 +72,11 @@
 
         var originalDest = destination.prototype;
 
-        destination = originalDest.constructor || base.constructor || function () { };
+        if (originalDest.constructor === objectConstructor) {
+            originalDest.constructor = base.constructor;
+        }
+
+        destination = originalDest.constructor || function () { };
 
         createPrototype(base, destination);
         copyProperties(originalDest, destination.prototype);

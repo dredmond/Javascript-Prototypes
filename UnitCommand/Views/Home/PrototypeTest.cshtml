@@ -4,7 +4,156 @@
 
 @section scripts
 {
-    <script type="text/javascript" src="@Url.Content("/Scripts/game/extendableObject.js")"></script>
+<script type="text/javascript" src="@Url.Content("/Scripts/game/extendableObject.js")"></script>
 }
 
 <h2>PrototypeTest</h2>
+<script type="text/javascript">
+    var TabContainer = (function() {
+        var tabList = [];
+
+        var container = extendableObject.extend({
+            constructor: function () {
+
+            },
+            foreachTab: function (callback) {
+                var i = tabList.length - 1;
+                while (i--) {
+                    if (!callback(i, tabList[i]))
+                        return;
+                }
+            },
+            addTab: function (tab) {
+                if (!(tab instanceof TabInfo))
+                    throw 'tab must be an instance of TabInfo';
+
+                tabList.push(tab);
+            },
+            removeTab: function (hash) {
+                foreachTab(function (i, tmpTab) {
+                    if (tmpTab.matchesHash(hash)) {
+                        tabList.splice(i, 1);
+                        return false;
+                    }
+
+                    return true;
+                });
+            },
+            getTab: function (hash) {
+                var tab = null;
+
+                foreachTab(function (i, tmpTab) {
+                    if (tmpTab.matchesHash(hash)) {
+                        tab = tmpTab;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                return tab;
+            },
+            display: function (hash) {
+                this.foreachTab(function (i, tmpTab) {
+                    if (tmpTab.matchesHash(hash)) {
+                        tmpTab.display();
+                        return false;
+                    }
+
+                    return true;
+                });
+            }
+        });
+
+        return new container();
+    })();
+
+    var TabInfo = extendableObject.extend({
+        constructor: function (hash) {
+            console.log('TabInfo constructor called.');
+            this.hash = hash;
+            console.log('TabInfo constructor finished.');
+        },
+        matchesHash: function(hash) {
+            return hash === this.hash;
+        },
+        display: function() {
+            throw 'display must be overridden!';
+        }
+    });
+
+    var tab1 = (function (hash) {
+        var tabObj = extendableObject.extend(TabInfo, {
+            display: function () {
+                console.log('Displaying tab 1!');
+            }
+        });
+
+        return new tabObj(hash);
+    });
+
+    var tab2 = (function (hash) {
+        var tabObj = extendableObject.extend(TabInfo, {
+            display: function () {
+                console.log('Displaying tab 2!');
+            }
+        });
+
+        // Make tab2Obj external and extendable by other tabs.
+        window.tab2Obj = tabObj;
+
+        return new tabObj(hash);
+    });
+
+    var tab3 = (function (hash) {
+        // Declaring tab3 as a classic prototype function.
+        function tab3Proto(h) {
+            console.log('tab 3 constructor called.');
+            // Call parent constructor (tab2Obj.constructor)
+            this.parent.constructor(h);
+            console.log('tab 3 constructor finished.');
+        }
+
+        tab3Proto.prototype.display = function() {
+            console.log('Displaying tab 3!');
+
+            // Call parent display function (tab2Obj.display)
+            this.parent.display();
+        }
+
+        var tabObj = extendableObject.extend(tab2Obj, tab3Proto);
+        return new tabObj(hash);
+    });
+
+    // Alternate way to declare tab3
+    var tab3Alt = (function (hash) {
+        var tabObj = extendableObject.extend(tab2Obj, {
+            constructor: function(h) {
+                console.log('tab 3 Alt constructor called.');
+                // Call parent constructor (tab2Obj.constructor)
+                this.parent.constructor(h);
+                console.log('tab 3 Alt constructor finished.');
+            },
+            display: function() {
+                console.log('Displaying tab 3 Alt!');
+
+                // Call parent display function (tab2Obj.display)
+                this.parent.display();
+            }
+        });
+        return new tabObj(hash);
+    });
+
+    var t = tab1('#tab1');
+
+    // Using everything from above.
+    TabContainer.addTab(t);
+    TabContainer.addTab(tab2('#tab2'));
+    TabContainer.addTab(tab3('#tab3'));
+    TabContainer.addTab(tab3Alt('#tab3Alt'));
+
+    TabContainer.display('#tab1');
+    TabContainer.display('#tab2');
+    TabContainer.display('#tab3');
+    TabContainer.display('#tab3Alt');
+</script>
