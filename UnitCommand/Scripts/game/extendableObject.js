@@ -1,6 +1,6 @@
 ﻿var extendableObject = extendableObject || (function() {
     var hasOwnProperty = Object.prototype.hasOwnProperty,
-        getOwnPropertyNames = Object.prototype.getOwnPropertyNames,
+        getOwnPropertyNames = Object.getOwnPropertyNames,
         extendableInstance = new extendable();
 
     function extendable() { }
@@ -9,12 +9,16 @@
         return hasOwnProperty.call(obj, propertyName);
     }
 
-    extendable.prototype.getOwnPropertyNames = function (obj, propertyName) {
-        return getOwnPropertyNames.call(obj, propertyName);
+    extendable.prototype.getOwnPropertyNames = function (obj) {
+        return getOwnPropertyNames.call(obj, obj);
     }
 
     function copyProperties(source, destination) {
-        for (var p in source) {
+        var propNames = extendableObject.getOwnPropertyNames(source);
+
+        for (var i = 0; i < propNames.length; i++) {
+            var p = propNames[i];
+
             if (!extendableInstance.hasOwnProperty(source, p))
                 continue;
 
@@ -22,19 +26,7 @@
             if (p === 'constructor' && extendableObject.hasOwnProperty(destination, p))
                 continue;
 
-            var destProperty = destination[p],
-                sourceProperty = source[p];
-
-            // Child has the same property so we need to make a copy of it.
-            if (typeof (destProperty) === 'undefined' && destProperty == null) {
-                destination[p] = sourceProperty;
-                continue;
-            }
-
-            destination[p] = function() {
-                destProperty(arguments);
-                sourceProperty(arguments);
-            };
+            destination[p] = source[p];
         }
     }
 
@@ -202,7 +194,7 @@ for (var p in x5) {
 console.log('jSON Extension #3');
 var jsonObj2 = {
     testFunc2: function() {
-        console.log('Testing testFunc in jsonObj2.');
+        console.log('Testing testFunc2 in jsonObj2.');
     },
     constructor: function (a, b, c) {
         console.log('Calling constructor in jsonObj2.');
@@ -218,6 +210,35 @@ x6.testFunc();
 x6.testFunc2();
 
 for (var p in x6) {
+    //if (!extendableObject.hasOwnProperty(x2Extender, p))
+    //    continue;
+
+    console.log('Property: ' + p);
+}
+
+console.log('jSON Extension #4');
+var jsonObj3 = {
+    testFunc2: function() {
+        console.log('Testing testFunc2 in jsonObj3');
+        this.parent.testFunc2();
+    },
+    constructor: function(a, b, c, d) {
+        console.log('Calling constructor in jsonObj3.');
+        this.parent.constructor(a, b, c);
+        this.d = d;
+    },
+    testFunc3: function() {
+        console.log('testFunc3: ' + this.d);
+    }
+}
+
+var testJsonExtend4 = extendableObject.extend(testJsonExtend3, jsonObj3);
+var x7 = new testJsonExtend4(1, 2, 3, 4);
+x7.testFunc();
+x7.testFunc2();
+x7.testFunc3();
+
+for (var p in x7) {
     //if (!extendableObject.hasOwnProperty(x2Extender, p))
     //    continue;
 
