@@ -22,11 +22,19 @@
             if (p === 'constructor' && extendableObject.hasOwnProperty(destination, p))
                 continue;
 
-            if (extendableObject.hasOwnProperty(destination, p)) {
-                destination.prototype[p] = source[p];
-            } else {
-                destination[p] = source[p];
+            var destProperty = destination[p],
+                sourceProperty = source[p];
+
+            // Child has the same property so we need to make a copy of it.
+            if (typeof (destProperty) === 'undefined' && destProperty == null) {
+                destination[p] = sourceProperty;
+                continue;
             }
+
+            destination[p] = function() {
+                destProperty(arguments);
+                sourceProperty(arguments);
+            };
         }
     }
 
@@ -46,12 +54,6 @@
     }
 
     extendable.prototype.extend = function (source, destination) {
-        /* Ideas:
-           Copy all objects to new functional prototypes
-           Use the functional prototypes to build a inherited new prototype.
-           If the source or destination is a function just do everything the standard way.
-         */
-
         if (typeof (source) === 'object') {
             source = objToFunc(source);
         }
@@ -77,27 +79,22 @@
 
         var originalDest = destination.prototype;
 
-        /*if (typeof (destination) !== 'function') {
-            var oldDestination = destination;
-
-            destination = oldDestination.constructor || base.constructor || function() { };
-            copyProperties(base, oldDestination);
-            createPrototype(oldDestination, destination);
-
-            destination.prototype.parent = base;
-        } else {*/
         destination = originalDest.constructor || base.constructor || function () { };
-        copyProperties(base, originalDest);
-        createPrototype(originalDest, destination);
+
+        createPrototype(base, destination);
+        copyProperties(originalDest, destination.prototype);
 
         destination.prototype.parent = base;
-        //}
 
         return destination;
     };
 
     return extendableInstance;
 })();
+
+/**************************
+ *  Testing code below!   *
+ **************************/
 
 console.log('x1');
 function x1() { }
@@ -220,52 +217,70 @@ var x6 = new testJsonExtend3(1, 2, 3);
 x6.testFunc();
 x6.testFunc2();
 
-function a(x) {
-    this.x = x;
+for (var p in x6) {
+    //if (!extendableObject.hasOwnProperty(x2Extender, p))
+    //    continue;
+
+    console.log('Property: ' + p);
 }
 
-a.prototype.debugX = function() {
-    console.log(this.x);
-}
+/* Outputs:
 
-function F() {};
+x1 extendableObject.js:95
+test called in x1. extendableObject.js:98
+testing extendableObject.js:99
 
-var aa = new a(1);
-aa.debugX();
 
-function b(x, y) {
-    a.call(this, x);
-    this.y = y;
-}
+x1Extender inherits x1 extendableObject.js:105
+test called in x1Extender. extendableObject.js:114
+donny 8/22/1984 extendableObject.js:115
+test called in x1. extendableObject.js:98
+testing extendableObject.js:99
 
-F.prototype = a.prototype;
 
-b.prototype = new F();
-b.prototype.constructor = b;
+x2Extender inherits x1Extender extendableObject.js:123
+test called in x2Extender. extendableObject.js:132
+29 extendableObject.js:133
+test called in x1Extender. extendableObject.js:114
+donny 8/22/1984 extendableObject.js:115
+test called in x1. extendableObject.js:98
+testing extendableObject.js:99
+Property: age extendableObject.js:144
+Property: constructor extendableObject.js:144
+Property: parent extendableObject.js:144
+Property: test extendableObject.js:144
+Property: name extendableObject.js:144
+Property: birthday extendableObject.js:144
 
-b.prototype.debugY = function () {
-    console.log(this.y);
-}
 
-var bb = new b(1, 2);
-bb.debugX();
-bb.debugY();
+jSON Extension extendableObject.js:147
+Testing testFunc in jsonObj. extendableObject.js:154
+Property: data extendableObject.js:171
+Property: constructor extendableObject.js:171
+Property: parent extendableObject.js:171
+Property: testFunc extendableObject.js:171
 
-function c(x, y, z) {
-    b.call(this, x, y);
-    this.z = z;
-}
 
-F.prototype = b.prototype;
+jSON Extension #2 extendableObject.js:174
+Calling constructor in jsonObj. extendableObject.js:180
+Testing testFunc in jsonObj. [a: 1 b: 2] extendableObject.js:177
+Property: a extendableObject.js:195
+Property: b extendableObject.js:195
+Property: constructor extendableObject.js:195
+Property: parent extendableObject.js:195
+Property: testFunc extendableObject.js:195
 
-c.prototype = new F();
-c.prototype.constructor = c;
 
-c.prototype.debugZ = function () {
-    console.log(this.z);
-}
-
-var cc = new c(1, 2, 3);
-cc.debugX();
-cc.debugY();
-cc.debugZ();
+jSON Extension #3 extendableObject.js:198
+Calling constructor in jsonObj2. extendableObject.js:204
+Calling constructor in jsonObj. extendableObject.js:180
+Testing testFunc in jsonObj. [a: 1 b: 2] extendableObject.js:177
+Testing testFunc in jsonObj2. extendableObject.js:201
+Property: c extendableObject.js:220
+Property: constructor extendableObject.js:220
+Property: testFunc2 extendableObject.js:220
+Property: parent extendableObject.js:220
+Property: testFunc extendableObject.js:220
+Property: a extendableObject.js:220
+Property: b extendableObject.js:220
+*/
