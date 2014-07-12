@@ -81,8 +81,6 @@
         createPrototype(base, destination);
         copyProperties(originalDest, destination.prototype);
 
-        destination.prototype.parent = base;
-
         return destination;
     };
 
