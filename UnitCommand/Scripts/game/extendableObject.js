@@ -113,7 +113,7 @@ x1Extender.prototype.test = function () {
     console.log('test called in x1Extender.');
     console.log(this.name + ' ' + this.birthday);
 
-    this.parent.test();
+    x1.prototype.test.call(this);
 };
 
 var x2 = new x1Extender('donny', '8/22/1984');
@@ -121,7 +121,7 @@ x2.test();
 
 console.log('x2Extender inherits x1Extender');
 function x2Extender(name, birthday, age) {
-    this.parent.constructor(name, birthday);
+    x1Extender.prototype.constructor.call(this, name, birthday);
     this.age = age;
 }
 
@@ -130,7 +130,7 @@ x2Extender = extendableObject.extend(x1Extender, x2Extender);
 x2Extender.prototype.test = function () {
     console.log('test called in x2Extender.');
     console.log(this.age);
-    this.parent.test();
+    x1Extender.prototype.test.call(this);
 };
 
 var x3 = new x2Extender('donny', '8/22/1984', '29');
@@ -201,7 +201,7 @@ var jsonObj2 = {
     },
     constructor: function (a, b, c) {
         console.log('Calling constructor in jsonObj2.');
-        this.parent.constructor(a, b);
+        jsonObj.constructor.call(this, a, b);
         this.c = c;
     }
 };
@@ -223,11 +223,11 @@ console.log('jSON Extension #4');
 var jsonObj3 = {
     testFunc2: function() {
         console.log('Testing testFunc2 in jsonObj3');
-        this.parent.testFunc2();
+        testJsonExtend3.prototype.testFunc2.call(this);
     },
     constructor: function(a, b, c, d) {
         console.log('Calling constructor in jsonObj3.');
-        this.parent.constructor(a, b, c);
+        testJsonExtend3.prototype.constructor.call(this, a, b, c);
         this.d = d;
     },
     testFunc3: function() {

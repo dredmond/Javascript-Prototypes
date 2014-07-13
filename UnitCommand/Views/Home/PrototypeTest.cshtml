@@ -9,6 +9,7 @@
 
 <h2>PrototypeTest</h2>
 <script type="text/javascript">
+    // The container that holds all the tabs.
     var TabContainer = (function() {
         var tabList = [];
 
@@ -17,8 +18,8 @@
 
             },
             foreachTab: function (callback) {
-                var i = tabList.length - 1;
-                while (i--) {
+                var i = tabList.length;
+                while (--i) {
                     if (!callback(i, tabList[i]))
                         return;
                 }
@@ -68,6 +69,8 @@
         return new container();
     })();
 
+    // Tab information object that contains the hash and the display code
+    // that needs to be overridden by another object.
     var TabInfo = extendableObject.extend({
         constructor: function (hash) {
             console.log('TabInfo constructor called.');
@@ -82,6 +85,7 @@
         }
     });
 
+    // Tab 1 created using a json object that doesn't override the constructor of TabInfo.
     var tab1 = (function (hash) {
         var tabObj = extendableObject.extend(TabInfo, {
             display: function () {
@@ -92,6 +96,9 @@
         return new tabObj(hash);
     });
 
+
+    // Tab 2 created using a json object and doesn't override the constructor of TabInfo.
+    // It does however export itself so it can be inherited later.
     var tab2 = (function (hash) {
         var tabObj = extendableObject.extend(TabInfo, {
             display: function () {
@@ -105,12 +112,15 @@
         return new tabObj(hash);
     });
 
+    // Tab 3 created using a prototype function and it overrides the constructor.
     var tab3 = (function (hash) {
         // Declaring tab3 as a classic prototype function.
         function tab3Proto(h) {
             console.log('tab 3 constructor called.');
+
             // Call parent constructor (tab2Obj.constructor)
-            this.parent.constructor(h);
+            tab2Obj.prototype.constructor.call(this, h);
+
             console.log('tab 3 constructor finished.');
         }
 
@@ -118,36 +128,36 @@
             console.log('Displaying tab 3!');
 
             // Call parent display function (tab2Obj.display)
-            this.parent.display();
+            tab2Obj.prototype.display.call(this);
         }
 
         var tabObj = extendableObject.extend(tab2Obj, tab3Proto);
         return new tabObj(hash);
     });
 
-    // Alternate way to declare tab3
+    // Alternate way to declare tab3 using json instead of a prototype function.
     var tab3Alt = (function (hash) {
         var tabObj = extendableObject.extend(tab2Obj, {
             constructor: function(h) {
                 console.log('tab 3 Alt constructor called.');
+
                 // Call parent constructor (tab2Obj.constructor)
-                this.parent.constructor(h);
+                tab2Obj.prototype.constructor.call(this, h);
+
                 console.log('tab 3 Alt constructor finished.');
             },
             display: function() {
                 console.log('Displaying tab 3 Alt!');
 
                 // Call parent display function (tab2Obj.display)
-                this.parent.display();
+                tab2Obj.prototype.display.call(this);
             }
         });
         return new tabObj(hash);
     });
 
-    var t = tab1('#tab1');
-
     // Using everything from above.
-    TabContainer.addTab(t);
+    TabContainer.addTab(tab1('#tab1'));
     TabContainer.addTab(tab2('#tab2'));
     TabContainer.addTab(tab3('#tab3'));
     TabContainer.addTab(tab3Alt('#tab3Alt'));
