@@ -1,0 +1,3 @@
+﻿var extenderClass = (function(extend) {
+
+});
