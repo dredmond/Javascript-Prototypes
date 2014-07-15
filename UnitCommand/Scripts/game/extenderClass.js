@@ -63,7 +63,17 @@ SugarCookie.prototype.makeCookie = function () {
     return a.prototype.makeCookie.call(this);
 };
 
+SugarCookie.prototype.beforeExtension = function () {
+    console.log('before extension');
+};
+
 var c = b.extend(SugarCookie);
+
+SugarCookie.prototype.afterExtension = function () {
+    console.log('after extension');
+};
 
 var cInst = new c();
 console.log(cInst.makeCookie());
+cInst.beforeExtension();
+cInst.afterExtension();
