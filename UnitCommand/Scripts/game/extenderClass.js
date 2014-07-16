@@ -7,14 +7,41 @@
 
     function copyProperties(destination, source) {
         for (var p in source) {
-            destination[p] = source[p];
+            destination[p] = (typeof (destination[p]) === 'function' && typeof (source[p]) === 'function') ?
+                wrapFunction(source, destination[p], source[p]) : source[p];
         }
+    }
+
+    function wrapFunction(scope, baseFunc, sourceFunc) {
+
+        return function () {
+            var oldBase = this.base;
+
+            this.base = baseFunc;
+            var result = sourceFunc.apply(this, arguments);
+            this.base = oldBase;
+
+            return result;
+        };
+        //var tmpProto = this.parent;
+        //this.parent = 
+
+        // make new func
+        // set base func destinationFunc
+        // apply sourceFunc
+        // return new func
     }
 
     function addExtend(destination) {
         destination.extend = function (extender) {
             var currentExtender = (typeof (extender) === 'object') ? extender : extender.prototype;
-            var extendProto = currentExtender.constructor || function() {};
+            var extendProto = currentExtender.constructor;
+
+            if (typeof (extendProto) !== 'function' || extendProto === Object.prototype.constructor) {
+                extendProto = destination.prototype.constructor;
+            } else {
+                extendProto = function() { };
+            }
 
             extendProto.prototype = createProto(destination.prototype);
             copyProperties(extendProto.prototype, currentExtender);
@@ -60,7 +87,7 @@ function SugarCookie() {
 
 SugarCookie.prototype.makeCookie = function () {
     console.log('makeCookie Overridden!');
-    return a.prototype.makeCookie.call(this);
+    return this.base.call(this);
 };
 
 SugarCookie.prototype.beforeExtension = function () {
@@ -77,3 +104,14 @@ var cInst = new c();
 console.log(cInst.makeCookie());
 cInst.beforeExtension();
 cInst.afterExtension();
+
+var d = c.extend({
+    makeCookie: function(x) {
+        return this.base.call(this, x) + ' with ' + x;
+    }
+});
+
+var dInst = new d();
+console.log(dInst.makeCookie('chocolate chips'));
+dInst.beforeExtension();
+dInst.afterExtension();
