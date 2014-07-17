@@ -5,7 +5,7 @@
     // Takes object or prototype and makes a new constructor function
     // that inherits it.
     function createProto(e) {
-        var func = function () { };
+        function func() { }
         func.prototype = e;
         return new func();
     }
@@ -71,7 +71,7 @@
     }
 
     function createConstructor(source, destination) {
-        var defaultConstructor = function () { };
+        function defaultConstructor() { }
 
         if (!source || typeof (source.constructor) !== 'function') {
             return defaultConstructor;
