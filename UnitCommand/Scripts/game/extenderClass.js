@@ -14,6 +14,10 @@
         return (Object.prototype.constructor === func);
     }
 
+    function getPrototypeObject(extender) {
+        return (typeof (extender) === 'object') ? extender : extender.prototype;
+    }
+
     // Copys all properties from source to the destination if they don't already
     // exist in the destination. Otherwise, it creates a new function that wraps around
     // the source function and allows the inherited function to call the base function (destination).
@@ -58,7 +62,7 @@
      */
     function addExtend(destination) {
         destination.extend = function (extender) {
-            var currentExtender = (typeof (extender) === 'object') ? extender : extender.prototype,
+            var currentExtender = getPrototypeObject(extender),
                 extendProto = createConstructor(currentExtender, destination);
 
             extendProto.prototype = createProto(destination.prototype);
@@ -95,7 +99,7 @@
         classExtension = {};
     }
 
-    var baseExtend = (typeof (classExtension) === 'object') ? classExtension : classExtension.prototype,
+    var baseExtend = getPrototypeObject(classExtension),
         classConstruct = createConstructor(baseExtend);
 
     classConstruct.prototype = createProto(baseExtend);
