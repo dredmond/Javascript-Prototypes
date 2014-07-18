@@ -140,7 +140,7 @@ SugarCookie.prototype.beforeExtension = function () {
 
 var c = b.extend(SugarCookie);
 
-SugarCookie.prototype.afterExtension = function () {
+c.prototype.afterExtension = function () {
     console.log('after extension');
 };
 
