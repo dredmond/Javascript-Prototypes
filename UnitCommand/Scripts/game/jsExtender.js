@@ -1,4 +1,4 @@
-﻿var extenderClass = extenderClass || (function (classExtension) {
+﻿var jsExtender = jsExtender || (function (classExtension) {
     var hasOwnProperty = Object.prototype.hasOwnProperty,
         getOwnPropertyNames = Object.getOwnPropertyNames;
 
@@ -107,59 +107,3 @@
 
     return classConstruct;
 });
-
-var a = extenderClass({
-    constructor: function() {
-        this.cookieType = 'basic';
-    },
-    makeCookie: function() {
-        return 'I made a ' + this.cookieType + ' cookie!';
-    }
-});
-
-var b = a.extend({
-    constructor: function() {
-        this.cookieType = 'chocolate chip';
-    }
-});
-
-var aInst = new a();
-console.log(aInst.makeCookie());
-
-var bInst = new b();
-console.log(bInst.makeCookie());
-
-function SugarCookie() {
-    this.cookieType = 'sugar';
-}
-
-SugarCookie.prototype.makeCookie = function () {
-    console.log('makeCookie Overridden!');
-    return this.base.call(this);
-};
-
-SugarCookie.prototype.beforeExtension = function () {
-    console.log('before extension');
-};
-
-var c = b.extend(SugarCookie);
-
-c.prototype.afterExtension = function () {
-    console.log('after extension');
-};
-
-var cInst = new c();
-console.log(cInst.makeCookie());
-cInst.beforeExtension();
-cInst.afterExtension();
-
-var d = c.extend({
-    makeCookie: function(x) {
-        return this.base.call(this, x) + ' with ' + x;
-    }
-});
-
-var dInst = new d();
-console.log(dInst.makeCookie('chocolate chips'));
-dInst.beforeExtension();
-dInst.afterExtension();

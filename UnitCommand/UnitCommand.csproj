@@ -263,7 +263,7 @@
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\game\extendableObject.js" />
     <Content Include="Scripts\game\eventHandlers.js" />
-    <Content Include="Scripts\game\extenderClass.js" />
+    <Content Include="Scripts\game\jsExtender.js" />
     <Content Include="Scripts\game\map.js" />
     <Content Include="Scripts\game\pathFinder.js" />
     <Content Include="Scripts\game\tileTypes.js" />
