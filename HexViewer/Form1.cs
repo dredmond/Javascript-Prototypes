@@ -61,7 +61,7 @@ namespace HexViewer
                 return;
 
             var data = File.ReadAllBytes(e.Node.Text);
-            textBox2.AppendText(HexToString(12, 4, data));
+            textBox2.AppendText(HexToString(8, 4, data));
             textBox2.SuspendLayout();
             
             textBox2.Select(0, 0);
@@ -139,7 +139,30 @@ namespace HexViewer
 
             hashString = hashBytes.Aggregate("", (s, b) => s + String.Format("{0:x2}", b));
 
-            foreach(var node in treeView1.Nodes.)
+            var foundNode = FindMatchingNode(treeView1.TopNode, hashString);
+            if (foundNode != null)
+            {
+                treeView1.SelectedNode = foundNode;
+            }
+        }
+
+        private static TreeNode FindMatchingNode(TreeNode startingNode, string value)
+        {
+            TreeNode foundNode = null;
+
+            if (startingNode.Text.Contains(value))
+                return startingNode;
+
+            var childNodes = startingNode.Nodes;
+
+            foreach (TreeNode node in childNodes)
+            {
+                foundNode = FindMatchingNode(node, value);
+                if (foundNode != null)
+                    break;
+            }
+
+            return foundNode;
         }
     }
 }
