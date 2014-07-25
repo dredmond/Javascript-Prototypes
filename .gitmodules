@@ -1,0 +1,3 @@
+[submodule "UnitCommand/Scripts/jsExtender"]
+	path = UnitCommand/Scripts/jsExtender
+	url = git@github.com:dredmond/jsExtender.git
