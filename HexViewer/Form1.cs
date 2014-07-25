@@ -37,21 +37,6 @@ namespace HexViewer
             treeView1.Refresh();
         }
 
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            /*
-            textBox2.Clear();
-            textBox2.AppendText("File: " + e.Node.Text + "\r\n\r\n");
-
-            if (!File.Exists(e.Node.Text))
-                return;
-
-            var data = File.ReadAllBytes(e.Node.Text);
-
-            textBox2.AppendText(Encoding.ASCII.GetString(data));
-             */
-        }
-
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             textBox2.Clear();
@@ -129,40 +114,6 @@ namespace HexViewer
             }
 
             return result.ToString();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            var sha1 = SHA1.Create();
-            var hashBytes = sha1.ComputeHash(Encoding.ASCII.GetBytes(textBox3.Text));
-            var hashString = "";
-
-            hashString = hashBytes.Aggregate("", (s, b) => s + String.Format("{0:x2}", b));
-
-            var foundNode = FindMatchingNode(treeView1.TopNode, hashString);
-            if (foundNode != null)
-            {
-                treeView1.SelectedNode = foundNode;
-            }
-        }
-
-        private static TreeNode FindMatchingNode(TreeNode startingNode, string value)
-        {
-            TreeNode foundNode = null;
-
-            if (startingNode.Text.Contains(value))
-                return startingNode;
-
-            var childNodes = startingNode.Nodes;
-
-            foreach (TreeNode node in childNodes)
-            {
-                foundNode = FindMatchingNode(node, value);
-                if (foundNode != null)
-                    break;
-            }
-
-            return foundNode;
         }
     }
 }
