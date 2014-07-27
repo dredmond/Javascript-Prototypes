@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace HexViewer
 {
-    public enum FileType
+    public enum FileType : ushort
     {
+        Unknown = 0x0000,
         File = 0x8180,
         Directory = 0x41ed
     }
