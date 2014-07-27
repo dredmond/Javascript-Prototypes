@@ -60,7 +60,7 @@ namespace HexViewer
             if (!IsValidRequest(4))
                 throw new BytesNotAvailableException("ReadInt", 4);
 
-            var bytes = ReadBytes(2);
+            var bytes = ReadBytes(4);
             var result = BitConverter.ToUInt32(bytes, 0);
             //Offset += 2;
 
@@ -108,7 +108,7 @@ namespace HexViewer
 
         public string ReadString(int size)
         {
-            if (size <= 0)
+            if (size <= 0 || size == UInt16.MaxValue)
                 return "";
 
             if (!IsValidRequest(size))

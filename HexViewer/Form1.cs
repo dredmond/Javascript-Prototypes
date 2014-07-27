@@ -43,7 +43,7 @@ namespace HexViewer
                 path = parser.ReadString();
                 otherData = parser.ReadBytes(2);
                 hash = parser.ReadString();
-                Console.WriteLine("{0} {1} {2}", domain, path, hash);
+                Console.WriteLine("{0} {1}", domain, path);
                 otherData = parser.ReadBytes(42);
             }
         }
