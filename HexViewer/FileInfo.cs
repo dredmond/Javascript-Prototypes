@@ -74,6 +74,6 @@ namespace HexViewer
             return Encoding.ASCII.GetString(hashBytes);
         }
 
-        public FileInfo()
+        //public FileInfo()
     }
 }

@@ -17,6 +17,35 @@ namespace HexViewer
         public Form1()
         {
             InitializeComponent();
+
+            TestParse();
+        }
+
+        private void TestParse()
+        {
+            const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\Manifest.mbdb";
+            var parser = new BackupParser(filePath);
+            var header = "";
+            var domain = "";
+            var path = "";
+            var hash = "";
+            byte[] otherData;
+
+            header = parser.ReadString(4);
+            Console.WriteLine("Header: {0}, Location: {1}, Size: {2}", header, parser.Offset, parser.Length);
+
+            var headerBytes = parser.ReadBytes(2);
+            Console.WriteLine("{0:x2} {1:x2}", headerBytes[0], headerBytes[1]);
+            
+            while (!parser.HasReachedEof())
+            {
+                domain = parser.ReadString();
+                path = parser.ReadString();
+                otherData = parser.ReadBytes(2);
+                hash = parser.ReadString();
+                Console.WriteLine("{0} {1} {2}", domain, path, hash);
+                otherData = parser.ReadBytes(42);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -36,6 +65,8 @@ namespace HexViewer
             }
             treeView1.Refresh();
         }
+
+        
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {

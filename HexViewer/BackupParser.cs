@@ -34,13 +34,23 @@ namespace HexViewer
             return Offset + size < Length;
         }
 
+        public bool HasReachedEof()
+        {
+            return Offset >= Length;
+        }
+
         public ushort ReadInt16()
         {
             if (!IsValidRequest(2))
                 throw new BytesNotAvailableException("ReadInt", 2);
 
-            var result = BitConverter.ToUInt16(_data, Offset);
-            Offset += 2;
+            var bytes = ReadBytes(2);
+            var result = BitConverter.ToUInt16(bytes, 0);
+            //Offset += 2;
+
+            var b1 = (result >> 0) & 0xff;
+            var b2 = (result >> 8) & 0xff;
+            result = (ushort)(b1 << 8 | b2 << 0);
 
             return result;
         }
@@ -50,8 +60,15 @@ namespace HexViewer
             if (!IsValidRequest(4))
                 throw new BytesNotAvailableException("ReadInt", 4);
 
-            var result = BitConverter.ToUInt32(_data, Offset);
-            Offset += 4;
+            var bytes = ReadBytes(2);
+            var result = BitConverter.ToUInt32(bytes, 0);
+            //Offset += 2;
+
+            var b1 = (result >> 0) & 0xff;
+            var b2 = (result >> 8) & 0xff;
+            var b3 = (result >> 0) & 0xff;
+            var b4 = (result >> 8) & 0xff;
+            result = (b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0);
 
             return result;
         }
@@ -89,7 +106,7 @@ namespace HexViewer
             return ReadString(stringSize);
         }
 
-        private string ReadString(int size)
+        public string ReadString(int size)
         {
             if (size <= 0)
                 return "";
