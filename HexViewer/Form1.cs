@@ -29,6 +29,7 @@ namespace HexViewer
             var domain = "";
             var path = "";
             var hash = "";
+            var propertyLen = 0;
             byte[] otherData;
 
             header = parser.ReadString(4);
@@ -41,10 +42,30 @@ namespace HexViewer
             {
                 domain = parser.ReadString();
                 path = parser.ReadString();
+
+                // Read out file header separator (ffff)
                 otherData = parser.ReadBytes(2);
+
                 hash = parser.ReadString();
                 Console.WriteLine("{0} {1}", domain, path);
-                otherData = parser.ReadBytes(42);
+
+                otherData = parser.ReadBytes(41);
+
+                propertyLen = parser.ReadInt8();
+                Console.WriteLine("Properties: {0}", propertyLen);
+
+                if (propertyLen == 0)
+                    continue;
+
+                for (var i = 0; i < propertyLen; i++)
+                {
+                    var property = parser.ReadString();
+                    property = property.Replace("\0", "");
+
+                    Console.WriteLine("Property {0}: {1}", i, property);
+                }
+
+                otherData = parser.ReadBytes(5);
             }
         }
 

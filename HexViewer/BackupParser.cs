@@ -39,10 +39,19 @@ namespace HexViewer
             return Offset >= Length;
         }
 
+        public ushort ReadInt8()
+        {
+            if (!IsValidRequest(1))
+                throw new BytesNotAvailableException("ReadInt8", 1);
+
+            var bytes = ReadBytes(1);
+            return bytes[0];
+        }
+
         public ushort ReadInt16()
         {
             if (!IsValidRequest(2))
-                throw new BytesNotAvailableException("ReadInt", 2);
+                throw new BytesNotAvailableException("ReadInt16", 2);
 
             var bytes = ReadBytes(2);
             var result = BitConverter.ToUInt16(bytes, 0);
@@ -58,7 +67,7 @@ namespace HexViewer
         public uint ReadInt32()
         {
             if (!IsValidRequest(4))
-                throw new BytesNotAvailableException("ReadInt", 4);
+                throw new BytesNotAvailableException("ReadInt32", 4);
 
             var bytes = ReadBytes(4);
             var result = BitConverter.ToUInt32(bytes, 0);
