@@ -62,10 +62,11 @@ namespace HexViewer
                     var property = parser.ReadString();
                     property = property.Replace("\0", "");
 
-                    Console.WriteLine("Property {0}: {1}", i, property);
-                }
+                    var propertyPart2 = parser.ReadString();
+                    propertyPart2 = propertyPart2.Replace("\0", "");
 
-                otherData = parser.ReadBytes(5);
+                    Console.WriteLine("Property {0}: {1} {2}", i, property, propertyPart2);
+                }
             }
         }
 
