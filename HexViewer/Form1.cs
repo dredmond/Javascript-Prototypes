@@ -23,14 +23,17 @@ namespace HexViewer
 
         private void TestParse()
         {
+            textBox2.Clear();
+
             const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\Manifest.mbdb";
             var parser = new BackupParser(filePath);
             var header = "";
             var domain = "";
             var path = "";
             var hash = "";
+            var notSure = "";
             var propertyLen = 0;
-            byte[] otherData;
+            byte[] otherData, otherData1;
 
             header = parser.ReadString(4);
             Console.WriteLine("Header: {0}, Location: {1}, Size: {2}", header, parser.Offset, parser.Length);
@@ -40,32 +43,37 @@ namespace HexViewer
             
             while (!parser.HasReachedEof())
             {
-                domain = parser.ReadString();
-                path = parser.ReadString();
-
-                // Read out file header separator (ffff)
-                otherData = parser.ReadBytes(2);
-
-                hash = parser.ReadString();
-                Console.WriteLine("{0} {1}", domain, path);
-
-                otherData = parser.ReadBytes(41);
-
-                propertyLen = parser.ReadInt8();
-                Console.WriteLine("Properties: {0}", propertyLen);
-
-                if (propertyLen == 0)
-                    continue;
-
-                for (var i = 0; i < propertyLen; i++)
+                try
                 {
-                    var property = parser.ReadString();
-                    property = property.Replace("\0", "");
+                    domain = parser.ReadString().Replace("\0", "");
+                    path = parser.ReadString().Replace("\0", "");
 
-                    var propertyPart2 = parser.ReadString();
-                    propertyPart2 = propertyPart2.Replace("\0", "");
+                    notSure = parser.ReadString().Replace("\0", "");
 
-                    Console.WriteLine("Property {0}: {1} {2}", i, property, propertyPart2);
+                    hash = parser.ReadString().Replace("\0", "");
+                    textBox2.AppendText(string.Format("{0} {1} {2} {3}\r\n", domain, path, notSure, hash));
+
+                    otherData = parser.ReadBytes(41);
+
+                    propertyLen = parser.ReadInt8();
+                    textBox2.AppendText(string.Format("Properties: {0}\r\n", propertyLen));
+
+                    if (propertyLen == 0)
+                        continue;
+
+                    for (var i = 0; i < propertyLen; i++)
+                    {
+                        var property = parser.ReadString();
+                        property = property.Replace("\0", "");
+
+                        var propertyPart2 = parser.ReadString();
+                        propertyPart2 = propertyPart2.Replace("\0", "");
+
+                        textBox2.AppendText(string.Format("Property {0}: {1} {2}\r\n", i, property, propertyPart2));
+                    }
+                }
+                catch (Exception)
+                {
                 }
             }
         }

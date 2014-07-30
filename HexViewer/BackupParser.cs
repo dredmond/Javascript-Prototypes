@@ -36,7 +36,7 @@ namespace HexViewer
 
         public bool HasReachedEof()
         {
-            return Offset >= Length;
+            return Offset >= Length - 1;
         }
 
         public ushort ReadInt8()
