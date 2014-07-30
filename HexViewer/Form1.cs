@@ -24,8 +24,8 @@ namespace HexViewer
         private void TestParse()
         {
             textBox2.Clear();
-
-            const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\Manifest.mbdb";
+            const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\Manifest.mbdb";
+            //const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\Manifest.mbdb";
             var parser = new BackupParser(filePath);
             var header = "";
             var domain = "";
@@ -36,10 +36,10 @@ namespace HexViewer
             byte[] otherData, otherData1;
 
             header = parser.ReadString(4);
-            Console.WriteLine("Header: {0}, Location: {1}, Size: {2}", header, parser.Offset, parser.Length);
+            textBox2.AppendText(string.Format("Header: {0}, Location: {1}, Size: {2}\r\n", header, parser.Offset, parser.Length));
 
             var headerBytes = parser.ReadBytes(2);
-            Console.WriteLine("{0:x2} {1:x2}", headerBytes[0], headerBytes[1]);
+            textBox2.AppendText(string.Format("{0:x2} {1:x2}\r\n", headerBytes[0], headerBytes[1]));
             
             while (!parser.HasReachedEof())
             {
