@@ -28,10 +28,6 @@ namespace HexViewer
             //const string filePath = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\Manifest.mbdb";
             var parser = new BackupParser(filePath);
             var header = "";
-            var domain = "";
-            var path = "";
-            var propertyLen = 0;
-            byte[] otherData, hash, notSure;
 
             header = parser.ReadString(4);
             textBox2.AppendText(string.Format("Header: {0}, Location: {1}, Size: {2}\r\n", header, parser.Offset, parser.Length));
@@ -43,22 +39,25 @@ namespace HexViewer
             {
                 try
                 {
-                    domain = parser.ReadString().Replace("\0", "");
-                    path = parser.ReadString().Replace("\0", "");
+                    var domain = parser.ReadString().Replace("\0", "");
+                    var path = parser.ReadString().Replace("\0", "");
 
                     textBox2.AppendText(string.Format("{0} {1}\r\n", domain, path));
 
-                    notSure = parser.ReadStringAsBytes();
+                    var notSure = parser.ReadStringAsBytes();
                     textBox2.AppendText(string.Format("Not Sure:\r\n{0}\r\n", HexToString(4, 4, notSure)));
 
-                    hash = parser.ReadStringAsBytes();
+                    var hash = parser.ReadStringAsBytes();
                     textBox2.AppendText(string.Format("Hash:\r\n{0}\r\n", HexToString(4, 4, hash)));
 
-                    otherData = parser.ReadBytes(41);
+                    var notSure2 = parser.ReadStringAsBytes();
+                    textBox2.AppendText(string.Format("Not Sure #2:\r\n{0}\r\n", HexToString(4, 4, notSure2)));
+
+                    var otherData = parser.ReadBytes(39);
 
                     textBox2.AppendText(string.Format("Other Data:\r\n{0}\r\n", HexToString(4, 4, otherData)));
 
-                    propertyLen = parser.ReadInt8();
+                    var propertyLen = parser.ReadInt8();
                     
                     if (propertyLen == 0)
                         continue;
@@ -76,8 +75,9 @@ namespace HexViewer
                         textBox2.AppendText(string.Format("Property {0}: {1} {2}\r\n", i, property, propertyPart2));
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    textBox2.AppendText(string.Format("Error {0}.\r\n{1}\r\n", ex.Message, ex.StackTrace));
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace HexViewer
 
             Directory.SetCurrentDirectory(textBox1.Text);
 
-            var files = Directory.GetFiles(textBox1.Text, "*", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(textBox1.Text, "*.mbdb", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {

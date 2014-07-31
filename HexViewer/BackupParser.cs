@@ -31,12 +31,12 @@ namespace HexViewer
 
         private bool IsValidRequest(int size)
         {
-            return Offset + size < Length;
+            return Offset + size <= Length;
         }
 
         public bool HasReachedEof()
         {
-            return Offset >= Length - 1;
+            return Offset >= Length;
         }
 
         public ushort ReadInt8()
@@ -55,7 +55,6 @@ namespace HexViewer
 
             var bytes = ReadBytes(2);
             var result = BitConverter.ToUInt16(bytes, 0);
-            //Offset += 2;
 
             var b1 = (result >> 0) & 0xff;
             var b2 = (result >> 8) & 0xff;
@@ -71,7 +70,6 @@ namespace HexViewer
 
             var bytes = ReadBytes(4);
             var result = BitConverter.ToUInt32(bytes, 0);
-            //Offset += 2;
 
             var b1 = (result >> 0) & 0xff;
             var b2 = (result >> 8) & 0xff;
