@@ -30,10 +30,8 @@ namespace HexViewer
             var header = "";
             var domain = "";
             var path = "";
-            var hash = "";
-            var notSure = "";
             var propertyLen = 0;
-            byte[] otherData, otherData1;
+            byte[] otherData, hash, notSure;
 
             header = parser.ReadString(4);
             textBox2.AppendText(string.Format("Header: {0}, Location: {1}, Size: {2}\r\n", header, parser.Offset, parser.Length));
@@ -48,18 +46,24 @@ namespace HexViewer
                     domain = parser.ReadString().Replace("\0", "");
                     path = parser.ReadString().Replace("\0", "");
 
-                    notSure = parser.ReadString().Replace("\0", "");
+                    textBox2.AppendText(string.Format("{0} {1}\r\n", domain, path));
 
-                    hash = parser.ReadString().Replace("\0", "");
-                    textBox2.AppendText(string.Format("{0} {1} {2} {3}\r\n", domain, path, notSure, hash));
+                    notSure = parser.ReadStringAsBytes();
+                    textBox2.AppendText(string.Format("Not Sure:\r\n{0}\r\n", HexToString(4, 4, notSure)));
+
+                    hash = parser.ReadStringAsBytes();
+                    textBox2.AppendText(string.Format("Hash:\r\n{0}\r\n", HexToString(4, 4, hash)));
 
                     otherData = parser.ReadBytes(41);
 
-                    propertyLen = parser.ReadInt8();
-                    textBox2.AppendText(string.Format("Properties: {0}\r\n", propertyLen));
+                    textBox2.AppendText(string.Format("Other Data:\r\n{0}\r\n", HexToString(4, 4, otherData)));
 
+                    propertyLen = parser.ReadInt8();
+                    
                     if (propertyLen == 0)
                         continue;
+
+                    textBox2.AppendText(string.Format("Properties: {0}\r\n", propertyLen));
 
                     for (var i = 0; i < propertyLen; i++)
                     {

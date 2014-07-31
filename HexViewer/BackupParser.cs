@@ -101,28 +101,22 @@ namespace HexViewer
 
         public string ReadString()
         {
-            var stringSize = -1;
+            byte[] bytes;
 
             try
             {
-                stringSize = ReadInt16();
+                bytes = ReadStringAsBytes();
             }
             catch (Exception ex)
             {
-                throw new BytesNotAvailableException("ReadString", stringSize, ex);
+                throw new BytesNotAvailableException("ReadString", -1, ex);
             }
 
-            return ReadString(stringSize);
+            return (bytes.Length != 0) ? Encoding.ASCII.GetString(bytes) : "";
         }
 
         public string ReadString(int size)
         {
-            if (size <= 0 || size == UInt16.MaxValue)
-                return "";
-
-            if (!IsValidRequest(size))
-                throw new BytesNotAvailableException("ReadString", size);
-
             byte[] bytes;
 
             try
@@ -136,6 +130,44 @@ namespace HexViewer
 
             var result = Encoding.ASCII.GetString(bytes);
             return result;
+        }
+
+        public byte[] ReadStringAsBytes()
+        {
+            var stringSize = -1;
+
+            try
+            {
+                stringSize = ReadInt16();
+            }
+            catch (Exception ex)
+            {
+                throw new BytesNotAvailableException("ReadStringAsBytes", stringSize, ex);
+            }
+
+            return ReadStringAsBytes(stringSize);
+        }
+
+        public byte[] ReadStringAsBytes(int size)
+        {
+            if (size <= 0 || size == UInt16.MaxValue)
+                return new byte[0];
+
+            if (!IsValidRequest(size))
+                throw new BytesNotAvailableException("ReadStringAsBytes", size);
+
+            byte[] bytes;
+
+            try
+            {
+                bytes = ReadBytes(size);
+            }
+            catch (Exception ex)
+            {
+                throw new BytesNotAvailableException("ReadString", size, ex);
+            }
+
+            return bytes;
         }
 
         public FileType ReadFileType()
