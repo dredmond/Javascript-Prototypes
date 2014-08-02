@@ -85,7 +85,7 @@ namespace HexViewer
         private void button1_Click(object sender, EventArgs e)
         {
             treeView1.Nodes.Clear();
-
+            /*
             var rootNode = new TreeNode(textBox1.Text);
             treeView1.Nodes.Add(rootNode);
 
@@ -97,14 +97,12 @@ namespace HexViewer
             {
                 rootNode.Nodes.Add(file.Replace(textBox1.Text, ""));
             }
-            treeView1.Refresh();
+            treeView1.Refresh();*/
         }
-
-        
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            textBox2.Clear();
+            /*textBox2.Clear();
             textBox2.AppendText("File: " + e.Node.Text + "\r\n\r\n");
 
             if (!File.Exists(e.Node.Text))
@@ -116,7 +114,7 @@ namespace HexViewer
             
             textBox2.Select(0, 0);
             textBox2.ScrollToCaret();
-            textBox2.ResumeLayout(true);
+            textBox2.ResumeLayout(true);*/
         }
 
         private static string HexToString(int size, int width, byte[] data)
