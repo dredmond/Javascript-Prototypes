@@ -115,6 +115,8 @@ namespace HexViewer
             textBox2.Select(0, 0);
             textBox2.ScrollToCaret();
             textBox2.ResumeLayout(true);*/
+
+
         }
 
         private static string HexToString(int size, int width, byte[] data)
