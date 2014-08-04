@@ -41,11 +41,12 @@ namespace HexViewer
 
         public string Domain { get; private set; }
         public string Path { get; private set; }
-        public string FileContentHash { get; private set; }
         public FileType Type { get; private set; }
         
         // 12 bytes Unknown
         public byte[] Unknown { get; private set; }
+
+        public byte[] FileHash { get; private set; }
 
         // 4 bytes (Size?)
         public int Size { get; private set; }
@@ -59,21 +60,45 @@ namespace HexViewer
         // 16 bytes Unknown
         public byte[] Unknown3 { get; private set; }
 
-        // 4 bytes Unknown
-        public byte[] Unknown4 { get; private set; }
+        public List<FileProperty> Properties { get; private set; }
 
         // Domain-Path
-        public string FileNameHash
+        public byte[] FileNameHash
         {
             get { return CreateSha1Hash(Domain + "-" + Path); }
         }
 
-        private static string CreateSha1Hash(string valueToHash)
+        private static byte[] CreateSha1Hash(string valueToHash)
         {
             var hashBytes = Sha1Generator.ComputeHash(Encoding.ASCII.GetBytes(valueToHash));
-            return Encoding.ASCII.GetString(hashBytes);
+            return hashBytes;
         }
 
-        //public FileInfo()
+        public FileInfo(BackupParser parser)
+        {
+            Properties = new List<FileProperty>();
+
+            Domain = parser.ReadString();
+            Path = parser.ReadString();
+
+            Unknown = parser.ReadStringAsBytes();
+
+            FileHash = parser.ReadStringAsBytes();
+
+            Unknown2 = parser.ReadStringAsBytes();
+
+            Unknown3 = parser.ReadBytes(39);
+
+            var propertyLen = parser.ReadInt8();
+
+            if (propertyLen == 0)
+                return;
+
+            for (var i = 0; i < propertyLen; i++)
+            {
+                var property = new FileProperty(parser);
+                Properties.Add(property);
+            }
+        }
     }
 }

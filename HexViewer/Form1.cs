@@ -14,18 +14,22 @@ namespace HexViewer
 {
     public partial class Form1 : Form
     {
+        public List<FileInfo> Files = new List<FileInfo>();
+
         public Form1()
         {
             InitializeComponent();
 
-            var directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\";
-            //var directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\";
+            const string directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\";
+            //const string directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\";
 
             TestParse(directory);
         }
 
         private void TestParse(string directory)
         {
+            treeView1.Nodes.Clear();
+            Files.Clear();
             textBox2.Clear();
             var filePath = directory + "Manifest.mbdb";
             var parser = new BackupParser(filePath);
@@ -39,48 +43,11 @@ namespace HexViewer
             
             while (!parser.HasReachedEof())
             {
-                try
-                {
-                    var domain = parser.ReadString().Replace("\0", "");
-                    var path = parser.ReadString().Replace("\0", "");
+                var file = new FileInfo(parser);
+                Files.Add(file);
 
-                    textBox2.AppendText(string.Format("{0} {1}\r\n", domain, path));
-
-                    var notSure = parser.ReadStringAsBytes();
-                    textBox2.AppendText(string.Format("Not Sure:\r\n{0}\r\n", HexToString(4, 4, notSure)));
-
-                    var hash = parser.ReadStringAsBytes();
-                    textBox2.AppendText(string.Format("Hash:\r\n{0}\r\n", HexToString(4, 4, hash)));
-
-                    var notSure2 = parser.ReadStringAsBytes();
-                    textBox2.AppendText(string.Format("Not Sure #2:\r\n{0}\r\n", HexToString(4, 4, notSure2)));
-
-                    var otherData = parser.ReadBytes(39);
-
-                    textBox2.AppendText(string.Format("Other Data:\r\n{0}\r\n", HexToString(4, 4, otherData)));
-
-                    var propertyLen = parser.ReadInt8();
-                    
-                    if (propertyLen == 0)
-                        continue;
-
-                    textBox2.AppendText(string.Format("Properties: {0}\r\n", propertyLen));
-
-                    for (var i = 0; i < propertyLen; i++)
-                    {
-                        var property = parser.ReadString();
-                        property = property.Replace("\0", "");
-
-                        var propertyPart2 = parser.ReadString();
-                        propertyPart2 = propertyPart2.Replace("\0", "");
-
-                        textBox2.AppendText(string.Format("Property {0}: {1} {2}\r\n", i, property, propertyPart2));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    textBox2.AppendText(string.Format("Error {0}.\r\n{1}\r\n", ex.Message, ex.StackTrace));
-                }
+                var node = new TreeNode(file.Domain + "-" + file.Path) {Tag = file};
+                treeView1.Nodes.Add(node);
             }
         }
 
@@ -104,21 +71,26 @@ namespace HexViewer
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            /*textBox2.Clear();
+            textBox2.Clear();
             textBox2.AppendText("File: " + e.Node.Text + "\r\n\r\n");
 
-            if (!File.Exists(e.Node.Text))
+            var file = e.Node.Tag as FileInfo;
+
+            if (file == null)
                 return;
 
-            var data = File.ReadAllBytes(e.Node.Text);
-            textBox2.AppendText(HexToString(8, 4, data));
-            textBox2.SuspendLayout();
-            
-            textBox2.Select(0, 0);
-            textBox2.ScrollToCaret();
-            textBox2.ResumeLayout(true);*/
+            textBox2.AppendText(string.Format("FileNameHash:\r\n{0}\r\n", HexToString(8, 4, file.FileNameHash)));
+            textBox2.AppendText(string.Format("Domain: {0}\r\n", file.Domain));
+            textBox2.AppendText(string.Format("Path: {0}\r\n", file.Path));
+            textBox2.AppendText(string.Format("\r\nUnknown:\r\n{0}\r\n", HexToString(8, 4, file.Unknown)));
+            textBox2.AppendText(string.Format("File Hash:\r\n{0}\r\n", HexToString(8, 4, file.FileHash)));
+            textBox2.AppendText(string.Format("Unknown2:\r\n{0}\r\n", HexToString(8, 4, file.Unknown2)));
+            textBox2.AppendText(string.Format("Unknown3:\r\n{0}\r\n", HexToString(8, 4, file.Unknown3)));
 
-
+            foreach (var property in file.Properties)
+            {
+                textBox2.AppendText(string.Format("Property: {0}\r\n{1}\r\n", property.Name, HexToString(8, 4, property.Value)));
+            }
         }
 
         private static string HexToString(int size, int width, byte[] data)
