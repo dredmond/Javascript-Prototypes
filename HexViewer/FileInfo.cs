@@ -49,7 +49,7 @@ namespace HexViewer
         public byte[] FileHash { get; private set; }
 
         // 4 bytes (Size?)
-        public int Size { get; private set; }
+        public ulong Size { get; private set; }
 
         // 16 bytes Unknown
         public byte[] Unknown2 { get; private set; }
@@ -59,6 +59,9 @@ namespace HexViewer
 
         // 16 bytes Unknown
         public byte[] Unknown3 { get; private set; }
+
+        // 16 bytes Unknown
+        public byte[] Unknown4 { get; private set; }
 
         public List<FileProperty> Properties { get; private set; }
 
@@ -87,7 +90,11 @@ namespace HexViewer
 
             Unknown2 = parser.ReadStringAsBytes();
 
-            Unknown3 = parser.ReadBytes(39);
+            Unknown3 = parser.ReadBytes(30);
+
+            Size = parser.ReadInt64();
+
+            Unknown4 = parser.ReadBytes(1);
 
             var propertyLen = parser.ReadInt8();
 

@@ -82,10 +82,12 @@ namespace HexViewer
             textBox2.AppendText(string.Format("FileNameHash:\r\n{0}\r\n", HexToString(8, 4, file.FileNameHash)));
             textBox2.AppendText(string.Format("Domain: {0}\r\n", file.Domain));
             textBox2.AppendText(string.Format("Path: {0}\r\n", file.Path));
+            textBox2.AppendText(string.Format("File Size: {0} bytes\r\n", file.Size));
             textBox2.AppendText(string.Format("\r\nUnknown:\r\n{0}\r\n", HexToString(8, 4, file.Unknown)));
             textBox2.AppendText(string.Format("File Hash:\r\n{0}\r\n", HexToString(8, 4, file.FileHash)));
             textBox2.AppendText(string.Format("Unknown2:\r\n{0}\r\n", HexToString(8, 4, file.Unknown2)));
             textBox2.AppendText(string.Format("Unknown3:\r\n{0}\r\n", HexToString(8, 4, file.Unknown3)));
+            textBox2.AppendText(string.Format("Unknown4:\r\n{0}\r\n", HexToString(8, 4, file.Unknown4)));
 
             foreach (var property in file.Properties)
             {

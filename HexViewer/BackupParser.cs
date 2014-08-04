@@ -73,9 +73,30 @@ namespace HexViewer
 
             var b1 = (result >> 0) & 0xff;
             var b2 = (result >> 8) & 0xff;
-            var b3 = (result >> 0) & 0xff;
-            var b4 = (result >> 8) & 0xff;
+            var b3 = (result >> 16) & 0xff;
+            var b4 = (result >> 24) & 0xff;
             result = (b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0);
+
+            return result;
+        }
+
+        public ulong ReadInt64()
+        {
+            if (!IsValidRequest(8))
+                throw new BytesNotAvailableException("ReadInt64", 4);
+
+            var bytes = ReadBytes(8);
+            var result = BitConverter.ToUInt64(bytes, 0);
+
+            var b1 = (result >> 0) & 0xff;
+            var b2 = (result >> 8) & 0xff;
+            var b3 = (result >> 16) & 0xff;
+            var b4 = (result >> 24) & 0xff;
+            var b5 = (result >> 32) & 0xff;
+            var b6 = (result >> 40) & 0xff;
+            var b7 = (result >> 48) & 0xff;
+            var b8 = (result >> 56) & 0xff;
+            result = (b1 << 56 | b2 << 48 | b3 << 40 | b4 << 32 | b5 << 24 | b6 << 16 | b7 << 8 | b8 << 0);
 
             return result;
         }
