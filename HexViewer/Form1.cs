@@ -46,7 +46,7 @@ namespace HexViewer
                 var file = new FileInfo(parser);
                 Files.Add(file);
 
-                var node = new TreeNode(file.Domain + "-" + file.Path) {Tag = file};
+                var node = new HexViewerNode(file);
                 treeView1.Nodes.Add(node);
             }
         }
@@ -74,22 +74,22 @@ namespace HexViewer
             textBox2.Clear();
             textBox2.AppendText("File: " + e.Node.Text + "\r\n\r\n");
 
-            var file = e.Node.Tag as FileInfo;
+            var fileNode = e.Node as HexViewerNode;
 
-            if (file == null)
+            if (fileNode == null)
                 return;
 
-            textBox2.AppendText(string.Format("FileNameHash:\r\n{0}\r\n", HexToString(8, 4, file.FileNameHash)));
-            textBox2.AppendText(string.Format("Domain: {0}\r\n", file.Domain));
-            textBox2.AppendText(string.Format("Path: {0}\r\n", file.Path));
-            textBox2.AppendText(string.Format("File Size: {0} bytes\r\n", file.Size));
-            textBox2.AppendText(string.Format("\r\nUnknown:\r\n{0}\r\n", HexToString(8, 4, file.Unknown)));
-            textBox2.AppendText(string.Format("File Hash:\r\n{0}\r\n", HexToString(8, 4, file.FileHash)));
-            textBox2.AppendText(string.Format("Unknown2:\r\n{0}\r\n", HexToString(8, 4, file.Unknown2)));
-            textBox2.AppendText(string.Format("Unknown3:\r\n{0}\r\n", HexToString(8, 4, file.Unknown3)));
-            textBox2.AppendText(string.Format("Unknown4:\r\n{0}\r\n", HexToString(8, 4, file.Unknown4)));
+            textBox2.AppendText(string.Format("FileNameHash:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.FileNameHash)));
+            textBox2.AppendText(string.Format("Domain: {0}\r\n", fileNode.Info.Domain));
+            textBox2.AppendText(string.Format("Path: {0}\r\n", fileNode.Info.Path));
+            textBox2.AppendText(string.Format("File Size: {0} bytes\r\n", fileNode.Info.Size));
+            textBox2.AppendText(string.Format("\r\nUnknown:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.Unknown)));
+            textBox2.AppendText(string.Format("File Hash:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.FileHash)));
+            textBox2.AppendText(string.Format("Unknown2:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.Unknown2)));
+            textBox2.AppendText(string.Format("Unknown3:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.Unknown3)));
+            textBox2.AppendText(string.Format("Unknown4:\r\n{0}\r\n", HexToString(8, 4, fileNode.Info.Unknown4)));
 
-            foreach (var property in file.Properties)
+            foreach (var property in fileNode.Info.Properties)
             {
                 textBox2.AppendText(string.Format("Property: {0}\r\n{1}\r\n", property.Name, HexToString(8, 4, property.Value)));
             }
