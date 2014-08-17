@@ -33,6 +33,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -43,9 +44,9 @@
             // 
             this.button1.Location = new System.Drawing.Point(406, 12);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(145, 23);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Load";
+            this.button1.Text = "Select Backup Folder";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -53,9 +54,9 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(12, 14);
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(388, 20);
             this.textBox1.TabIndex = 1;
-            this.textBox1.Text = "C:\\Users\\Donny\\AppData\\Roaming\\Apple Computer\\MobileSync\\Backup\\";
             // 
             // splitContainer1
             // 
@@ -96,6 +97,11 @@
             this.textBox2.Size = new System.Drawing.Size(806, 413);
             this.textBox2.TabIndex = 3;
             // 
+            // folderBrowserDialog1
+            // 
+            this.folderBrowserDialog1.SelectedPath = "C:\\Users\\Donny\\AppData";
+            this.folderBrowserDialog1.ShowNewFolderButton = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -105,7 +111,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "HexViewer";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
@@ -123,6 +129,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 

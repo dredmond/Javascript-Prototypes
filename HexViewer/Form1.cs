@@ -15,14 +15,15 @@ namespace HexViewer
     public partial class Form1 : Form
     {
         public List<FileInfo> Files = new List<FileInfo>();
-        //private const string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\";
-        private const string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\";
+        //private string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\";
+        //private string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\";
 
         public Form1()
         {
             InitializeComponent();
 
-            TestParse(Directory);
+            textBox1.Text = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\AppData\Roaming\Apple Computer\MobileSync\Backup\");
+            folderBrowserDialog1.SelectedPath = textBox1.Text;
         }
 
         private void TestParse(string directory)
@@ -62,6 +63,18 @@ namespace HexViewer
 
         private void button1_Click(object sender, EventArgs e)
         {
+            var result = folderBrowserDialog1.ShowDialog();
+
+            if (result != DialogResult.OK)
+            {
+                textBox1.Text = "";
+                return;
+            }
+
+            textBox1.Text = folderBrowserDialog1.SelectedPath + "\\";
+
+            TestParse(textBox1.Text);
+
             // treeView1.Nodes.Clear();
             /*
             var rootNode = new TreeNode(textBox1.Text);
@@ -142,14 +155,14 @@ namespace HexViewer
             {
                 var hashText = WriteHexLine(0, hashLen, hashLen, fileNode.Info.FileNameHash);
 
-                if (!File.Exists(Directory + hashText))
+                if (!File.Exists(textBox1.Text + hashText))
                 {
                     textBox2.AppendText("\r\nData:\r\nFile Not Found!\r\n");
                     return;
                 }
                 else
                 {
-                    var fileData = File.ReadAllBytes(Directory + hashText);
+                    var fileData = File.ReadAllBytes(textBox1.Text + hashText);
                     textBox2.AppendText(string.Format("\r\nData:\r\n{0}\r\n", HexToString(8, 4, fileData)));
                 }
             }
