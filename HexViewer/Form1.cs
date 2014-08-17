@@ -160,7 +160,7 @@ namespace HexViewer
 
         private static string FormattedFileSize(ulong fileSize)
         {
-            var mBytes = fileSize / 1024d;
+            var mBytes = fileSize / 1024d / 1024d;
             return string.Format("{0} bytes ({1:0.00} MB)", fileSize, mBytes);
         }
 
