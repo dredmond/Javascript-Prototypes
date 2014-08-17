@@ -74,9 +74,9 @@ namespace HexViewer
             TestParse(textBox1.Text);
         }
 
-        private TreeNode FindNode(TreeNode parentNode, string name)
+        private TreeNode FindNode(TreeNode parentNode, string name, bool contains = false)
         {
-            if (parentNode != null && parentNode.Text == name)
+            if (parentNode != null && ((!contains && parentNode.Text == name) || (contains && parentNode.Text.Contains(name))))
             {
                 return parentNode;
             }
@@ -85,11 +85,14 @@ namespace HexViewer
 
             foreach (TreeNode node in childNodes)
             {
-                var foundNode = FindNode(node, name);
+                var foundNode = FindNode(node, name, contains);
 
                 if (foundNode != null)
                     return foundNode;
             }
+
+            //TODO: Search siblings as well as children
+            //var foundNode = FindNode(parentNode.NextNode)
 
             return null;
         }
@@ -220,6 +223,24 @@ namespace HexViewer
             }
 
             return result.ToString();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var selectedNode = treeView1.SelectedNode;
+
+            var foundNode = FindNode(selectedNode, textBox3.Text, true);
+            if (foundNode == null)
+                return;
+
+            if (foundNode == selectedNode)
+            {
+                //if (selectedNode.Nodes.Count > 0)
+                //    selectedNode = selectedNode.FirstNode;
+                //else 
+            }
+
+            treeView1.SelectedNode = foundNode;
         }
     }
 }
