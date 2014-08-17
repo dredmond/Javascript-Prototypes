@@ -15,8 +15,6 @@ namespace HexViewer
     public partial class Form1 : Form
     {
         public List<FileInfo> Files = new List<FileInfo>();
-        //private string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\180afbd8d349c5d29da1030a646fbc3296877be0\";
-        //private string Directory = @"C:\Users\Donny\AppData\Roaming\Apple Computer\MobileSync\Backup\7c97e37cefca9d87de0c19da5a791bc7ae78c8ff\";
 
         public Form1()
         {
@@ -74,21 +72,6 @@ namespace HexViewer
             textBox1.Text = folderBrowserDialog1.SelectedPath + "\\";
 
             TestParse(textBox1.Text);
-
-            // treeView1.Nodes.Clear();
-            /*
-            var rootNode = new TreeNode(textBox1.Text);
-            treeView1.Nodes.Add(rootNode);
-
-            Directory.SetCurrentDirectory(textBox1.Text);
-
-            var files = Directory.GetFiles(textBox1.Text, "*.mbdb", SearchOption.AllDirectories);
-
-            foreach (var file in files)
-            {
-                rootNode.Nodes.Add(file.Replace(textBox1.Text, ""));
-            }
-            treeView1.Refresh();*/
         }
 
         private TreeNode FindNode(TreeNode parentNode, string name)
