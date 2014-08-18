@@ -9,12 +9,12 @@ namespace HexViewer
         public HexViewerNode(FileInfo fileInfo)
         {
             Info = fileInfo;
-            Text = Info.Domain + "-" + Info.Path;
+            Text = Info.ToString();
         }
 
         public override string ToString()
         {
-            return Info.Domain + "-" + Info.Path;
+            return Info.ToString();
         }
     }
 }

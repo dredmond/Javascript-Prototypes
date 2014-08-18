@@ -56,6 +56,11 @@ namespace HexViewer
                 //var parsedPath = ParseLocation(file.Path);
                 var node = new HexViewerNode(file);
                 domainNode.Nodes.Add(node);
+
+                if (file.Size / 1024d > 2000)
+                {
+                    Console.WriteLine(node.ToString());
+                }
             }
         }
 

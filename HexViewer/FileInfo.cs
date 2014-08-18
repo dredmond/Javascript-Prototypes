@@ -108,5 +108,10 @@ namespace HexViewer
                 Properties.Add(property);
             }
         }
+
+        public override string ToString()
+        {
+            return Domain + "-" + Path + " (" + (Size / 1024d).ToString("0.00") + " KB)";
+        }
     }
 }
