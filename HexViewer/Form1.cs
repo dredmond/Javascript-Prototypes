@@ -79,6 +79,17 @@ namespace HexViewer
             TestParse(textBox1.Text);
         }
 
+        // Finding next node that matches name
+        // Check Starting node
+        // Get Children of starting node
+        // Get Siblings of starting node
+        // Check Children
+        // Check Siblings
+        // Get Parent Node
+        // 
+        // Check Children of starting node
+        // Check Siblings of starting node
+
         private TreeNode FindNode(TreeNode parentNode, string name, bool contains = false)
         {
             if (parentNode != null && ((!contains && parentNode.Text == name) || (contains && parentNode.Text.Contains(name))))
