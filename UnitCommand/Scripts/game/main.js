@@ -212,7 +212,7 @@
     });
 });
 
-var btn = ui.button('test', {
+var btn = ui.button.create('test', {
     text: 'Button 1',
     click: function(evt) {
         alert('button clicked.');
@@ -223,7 +223,7 @@ var btn = ui.button('test', {
 btn.setLocation(50, 50);
 btn.setSize(50, 300);
 
-var btn2 = ui.button('test2', {
+var btn2 = ui.button.create('test2', {
     text: 'Button 2',
     click: function (evt) {
         alert('button 2 clicked.');
