@@ -90,12 +90,40 @@ namespace HexViewer
         // Check Children of starting node
         // Check Siblings of starting node
 
-        private TreeNode FindNextNode(TreeNode startingNode, string name)
+        private TreeNode FindNextNode(TreeNode startingNode, string name, bool skipStartingNode = false)
         {
+            TreeNode foundNode;
+
             if (startingNode == null)
                 return null;
 
-            
+            if (!skipStartingNode && startingNode.Text.Contains(name))
+                return startingNode;
+
+            foreach (TreeNode child in startingNode.Nodes)
+            {
+                foundNode = FindNextNode(child, name);
+
+                if (foundNode != null)
+                    return foundNode;
+            }
+
+            var nextSiblingNode = startingNode.NextNode;
+            foundNode = FindNextNode(nextSiblingNode, name);
+            if (foundNode != null)
+                return foundNode;
+
+            var parentNode = startingNode.Parent;
+            if (parentNode == null)
+                return null;
+
+            var parentSibling = parentNode.NextNode;
+
+            foundNode = FindNextNode(parentSibling, name);
+            if (foundNode != null)
+                return foundNode;
+
+            return null;
         }
 
         private TreeNode FindNode(TreeNode parentNode, string name, bool contains = false)
@@ -251,9 +279,19 @@ namespace HexViewer
 
         private void button2_Click(object sender, EventArgs e)
         {
+            TreeNode foundNode;
             var selectedNode = treeView1.SelectedNode;
 
-            var foundNode = FindNode(selectedNode, textBox3.Text, true);
+            if (selectedNode == null)
+            {
+                selectedNode = treeView1.TopNode;
+                foundNode = FindNextNode(selectedNode, textBox3.Text);
+            }
+            else
+            {
+                foundNode = FindNextNode(selectedNode, textBox3.Text, true);
+            }
+
             if (foundNode == null)
                 return;
 
