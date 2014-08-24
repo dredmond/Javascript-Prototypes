@@ -5,6 +5,9 @@
         lastUpdateTime = null,
         updateInterval = 10,
         resizeInterval = 200,
+        progressUpdate = 1000,
+        progressUpdateElapsed = 0,
+        currentProgress = 0,
         gameMap = map.createMap({
             tileSize: 45,
             dataSettings: {
@@ -134,11 +137,21 @@
         // Update the map.
         gameMap.update(gameTime, dt);
 
+        progressUpdateElapsed += dt;
+        if (progressUpdateElapsed >= progressUpdate) {
+            progressUpdateElapsed -= progressUpdate;
+
+            if (currentProgress < 100) {
+                currentProgress += 5;
+                prog.setProgress(currentProgress);
+            }
+        }
+
         ui.update(gameTime, dt);
     }
 
     function draw() {
-        ctx.fillStyle = '000000';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
         // Draw the map
@@ -223,7 +236,10 @@ btn2.setLocation(50, 110);
 ui.addComponent(btn);
 ui.addComponent(btn2);
 
-var prog = ui.progressbar('progress');
+var prog = ui.progressbar('progress', {
+    size: { height: 12, width: 100 },
+    location: {x: 300, y: 300}
+});
 ui.addComponent(prog);
 
 //btn.click = function () {

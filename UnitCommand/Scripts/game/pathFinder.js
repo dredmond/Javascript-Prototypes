@@ -158,18 +158,25 @@
     }
 
     function draw(ctx, tileSize) {
+        ctx.save();
+
         for (var x = 0; x < walkableTiles.length; x++) {
             for (var y = 0; y < walkableTiles[x].length; y++) {
                 var tile = walkableTiles[x][y];
 
+                if (tile.closed) {
+                    ctx.fillStyle = 'rgba(255, 0, 0, .50)';
+                    ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
+
                 ctx.font = '10px Georgia';
-                ctx.fillStyle = 'ffffff';
+                ctx.fillStyle = '#ffffff';
                 ctx.fillText(tile.isWalkable ? '1' : '0', x * tileSize + 2, y * tileSize + 8);
 
                 if (tile.fScore === 0)
                     continue;
 
-                ctx.fillStyle = '000000';
+                ctx.fillStyle = '#000000';
                 var textSize = ctx.measureText(tile.fScore);
                 ctx.fillText(tile.fScore, x * tileSize + (tileSize - textSize.width - 2), y * tileSize + 8);
 
@@ -177,13 +184,10 @@
 
                 textSize = ctx.measureText(tile.hScore);
                 ctx.fillText(tile.hScore, x * tileSize + (tileSize - textSize.width - 2), y * tileSize + (tileSize - 4));
-
-                if (tile.closed) {
-                    ctx.fillStyle = 'rgba(255, 0, 0, .25)';
-                    ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-                }
             }
         }
+
+        ctx.restore();
     }
 
     function calculateGScore(parent, child) {

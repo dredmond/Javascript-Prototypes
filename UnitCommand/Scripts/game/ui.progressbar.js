@@ -4,6 +4,8 @@
     var result = new progressbarObj(),
         maxProgress = 100,
         minProgress = 0,
+        size = options.size || { width: 100, height: 12 },
+        location = options.location || { x: 0, y: 0 },
         currentProgress = minProgress;
 
     function capInBounds(value) {
@@ -66,15 +68,28 @@
     };
 
     function handleDrawEvent(ctx) {
+        ctx.save();
+
+        var progWidth = (size.width - 4) / 100.0 * currentProgress;
+
         ctx.fillStyle = 'white';
-        ctx.fillRect(300, 300, 100, 12);
+        ctx.fillRect(location.x, location.y, 100, 12);
 
         ctx.fillStyle = 'green';
-        ctx.fillRect(302, 302, 96, 8);
+        ctx.fillRect(location.x + 2, location.y + 2, progWidth, 8);
+
+        ctx.restore();
     }
 
     function handleUpdateEvent(currentGameTime, dt) {
-        
+
+    }
+
+    progressbarObj.prototype.containsPoint = function (x, y) {
+        return (x >= location.x &&
+            x < location.x + size.width &&
+            y >= location.y &&
+            y < location.y + size.height);
     }
 
     progressbarObj.prototype.draw = handleDrawEvent;

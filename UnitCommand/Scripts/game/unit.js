@@ -208,6 +208,7 @@
     }
 
     function debug(ctx, startPos, endPos) {
+        ctx.save();
         var tileSizeMid = gameMap.getHalfTileSize();
         if (navigationTiles.length > 1) {
             ctx.beginPath();
@@ -227,6 +228,7 @@
             }
             ctx.stroke();
         }
+        ctx.restore();
 
         pFinder.draw(ctx, tileSize);
     }
