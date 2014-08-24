@@ -214,31 +214,32 @@
 
 var btn = ui.button.create('test', {
     text: 'Button 1',
+    size: { height: 50, width: 300 },
+    location: {x: 50, y: 50},
     click: function(evt) {
         alert('button clicked.');
         console.log(evt, evt.getName());
     }
 });
 
-btn.setLocation(50, 50);
-btn.setSize(50, 300);
-
 var btn2 = ui.button.create('test2', {
     text: 'Button 2',
+    size: { height: 50, width: 300 },
+    location: { x: 50, y: 110 },
     click: function (evt) {
         alert('button 2 clicked.');
         console.log(evt, evt.getName());
     }
 });
 
-btn2.setLocation(50, 110);
-
 ui.addComponent(btn);
 ui.addComponent(btn2);
 
-var prog = ui.progressbar('progress', {
+var prog = ui.progressbar.create('progress', {
     size: { height: 12, width: 200 },
-    location: {x: 300, y: 300}
+    location: { x: 300, y: 300 },
+    backgroundColor: 'white',
+    progressColor: 'green'
 });
 ui.addComponent(prog);
 

@@ -1,20 +1,73 @@
-﻿ui.progressbar = ui.progressbar || (function(name, options) {
-    function progressbarObj() {};
+﻿ui.progressbar = ui.progressbar || (function() {
+    var progressbar = ui.component.extend({
+        constructor: function(name, options) {
+            this.base(name, options);
 
-    var result = new progressbarObj(),
-        maxProgress = 100.0,
-        minProgress = 0.0,
-        size = options.size || { width: 100, height: 12 },
-        location = options.location || { x: 0, y: 0 },
-        currentProgress = minProgress;
+            this.options.maxProgress = !jsExtender.isUndefinedOrNull(options.maxProgress) ? options.maxProgress : 100.0;
+            this.options.minProgress = !jsExtender.isUndefinedOrNull(options.minProgress) ? options.minProgress : 0;
+            this.options.progressColor = !jsExtender.isUndefinedOrNull(options.progressColor) ? options.progressColor : 'green';
+            this.currentProgress = this.options.minProgress;
+        },
+        draw: function(ctx) {
+            ctx.save();
 
-    function capInBounds(value) {
-        if (value > maxProgress) {
-            value = maxProgress;
+            var offset = this.options.borderSize / 2;
+            var progWidth = (this.options.size.width - this.options.borderSize) / this.options.maxProgress * this.currentProgress;
+
+            ctx.fillStyle = this.options.backgroundColor;
+            ctx.fillRect(this.options.location.x, this.options.location.y, this.options.size.width, this.options.size.height);
+
+            ctx.fillStyle = this.options.progressColor;
+            ctx.fillRect(this.options.location.x + offset, this.options.location.y + offset, progWidth, this.options.size.height - this.options.borderSize);
+
+            ctx.restore();
+        },
+        update: function(currentGameTime, dt) {
+            
+        },
+        getProgress: function () {
+            return this.currentProgress;
+        },
+        incProgress: function (value) {
+            this.setProgress(currentProgress + value);
+        },
+        setProgress: function (value) {
+            this.currentProgress = capInBounds(this, value);
+        },
+        getMaxProgress: function () {
+            return this.options.maxProgress;
+        },
+        setMaxProgress: function (value) {
+            checkMinMax(this.options.minProgress, value);
+
+            this.options.maxProgress = value;
+
+            // Make sure the current progress stays within the bounds.
+            this.currentProgress = capInBounds(this, this.currentProgress);
+        },
+        getMinProgress: function () {
+            return this.options.minProgress;
+        },
+        setMinProgress: function (value) {
+            checkMinMax(value, this.options.maxProgress);
+
+            this.options.minProgress = value;
+
+            // Make sure the current progress stays within the bounds.
+            this.currentProgress = capInBounds(this, this.currentProgress);
+        },
+        hasCompleted: function () {
+            return this.currentProgress >= this.options.maxProgress;
+        }
+    });
+
+    function capInBounds(progBar, value) {
+        if (value > progBar.options.maxProgress) {
+            value = progBar.options.maxProgress;
         }
 
-        if (value < minProgress) {
-            value = minProgress;
+        if (value < progBar.options.minProgress) {
+            value = progBar.options.minProgress;
         }
 
         return value;
@@ -22,78 +75,8 @@
 
     function checkMinMax(min, max) {
         if (min > max)
-            throw 'Min progress cannot exceed max progress. (Min: ' + min + ' Max: ' + max +')';
+            throw 'Min progress cannot exceed max progress. (Min: ' + min + ' Max: ' + max + ')';
     }
 
-    progressbarObj.prototype.getProgress = function () {
-        return currentProgress;
-    };
-
-    progressbarObj.prototype.incProgress = function (value) {
-        setProgress(currentProgress + value);
-    };
-
-    progressbarObj.prototype.setProgress = function(value) {
-        currentProgress = capInBounds(value);
-    };
-
-    progressbarObj.prototype.getMaxProgress = function () {
-        return maxProgress;
-    };
-
-    progressbarObj.prototype.setMaxProgress = function (value) {
-        checkMinMax(minProgress, value);
-
-        maxProgress = value;
-
-        // Make sure the current progress stays within the bounds.
-        currentProgress = capInBounds(currentProgress);
-    };
-
-    progressbarObj.prototype.getMinProgress = function () {
-        return minProgress;
-    };
-
-    progressbarObj.prototype.setMinProgress = function (value) {
-        checkMinMax(value, maxProgress);
-
-        minProgress = value;
-
-        // Make sure the current progress stays within the bounds.
-        currentProgress = capInBounds(currentProgress);
-    };
-
-    progressbarObj.prototype.hasCompleted = function () {
-        return currentProgress >= maxProgress;
-    };
-
-    function handleDrawEvent(ctx) {
-        ctx.save();
-
-        var progWidth = (size.width - 4) / maxProgress * currentProgress;
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(location.x, location.y, size.width, size.height);
-
-        ctx.fillStyle = 'green';
-        ctx.fillRect(location.x + 2, location.y + 2, progWidth, size.height - 4);
-
-        ctx.restore();
-    }
-
-    function handleUpdateEvent(currentGameTime, dt) {
-
-    }
-
-    progressbarObj.prototype.containsPoint = function (x, y) {
-        return (x >= location.x &&
-            x < location.x + size.width &&
-            y >= location.y &&
-            y < location.y + size.height);
-    }
-
-    progressbarObj.prototype.draw = handleDrawEvent;
-    progressbarObj.prototype.update = handleUpdateEvent;
-    
-    return result;
-});
+    return progressbar;
+})();

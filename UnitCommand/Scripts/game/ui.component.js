@@ -61,7 +61,7 @@
                 this.setFocus(this.containsPoint(ui.mousePos.x, ui.mousePos.y));
 
                 if (oldFocus !== this.hasFocus) {
-                    if (hasFocus)
+                    if (this.hasFocus)
                         this.mouseOver();
                     else
                         this.mouseOut();
