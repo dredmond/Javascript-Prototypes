@@ -86,9 +86,17 @@ namespace HexViewer
         // Check Children
         // Check Siblings
         // Get Parent Node
-        // 
+
         // Check Children of starting node
         // Check Siblings of starting node
+
+        private TreeNode FindNextNode(TreeNode startingNode, string name)
+        {
+            if (startingNode == null)
+                return null;
+
+            
+        }
 
         private TreeNode FindNode(TreeNode parentNode, string name, bool contains = false)
         {
