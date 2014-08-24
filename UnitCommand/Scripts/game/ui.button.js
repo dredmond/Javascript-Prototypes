@@ -9,9 +9,8 @@
         draw: function (ctx) {
             ctx.save();
 
-            var translateBorder = this.options.borderSize / 2;
-
-            ctx.translate(translateBorder, translateBorder);
+            var offset = this.options.borderSize / 2;
+            ctx.translate(this.options.location.x, this.options.location.y);
 
             if (this.getFocus()) {
                 ctx.fillStyle = 'rgb(200,200,200)';
@@ -19,10 +18,10 @@
                 ctx.fillStyle = 'white';
             }
 
-            ctx.fillRect(this.options.location.x, this.options.location.y, this.options.size.width, this.options.size.height);
+            ctx.fillRect(offset, offset, this.options.size.width, this.options.size.height);
             ctx.strokeStyle = this.options.borderColor;
             ctx.lineWidth = this.options.borderSize;
-            ctx.strokeRect(this.options.location.x, this.options.location.y, this.options.size.width, this.options.size.height);
+            ctx.strokeRect(offset, offset, this.options.size.width, this.options.size.height);
 
             ctx.font = this.options.font;
 
@@ -36,7 +35,8 @@
                 textXOffset = Math.round((this.options.size.width - textSize.width) / 2),
                 textYOffset = Math.round((this.options.size.height + 7.5) / 2);
 
-            ctx.fillText(this.options.text, this.options.location.x + textXOffset, this.options.location.y + textYOffset, this.options.size.width);
+            ctx.translate(textXOffset, textYOffset);
+            ctx.fillText(this.options.text, offset, offset, this.options.size.width);
 
             ctx.restore();
         }

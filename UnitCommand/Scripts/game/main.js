@@ -141,10 +141,10 @@
         if (progressUpdateElapsed >= progressUpdate) {
             progressUpdateElapsed -= progressUpdate;
 
-            if (currentProgress < 100) {
-                currentProgress += 5;
-                prog.setProgress(currentProgress);
-            }
+            if (!prog.hasCompleted())
+                prog.incProgress(5);
+            if (!prog2.hasCompleted())
+                prog2.incProgress(1);
         }
 
         ui.update(gameTime, dt);
@@ -239,9 +239,31 @@ var prog = ui.progressbar.create('progress', {
     size: { height: 12, width: 200 },
     location: { x: 300, y: 300 },
     backgroundColor: 'white',
-    progressColor: 'green'
+    progressColor: 'green',
+    progressChanged: function (progBar, progress) {
+        console.log('Green Progress: ' + progress);
+    },
+    completed: function (progBar) {
+        console.log('Green Completed');
+    }
 });
 ui.addComponent(prog);
+
+var prog2 = ui.progressbar.create('progress2', {
+    size: { height: 12, width: 200 },
+    location: { x: 300, y: 314 },
+    minProgress: 0,
+    maxProgress: 200,
+    backgroundColor: 'white',
+    progressColor: 'red',
+    progressChanged: function(progBar, progress) {
+        console.log('Red Progress: ' + progress);
+    },
+    completed: function(progBar) {
+        console.log('Red Completed');
+    }
+});
+ui.addComponent(prog2);
 
 //btn.click = function () {
 //    console.log('Overridden!');
