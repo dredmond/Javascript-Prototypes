@@ -2,8 +2,8 @@
     function progressbarObj() {};
 
     var result = new progressbarObj(),
-        maxProgress = 100,
-        minProgress = 0,
+        maxProgress = 100.0,
+        minProgress = 0.0,
         size = options.size || { width: 100, height: 12 },
         location = options.location || { x: 0, y: 0 },
         currentProgress = minProgress;
@@ -70,13 +70,13 @@
     function handleDrawEvent(ctx) {
         ctx.save();
 
-        var progWidth = (size.width - 4) / 100.0 * currentProgress;
+        var progWidth = (size.width - 4) / maxProgress * currentProgress;
 
         ctx.fillStyle = 'white';
-        ctx.fillRect(location.x, location.y, 100, 12);
+        ctx.fillRect(location.x, location.y, size.width, size.height);
 
         ctx.fillStyle = 'green';
-        ctx.fillRect(location.x + 2, location.y + 2, progWidth, 8);
+        ctx.fillRect(location.x + 2, location.y + 2, progWidth, size.height - 4);
 
         ctx.restore();
     }

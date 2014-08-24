@@ -237,7 +237,7 @@ ui.addComponent(btn);
 ui.addComponent(btn2);
 
 var prog = ui.progressbar('progress', {
-    size: { height: 12, width: 100 },
+    size: { height: 12, width: 200 },
     location: {x: 300, y: 300}
 });
 ui.addComponent(prog);
