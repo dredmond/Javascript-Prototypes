@@ -10,8 +10,8 @@
         gameMap = map.createMap({
             tileSize: 45,
             dataSettings: {
-                height: 15,
-                width: 15,
+                height: 50,
+                width: 50,
                 tiles: [
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -213,8 +213,8 @@
 
 var btn = ui.button.create('test', {
     text: 'Button 1',
-    size: { height: 50, width: 300 },
-    location: {x: 50, y: 50},
+    size: { height: 30, width: 75 },
+    location: {x: 50, y: 25},
     click: function(evt) {
         alert('button clicked.');
         console.log(evt, evt.getName());
@@ -223,8 +223,8 @@ var btn = ui.button.create('test', {
 
 var btn2 = ui.button.create('test2', {
     text: 'Button 2',
-    size: { height: 50, width: 300 },
-    location: { x: 50, y: 110 },
+    size: { height: 30, width: 75 },
+    location: { x: 50, y: 60 },
     click: function (evt) {
         alert('button 2 clicked.');
         console.log(evt, evt.getName());
@@ -235,7 +235,7 @@ ui.addComponent(btn);
 ui.addComponent(btn2);
 
 var prog = ui.progressbar.create('progress', {
-    size: { height: 12, width: 200 },
+    size: { height: 12, width: 75 },
     location: { x: 300, y: 300 },
     backgroundColor: 'white',
     progressColor: 'green',
@@ -249,7 +249,7 @@ var prog = ui.progressbar.create('progress', {
 ui.addComponent(prog);
 
 var prog2 = ui.progressbar.create('progress2', {
-    size: { height: 12, width: 200 },
+    size: { height: 12, width: 75 },
     location: { x: 300, y: 314 },
     minProgress: 0,
     maxProgress: 200,
