@@ -1,4 +1,4 @@
 ﻿- Add interface menu system.
 - Add ability to place buildings.
-- Add progress bar for build times.
+- (DONE) Add progress bar for build times.
 - Add harvestable tiles (Trees, Stone, etc.)

@@ -4,10 +4,9 @@
         lastResizeTime = new Date(),
         lastUpdateTime = null,
         updateInterval = 10,
-        resizeInterval = 200,
+        resizeInterval = 50,
         progressUpdate = 1000,
         progressUpdateElapsed = 0,
-        currentProgress = 0,
         gameMap = map.createMap({
             tileSize: 45,
             dataSettings: {
@@ -161,6 +160,13 @@
     }
 
     function gameLoop(gameTime) {
+        // Check if the lastResizeTime is set and check if the delta is above our
+        // resizeInterval. If it is resize the canvas.
+        if (lastResizeTime != null && (new Date()) - lastResizeTime >= resizeInterval) {
+            lastResizeTime = null;
+            handleResize();
+        }
+
         // Request the next update from the browser.
         requestAnimationFrame(gameLoop);
 
@@ -181,13 +187,6 @@
         // draw the screen to the canvas.
         update(gameTime, dt);
         draw();
-
-        // Check if the lastResizeTime is set and check if the delta is above our
-        // resizeInterval. If it is resize the canvas.
-        if (lastResizeTime != null && (new Date()) - lastResizeTime >= resizeInterval) {
-            lastResizeTime = null;
-            handleResize();
-        }
     }
 
     var u = unit(gameMap);
