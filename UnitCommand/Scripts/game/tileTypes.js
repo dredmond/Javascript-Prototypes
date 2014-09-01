@@ -3,5 +3,7 @@
     grass: 1,
     stones: 2,
     water: 3,
-    trees: 4
+    trees: 4,
+    door: 5,
+    lockedDoor: 6
 };
