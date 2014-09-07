@@ -262,7 +262,12 @@
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\game\eventHandlers.js" />
+    <Content Include="Scripts\game\events\keyboardEvent.js" />
+    <Content Include="Scripts\game\events\mouseEvent.js" />
+    <Content Include="Scripts\game\events\resizeEvent.js" />
     <Content Include="Scripts\game\gameLogic.js" />
+    <Content Include="Scripts\game\levels\level1.js" />
+    <Content Include="Scripts\game\levels\level2.js" />
     <Content Include="Scripts\game\map.js" />
     <Content Include="Scripts\game\pathFinder.js" />
     <Content Include="Scripts\game\tileTypes.js" />

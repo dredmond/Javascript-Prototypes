@@ -5,35 +5,7 @@
         lastUpdateTime = null,
         updateInterval = 10,
         resizeInterval = 50,
-        progressUpdate = 1000,
-        progressUpdateElapsed = 0,
-        gameMap = map.createMap({
-            tileSize: 45,
-            dataSettings: {
-                height: 50,
-                width: 50,
-                tiles: [
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 4, 4, 0, 1, 1, 1, 0, 2, 0,
-                     4, 4, 4, 4, 4, 4, 4, 4, 0, 1, 1, 1, 0, 2, 0,
-                     0, 0, 0, 0, 0, 0, 4, 4, 0, 2, 2, 0, 0, 2, 0,
-                     0, 0, 0, 3, 3, 0, 4, 4, 0, 2, 3, 3, 0, 2, 0,
-                     0, 0, 0, 3, 3, 0, 0, 0, 0, 2, 3, 3, 0, 2, 0,
-                     0, 0, 0, 4, 4, 4, 4, 4, 4, 2, 3, 3, 0, 0, 0,
-                     0, 0, 4, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 2, 2,
-                     0, 0, 4, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 2, 0,
-                     0, 0, 3, 0, 0, 0, 0, 0, 0, 2, 1, 2, 2, 2, 0,
-                     0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0
-                ]
-            }
-        }),
-        oldMapOffset = null,
-        mouseDragStart = null,
-        selectedUnits = [],
+        level = null,
         canvasOffsets = {
             top: mainCanvas.offsetTop,
             left: mainCanvas.offsetLeft
@@ -54,6 +26,8 @@
     mainCanvas.addEventListener('mousedown', function (evt) {
         evt.preventDefault();
 
+        console.log(evt);
+        /*
         if (evt.button === 2) {
             mouseDragStart = evt;
             oldMapOffset = gameMap.getMapOffset();
@@ -75,12 +49,14 @@
                 unit.moveTo(loc);
             }
             return;
-        }
+        }*/
     });
 
     window.addEventListener('mousemove', function (evt) {
         evt.preventDefault();
 
+        console.log(evt);
+        /*
         if (oldMapOffset !== null) {
             gameMap.setMapOffset({
                 x: oldMapOffset.x + evt.x - mouseDragStart.x,
@@ -89,13 +65,15 @@
         } else {
             ui.mousePos.x = evt.x - canvasOffsets.left;
             ui.mousePos.y = evt.y - canvasOffsets.top;
-        }
+        }*/
     });
 
     window.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
 
-        oldMapOffset = null;
+        console.log(evt);
+
+        //oldMapOffset = null;
     });
 
     // Handle the resize event. We want to size the canvas so it sits 
@@ -125,26 +103,16 @@
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
 
         // Update the map viewsize settings.
-        gameMap.setViewSize({
-            height: mainCanvas.height,
-            width: mainCanvas.width
-        });
+        if (level !== null)
+            level.resize({
+                height: mainCanvas.height,
+                width: mainCanvas.width
+            });
     }
 
     function update(gameTime, dt) {
-
-        // Update the map.
-        gameMap.update(gameTime, dt);
-
-        progressUpdateElapsed += dt;
-        if (progressUpdateElapsed >= progressUpdate) {
-            progressUpdateElapsed -= progressUpdate;
-
-            if (!prog.hasCompleted())
-                prog.incProgress(5);
-            if (!prog2.hasCompleted())
-                prog2.incProgress(1);
-        }
+        if (level !== null)
+            level.update(gameTime, dt);
 
         ui.update(gameTime, dt);
     }
@@ -153,8 +121,8 @@
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
-        // Draw the map
-        gameMap.draw(ctx);
+        if (level !== null)
+            level.draw(ctx);
 
         ui.draw(ctx);
     }
@@ -189,12 +157,6 @@
         draw();
     }
 
-    var u = unit(gameMap);
-    u.setLocation({ x: 0, y: 14 });
-
-    selectedUnits.push(u);
-    gameMap.addUnit(u);
-
     requestAnimationFrame(gameLoop);
 
     $.ajax({
@@ -209,66 +171,6 @@
         }
     });
 });
-
-var btn = ui.button.create('test', {
-    text: 'Button 1',
-    size: { height: 30, width: 75 },
-    location: {x: 50, y: 25},
-    click: function(evt) {
-        alert('button clicked.');
-        console.log(evt, evt.getName());
-    }
-});
-
-var btn2 = ui.button.create('test2', {
-    text: 'Button 2',
-    size: { height: 30, width: 75 },
-    location: { x: 50, y: 60 },
-    click: function (evt) {
-        alert('button 2 clicked.');
-        console.log(evt, evt.getName());
-    }
-});
-
-ui.addComponent(btn);
-ui.addComponent(btn2);
-
-var prog = ui.progressbar.create('progress', {
-    size: { height: 12, width: 75 },
-    location: { x: 300, y: 300 },
-    backgroundColor: 'white',
-    progressColor: 'green',
-    progressChanged: function (progBar, progress) {
-        console.log('Green Progress: ' + progress);
-    },
-    completed: function (progBar) {
-        console.log('Green Completed');
-    }
-});
-ui.addComponent(prog);
-
-var prog2 = ui.progressbar.create('progress2', {
-    size: { height: 12, width: 75 },
-    location: { x: 300, y: 314 },
-    minProgress: 0,
-    maxProgress: 200,
-    backgroundColor: 'white',
-    progressColor: 'red',
-    progressChanged: function(progBar, progress) {
-        console.log('Red Progress: ' + progress);
-    },
-    completed: function(progBar) {
-        console.log('Red Completed');
-    }
-});
-ui.addComponent(prog2);
-
-//btn.click = function () {
-//    console.log('Overridden!');
-//};
-
-//btn.click();
-//btn2.click();
 
 // Helper functions for setting up requestAnimationFrame.
 (function () {
