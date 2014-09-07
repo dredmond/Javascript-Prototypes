@@ -1,1 +1,3 @@
-﻿
+﻿var keyboardEvent = (function() {
+
+});

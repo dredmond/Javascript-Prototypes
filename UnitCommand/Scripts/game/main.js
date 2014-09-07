@@ -23,6 +23,11 @@
         evt.preventDefault();
     });
 
+    window.addEventListener('keydown', function(evt) {
+        evt.preventDefault();
+        console.log(evt);
+    });
+
     mainCanvas.addEventListener('mousedown', function (evt) {
         evt.preventDefault();
 
@@ -55,7 +60,7 @@
     window.addEventListener('mousemove', function (evt) {
         evt.preventDefault();
 
-        console.log(evt);
+        //console.log(evt);
         /*
         if (oldMapOffset !== null) {
             gameMap.setMapOffset({
@@ -156,6 +161,9 @@
         update(gameTime, dt);
         draw();
     }
+
+    //level = level1();
+    //level.load();
 
     requestAnimationFrame(gameLoop);
 
