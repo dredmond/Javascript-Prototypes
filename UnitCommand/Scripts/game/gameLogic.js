@@ -5,6 +5,10 @@
         inputHandler = null,
         gameManager = null;
         
+    function randomize() {
+        
+    }
+    
     function draw() {
         
     }
