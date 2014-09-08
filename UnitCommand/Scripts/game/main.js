@@ -25,60 +25,45 @@
 
     window.addEventListener('keydown', function(evt) {
         evt.preventDefault();
-        console.log(evt);
+
+        if (level !== null)
+            level.inputEvent(evt);
+    });
+
+    window.addEventListener('keyup', function (evt) {
+        evt.preventDefault();
+
+        if (level !== null)
+            level.inputEvent(evt);
+    });
+
+    window.addEventListener('keypress', function (evt) {
+        evt.preventDefault();
+
+        if (level !== null)
+            level.inputEvent(evt);
     });
 
     mainCanvas.addEventListener('mousedown', function (evt) {
         evt.preventDefault();
 
-        console.log(evt);
-        /*
-        if (evt.button === 2) {
-            mouseDragStart = evt;
-            oldMapOffset = gameMap.getMapOffset();
-            return;
-        }
+        if (level !== null)
+            level.inputEvent(evt);
 
-        if (evt.button === 0) {
-            var component = ui.getComponentFromPoint(ui.mousePos.x, ui.mousePos.y);
-
-            if (component != null) {
-                component.click();
-                return;
-            }
-
-            for (var i in selectedUnits) {
-                var unit = selectedUnits[i],
-                    loc = gameMap.canvasToMapCoords(ui.mousePos.x, ui.mousePos.y);
-
-                unit.moveTo(loc);
-            }
-            return;
-        }*/
     });
 
     window.addEventListener('mousemove', function (evt) {
         evt.preventDefault();
 
-        //console.log(evt);
-        /*
-        if (oldMapOffset !== null) {
-            gameMap.setMapOffset({
-                x: oldMapOffset.x + evt.x - mouseDragStart.x,
-                y: oldMapOffset.y + evt.y - mouseDragStart.y
-            });
-        } else {
-            ui.mousePos.x = evt.x - canvasOffsets.left;
-            ui.mousePos.y = evt.y - canvasOffsets.top;
-        }*/
+        if (level !== null)
+            level.inputEvent(evt);
     });
 
     window.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
 
-        console.log(evt);
-
-        //oldMapOffset = null;
+        if (level !== null)
+            level.inputEvent(evt);
     });
 
     // Handle the resize event. We want to size the canvas so it sits 
@@ -89,6 +74,10 @@
             top: mainCanvas.offsetTop,
             left: mainCanvas.offsetLeft
         };
+
+        if (level !== null) {
+            level.setCanvasOffsets(canvasOffsets);
+        }
 
         // Get total space above canvas
         var headerSize = canvasOffsets.top;
@@ -108,11 +97,12 @@
         $(mainCanvas).attr('height', (newCanvasSize - footerSize) + 'px').attr('width', $(window).width() + 'px');
 
         // Update the map viewsize settings.
-        if (level !== null)
+        if (level !== null) {
             level.resize({
                 height: mainCanvas.height,
                 width: mainCanvas.width
             });
+        }
     }
 
     function update(gameTime, dt) {
@@ -162,8 +152,8 @@
         draw();
     }
 
-    //level = level1();
-    //level.load();
+    level = level1();
+    level.load();
 
     requestAnimationFrame(gameLoop);
 

@@ -7,7 +7,11 @@
         prog = null,
         prog2 = null,
         btn = null,
-        btn2 = null;
+        btn2 = null,
+        canvasOffsets = {
+            top: 0,
+            left: 0
+        };
 
     var gameMap = null;
 
@@ -97,12 +101,66 @@
         gameMap.addUnit(u);
     }
 
-    function mouseEvent(evt) {
-        //switch
+    function handleMouseUp(evt) {
+        oldMapOffset = null;
     }
 
-    function keyboardEvent(evt) {
-        
+    function handleMouseDown(evt) {
+        if (evt.button === 2) {
+            mouseDragStart = evt;
+            oldMapOffset = gameMap.getMapOffset();
+            return;
+        }
+
+        if (evt.button === 0) {
+            var component = ui.getComponentFromPoint(ui.mousePos.x, ui.mousePos.y);
+
+            if (component != null) {
+                component.click();
+                return;
+            }
+
+            for (var i in selectedUnits) {
+                var unit = selectedUnits[i],
+                    loc = gameMap.canvasToMapCoords(ui.mousePos.x, ui.mousePos.y);
+
+                unit.moveTo(loc);
+            }
+            return;
+        }
+    }
+
+    function handleMouseMove(evt) { 
+        if (oldMapOffset !== null) {
+            gameMap.setMapOffset({
+                x: oldMapOffset.x + evt.x - mouseDragStart.x,
+                y: oldMapOffset.y + evt.y - mouseDragStart.y
+            });
+        } else {
+            ui.mousePos.x = evt.x - canvasOffsets.left;
+            ui.mousePos.y = evt.y - canvasOffsets.top;
+        }
+    }
+
+    function handleKeyDown(evt) {
+
+    }
+
+    function inputEvent(evt) {
+        switch (evt.type) {
+            case 'mouseup':
+                handleMouseUp(evt);
+                break;
+            case 'mousedown':
+                handleMouseDown(evt);
+                break;
+            case 'mousemove':
+                handleMouseMove(evt);
+                break;
+            case 'keydown':
+                handleKeyDown(evt);
+                break;
+        }
     }
 
     function resize(evt) {
@@ -129,15 +187,17 @@
         gameMap.draw(ctx);
     }
 
-
-
-
     return {
         load: load,
-        mouseEvent: mouseEvent,
-        keyboardEvent: keyboardEvent,
+        inputEvent: inputEvent,
         resize: resize,
         update: update,
-        draw: draw
+        draw: draw,
+        setCanvasOffsets: function(offsets) {
+            canvasOffsets = offsets;
+        },
+        getCanvasOffsets: function() {
+            return canvasOffsets;
+        }
     };
 });
