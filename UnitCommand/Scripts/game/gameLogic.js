@@ -1,4 +1,4 @@
-﻿var gameLogic = (function (canvasOffsets, ctx) {
+﻿var gameLogic = (function (parentElement) {
     var eventManager = null,
         stateManager = null,
         lastUpdateTime = null,
@@ -17,8 +17,8 @@
         
     }
 
-    return {
+    return jsExtender({
         draw: draw,
         update: update
-    }
+    });
 });
