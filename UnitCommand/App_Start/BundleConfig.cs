@@ -9,9 +9,6 @@ namespace UnitCommand
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/game").Include(
-                        "~/Scripts/game/events/keyboardEvent.js",
-                        "~/Scripts/game/events/mouseEvent.js",
-                        "~/Scripts/game/eventHandlers.js",
                         "~/Scripts/game/ui.js",
                         "~/Scripts/game/ui.component.js",
                         "~/Scripts/game/ui.button.js",
@@ -21,6 +18,7 @@ namespace UnitCommand
                         "~/Scripts/game/mapData.js",
                         "~/Scripts/game/map.js",
                         "~/Scripts/game/pathFinder.js",
+                        "~/Scripts/game/levels/levelClass.js",
                         "~/Scripts/game/levels/level1.js",
                         "~/Scripts/game/levels/level2.js",
                         "~/Scripts/game/main.js"));

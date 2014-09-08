@@ -1,4 +1,4 @@
-﻿var level1 = (function () {
+﻿var level1 = (function (canvas) {
     var progressUpdate = 1000,
         progressUpdateElapsed = 0,
         oldMapOffset = null,
@@ -7,15 +7,21 @@
         prog = null,
         prog2 = null,
         btn = null,
-        btn2 = null,
-        canvasOffsets = {
-            top: 0,
-            left: 0
-        };
+        btn2 = null;
 
     var gameMap = null;
 
+    var level = levelClass({
+        load: load,
+        draw: draw,
+        update: update,
+        resize: resize,
+        inputEvent: inputEvent
+    }).create(canvas);
+
     function load() {
+        console.log('level 1 loaded');
+
         gameMap = map.createMap({
             tileSize: 45,
             dataSettings: {
@@ -99,6 +105,8 @@
 
         selectedUnits.push(u);
         gameMap.addUnit(u);
+
+        this.base();
     }
 
     function handleMouseUp(evt) {
@@ -137,6 +145,7 @@
                 y: oldMapOffset.y + evt.y - mouseDragStart.y
             });
         } else {
+            var canvasOffsets = level.getCanvasOffset();
             ui.mousePos.x = evt.x - canvasOffsets.left;
             ui.mousePos.y = evt.y - canvasOffsets.top;
         }
@@ -187,17 +196,5 @@
         gameMap.draw(ctx);
     }
 
-    return {
-        load: load,
-        inputEvent: inputEvent,
-        resize: resize,
-        update: update,
-        draw: draw,
-        setCanvasOffsets: function(offsets) {
-            canvasOffsets = offsets;
-        },
-        getCanvasOffsets: function() {
-            return canvasOffsets;
-        }
-    };
+    return level;
 });

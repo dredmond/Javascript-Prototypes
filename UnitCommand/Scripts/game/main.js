@@ -75,10 +75,6 @@
             left: mainCanvas.offsetLeft
         };
 
-        if (level !== null) {
-            level.setCanvasOffsets(canvasOffsets);
-        }
-
         // Get total space above canvas
         var headerSize = canvasOffsets.top;
 
@@ -152,8 +148,7 @@
         draw();
     }
 
-    level = level1();
-    level.load();
+    level = level1(mainCanvas);
 
     requestAnimationFrame(gameLoop);
 
