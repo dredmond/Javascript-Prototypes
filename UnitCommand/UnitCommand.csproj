@@ -252,6 +252,7 @@
     <Content Include="Scripts\game\levels\level1.js" />
     <Content Include="Scripts\game\levels\level2.js" />
     <Content Include="Scripts\game\levels\levelClass.js" />
+    <Content Include="Scripts\game\levels\mapGenerator.js" />
     <Content Include="Scripts\game\map.js" />
     <Content Include="Scripts\game\pathFinder.js" />
     <Content Include="Scripts\game\tileTypes.js" />
@@ -332,6 +333,7 @@
     <Content Include="Views\Home\PrototypeTest.cshtml" />
     <Content Include="Scripts\jsExtender\.git" />
     <Content Include="Scripts\jsExtender\README.md" />
+    <Content Include="Views\Home\MapGenTest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

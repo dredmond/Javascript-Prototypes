@@ -17,5 +17,10 @@ namespace UnitCommand.Controllers
         {
             return View();
         }
+
+        public ActionResult MapGenTest()
+        {
+            return View();
+        }
     }
 }
