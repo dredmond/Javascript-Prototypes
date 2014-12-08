@@ -32,29 +32,43 @@ var mapGenerator = (function (difficulty) {
 
     var mapClass = jsExtender({
         constructor: function () {
-            var totalAreas = this.getRandom(difficulty, difficulty * 2);
+            var totalAreas = this.getRandom(difficulty, difficulty * 3);
             console.log(totalAreas);
+
+            var maxAreas = Math.ceil(totalAreas / 2);
 
             // Remove start and end from totalArea Count
             totalAreas -= 2;
 
             // Create Starting Area
             var startArea = {
+                x: this.getRandom(0, maxAreas),
+                y: this.getRandom(0, maxAreas),
                 type: areaTypes.start
             };
 
             // Create Ending Area
             var endArea = {
-                type: areaTypes.end
+                x: this.getRandom(0, maxAreas),
+                y: this.getRandom(0, maxAreas),
+                type: areaTypes.exit
             };
+
+            console.log(startArea, endArea);
 
             // Build other areas and attach them.
             for (var i = 0; i < totalAreas; i++) {
-                
+                var area = {
+                    x: this.getRandom(0, maxAreas),
+                    y: this.getRandom(0, maxAreas),
+                    type: areaTypes.basic
+                };
+
+                console.log(area);
             }
         },
         getRandom: function(minVal, maxVal) {
-            return Math.floor(Math.random() * maxVal) + minVal;
+            return Math.floor(Math.min(Math.random() * maxVal + minVal, maxVal));
         }
     });
 
