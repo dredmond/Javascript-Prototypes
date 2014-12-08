@@ -28,7 +28,8 @@ var areaClass = (function (extension) {
 });
 
 var mapGenerator = (function (difficulty) {
-    var areas = [];
+    var areas = [],
+        areaDisplaySize = 50;
 
     var mapClass = jsExtender({
         constructor: function () {
@@ -121,14 +122,16 @@ var mapGenerator = (function (difficulty) {
                         continue;
 
                     var area = $('<div>');
-                    area.addClass('map-area').css('top', y * 20).css('left', x * 20);
+                    area.addClass('map-area').css('top', y * areaDisplaySize).css('left', x * areaDisplaySize);
 
                     switch (areas[x][y].type) {
                         case areaTypes.start:
                             area.css('background-color', 'green');
+                            area.html('START');
                             break;
                         case areaTypes.exit:
                             area.css('background-color', 'red');
+                            area.html('END');
                             break;
                         default:
                             break;
