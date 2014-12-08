@@ -2,12 +2,31 @@
     ViewBag.Title = "MapGenTest";
 }
 
-
-
 @section scripts {
     <script src="/Scripts/jsExtender/jsExtender.js"></script>
     <script src="/Scripts/game/levels/mapGenerator.js"></script>
 }
 
-<h2>MapGenTest</h2>
+<style>
+     #mapArea {
+         position: relative;
+         width: 500px;
+         height: 500px;
+         margin-left: 100px; 
+     }
 
+     .map-area {
+         position: absolute;
+         width: 20px;
+         height: 20px;
+         background-color: gray;
+     }
+</style>
+<h2>MapGenTest</h2>
+<div id="mapArea"></div>
+<script>
+    //for (var i = 0; i < 20; i++) {
+    var map = mapGenerator(5);
+    map.showMap();
+    //}
+</script>
