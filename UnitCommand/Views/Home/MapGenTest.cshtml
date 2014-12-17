@@ -33,7 +33,23 @@
 <div id="mapArea"></div>
 <script>
     //for (var i = 0; i < 20; i++) {
-    var map = mapGenerator(5);
+    var mapGenClass = mapGenerator({
+        constructor: function () {
+            var proto = mapGenClass.prototype;
+            console.log('Map Generator Initialized.');
+
+            proto.appendFunctions({
+                test2: function () {
+                    console.log('test2 from mapGenClass.');
+                    this.base();
+                }
+            });
+        }
+    });
+    var map = mapGenClass.create(5);
+    map.generateMap();
     map.showMap();
+    map.test();
+    map.test2();
     //}
 </script>
