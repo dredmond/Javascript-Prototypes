@@ -1,8 +1,6 @@
 ﻿ui.progressbar = ui.progressbar || (function() {
     var progressbar = ui.component.extend({
         constructor: function(name, options) {
-            this.base(name, options);
-
             this.options.maxProgress = !jsExtender.isUndefinedOrNull(options.maxProgress) ? options.maxProgress : 100.0;
             this.options.minProgress = !jsExtender.isUndefinedOrNull(options.minProgress) ? options.minProgress : 0;
             this.options.progressColor = !jsExtender.isUndefinedOrNull(options.progressColor) ? options.progressColor : 'green';

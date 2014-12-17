@@ -1,8 +1,6 @@
 ﻿ui.button = ui.button || (function () {
     var button = ui.component.extend({
         constructor: function (name, options) {
-            this.base(name, options);
-
             this.options.font = !jsExtender.isUndefinedOrNull(options.font) ? options.font : '15px Georgia';
             this.options.text = !jsExtender.isUndefinedOrNull(options.text) ? options.text : '';
         },

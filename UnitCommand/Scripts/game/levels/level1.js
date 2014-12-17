@@ -105,8 +105,6 @@
 
         selectedUnits.push(u);
         gameMap.addUnit(u);
-
-        this.base();
     }
 
     function handleMouseUp(evt) {
