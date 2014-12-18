@@ -4,6 +4,13 @@
     exit: 2
 };
 
+var direction = {
+    up: 0,
+    down: 1,
+    left: 2,
+    right: 3
+};
+
 var areaClass = (function (extension) {
     var objects = [],
         tiles = [],
@@ -50,6 +57,30 @@ var mapGenerator = (function (extension) {
                 return true;
             }
 
+            function getAvailableChildLocations(area) {
+                var available = [],
+                    x = area.x,
+                    y = area.y;
+
+                if (!areaExists(x + 1, y))
+                    available.push({ x: x + 1, y: y });
+
+                if (!areaExists(x - 1, y))
+                    available.push({ x: x - 1, y: y });
+
+                if (!areaExists(x, y + 1))
+                    available.push({ x: x, y: y + 1 });
+
+                if (!areaExists(x, y - 1))
+                    available.push({ x: x, y: y - 1 });
+
+                return available;
+            }
+
+            function canHaveChildren(area) {
+                return getAvailableChildLocations(area).length > 0;
+            }
+
             function generateMap(totalAreas) {
                 if (!totalAreas || totalAreas < difficulty) {
                     totalAreas = getRandom(difficulty, difficulty * 3);
@@ -70,7 +101,10 @@ var mapGenerator = (function (extension) {
                 // Remove start and end from totalArea Count
                 totalAreas -= 2;
 
-                var areaAdded = false;
+                var areaAdded = false,
+                    i,
+                    area = null,
+                    nextDirection;
 
                 // Create Starting Area
                 var startArea = null, endArea = null;
@@ -86,14 +120,66 @@ var mapGenerator = (function (extension) {
                     areaAdded = addArea(startArea);
                 }
 
+                var currentArea = startArea;
+                for (i = 0; i < difficulty; i++) {
+                    areaAdded = false;
+
+                    if (!currentArea)
+                        break;
+
+                    while (!areaAdded && canHaveChildren(currentArea)) {
+                        area = {
+                            x: currentArea.x,
+                            y: currentArea.y,
+                            type: areaTypes.basic
+                        };
+
+                        nextDirection = getRandom(0, 3);
+                        switch (nextDirection) {
+                            case direction.up:
+                                area.y += 1;
+                                break;
+                            case direction.down:
+                                area.y -= 1;
+                                break;
+                            case direction.left:
+                                area.x -= 1;
+                                break;
+                            case direction.right:
+                                area.y += 1;
+                                break;
+                        }
+
+                        areaAdded = addArea(area);
+                    }
+
+                    currentArea = area;
+                }
+
                 areaAdded = false;
-                while (!areaAdded) {
+                while (!areaAdded && canHaveChildren(currentArea)) {
                     // Create Ending Area
                     endArea = {
-                        x: getRandom(0, maxAreas),
-                        y: getRandom(0, maxAreas),
+                        x: currentArea.x,
+                        y: currentArea.y,
                         type: areaTypes.exit
                     };
+
+                    nextDirection = getRandom(0, 3);
+                    switch (nextDirection) {
+                        case direction.up:
+                            endArea.y += 1;
+                            break;
+                        case direction.down:
+                            endArea.y -= 1;
+                            break;
+                        case direction.left:
+                            endArea.x -= 1;
+                            break;
+                        case direction.right:
+                            endArea.y += 1;
+                            break;
+                    }
 
                     areaAdded = addArea(endArea);
                 }
@@ -101,8 +187,7 @@ var mapGenerator = (function (extension) {
                 console.log(startArea, endArea);
 
                 // Build other areas and attach them.
-                for (var i = 0; i < totalAreas; i++) {
-                    var area = null;
+                for (i = 0; i < totalAreas; i++) {
                     areaAdded = false;
 
                     while (!areaAdded) {
