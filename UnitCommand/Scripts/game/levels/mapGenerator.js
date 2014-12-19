@@ -39,6 +39,7 @@ var mapGenerator = (function (extension) {
         constructor: function (difficulty) {
             var areas = [],
                 areaDisplaySize = 50,
+                maxAreas = 0,
                 proto = mapClass.prototype;
 
             function getRandom(minVal, maxVal) {
@@ -50,6 +51,9 @@ var mapGenerator = (function (extension) {
             }
 
             function addArea(area) {
+                if (area.x < 0 || area.y < 0 || area.x >= maxAreas || area.y >= maxAreas)
+                    return false;
+
                 if (areaExists(area.x, area.y))
                     return false;
 
@@ -62,16 +66,16 @@ var mapGenerator = (function (extension) {
                     x = area.x,
                     y = area.y;
 
-                if (!areaExists(x + 1, y))
+                if (x < maxAreas - 2 && !areaExists(x + 1, y))
                     available.push({ x: x + 1, y: y });
 
-                if (!areaExists(x - 1, y))
+                if (x > 0 && !areaExists(x - 1, y))
                     available.push({ x: x - 1, y: y });
 
-                if (!areaExists(x, y + 1))
+                if (y < maxAreas - 2 && !areaExists(x, y + 1))
                     available.push({ x: x, y: y + 1 });
 
-                if (!areaExists(x, y - 1))
+                if (y > 0 && !areaExists(x, y - 1))
                     available.push({ x: x, y: y - 1 });
 
                 return available;
@@ -88,7 +92,7 @@ var mapGenerator = (function (extension) {
 
                 console.log(totalAreas);
 
-                var maxAreas = Math.ceil(totalAreas / 2);
+                maxAreas = Math.ceil(totalAreas / 2);
                 for (var x = 0; x < maxAreas; x++) {
                     areas[x] = [];
                     for (var y = 0; y < maxAreas; y++) {
