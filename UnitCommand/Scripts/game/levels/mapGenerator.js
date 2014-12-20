@@ -1,7 +1,8 @@
 ﻿var areaTypes = {
-    basic: 0,
-    start: 1,
-    exit: 2
+    empty: 0,
+    basic: 1,
+    start: 2,
+    exit: 3
 };
 
 var direction = {
@@ -81,8 +82,25 @@ var mapGenerator = (function (extension) {
                 return available;
             }
 
-            function canHaveChildren(area) {
+            function canHaveNeighbors(area) {
                 return getAvailableChildLocations(area).length > 0;
+            }
+
+            function inMapBoundry(x, y) {
+                return (x >= 0 && x < maxAreas && y >= 0 && y < maxAreas);
+            }
+
+            function isAreaInMapBoundry(area) {
+                return inMapBoundry(area.x, area.y);
+            }
+
+            function getRandomNeighbor(area, allowNeighbors) {
+                var x = area.x,
+                    y = area.y;
+
+                allowNeighbors = !jsExtender.isUndefinedOrNull(allowNeighbors) ? allowNeighbors : true;
+
+
             }
 
             function generateMap(totalAreas) {
@@ -223,6 +241,9 @@ var mapGenerator = (function (extension) {
                         area.addClass('map-area').css('top', y * areaDisplaySize).css('left', x * areaDisplaySize);
 
                         switch (areas[x][y].type) {
+                            case areaTypes.basic:
+                                area.css('background-color', 'white');
+                                break;
                             case areaTypes.start:
                                 area.css('background-color', 'green');
                                 area.html('START');
