@@ -89,7 +89,28 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
-                // Steps to create map...
+                // Build Max Allowed Counters
+                // Exit = 1 - We can only ever have 1 exit.
+                // Secrets = ?
+                // Keys = ?
+                // Doors = ?
+                // Shops = ?
+
+                // Steps to Create Map
+                // 1. Select random cell for starting area.
+                // 2. Get neighbor cells and select one randomly.
+                // 3. If cell doesn't exist create it. (Repeat step 2)
+                // 4. Increment cell count and distance from starting cell.
+
+                // Cell Creation Steps
+                // 1. Randomly decide on area type. (Normal, Secret, Key, Shop, Exit, etc.)
+                // 2. Check if rules allow that room type to exist in the chosen location. (Otherwise, Repeat Step 1)
+                // 3. Negate room counter for the selected type.
+                // 4. Return to Map Creation Step.
+
+                // Map Grammar
+                // S -> R
+                // 
             }
 
             function showMap() {
