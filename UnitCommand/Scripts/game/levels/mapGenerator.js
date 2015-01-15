@@ -62,30 +62,6 @@ var mapGenerator = (function (extension) {
                 return true;
             }
 
-            function getAvailableChildLocations(area) {
-                var available = [],
-                    x = area.x,
-                    y = area.y;
-
-                if (x < maxAreas - 2 && !areaExists(x + 1, y))
-                    available.push({ x: x + 1, y: y });
-
-                if (x > 0 && !areaExists(x - 1, y))
-                    available.push({ x: x - 1, y: y });
-
-                if (y < maxAreas - 2 && !areaExists(x, y + 1))
-                    available.push({ x: x, y: y + 1 });
-
-                if (y > 0 && !areaExists(x, y - 1))
-                    available.push({ x: x, y: y - 1 });
-
-                return available;
-            }
-
-            function canHaveNeighbors(area) {
-                return getAvailableChildLocations(area).length > 0;
-            }
-
             function inMapBoundry(x, y) {
                 return (x >= 0 && x < maxAreas && y >= 0 && y < maxAreas);
             }
@@ -94,22 +70,15 @@ var mapGenerator = (function (extension) {
                 return inMapBoundry(area.x, area.y);
             }
 
-            function getRandomNeighbor(area, allowNeighbors) {
-                var x = area.x,
-                    y = area.y;
-
-                allowNeighbors = !jsExtender.isUndefinedOrNull(allowNeighbors) ? allowNeighbors : true;
-
-
-            }
-
             function generateMap(totalAreas) {
+                // Get total map size.
                 if (!totalAreas || totalAreas < difficulty) {
                     totalAreas = getRandom(difficulty, difficulty * 3);
                 }
 
                 console.log(totalAreas);
 
+                // Initialize the map areas.
                 maxAreas = Math.ceil(totalAreas / 2);
                 for (var x = 0; x < maxAreas; x++) {
                     areas[x] = [];
@@ -120,112 +89,7 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
-                // Remove start and end from totalArea Count
-                totalAreas -= 2;
-
-                var areaAdded = false,
-                    i,
-                    area = null,
-                    nextDirection;
-
-                // Create Starting Area
-                var startArea = null, endArea = null;
-
-                while (!areaAdded) {
-                    // Create Starting Area
-                    startArea = {
-                        x: getRandom(0, maxAreas),
-                        y: getRandom(0, maxAreas),
-                        type: areaTypes.start
-                    };
-
-                    areaAdded = addArea(startArea);
-                }
-
-                var currentArea = startArea;
-                for (i = 0; i < difficulty; i++) {
-                    areaAdded = false;
-
-                    if (!currentArea)
-                        break;
-
-                    while (!areaAdded && canHaveChildren(currentArea)) {
-                        area = {
-                            x: currentArea.x,
-                            y: currentArea.y,
-                            type: areaTypes.basic
-                        };
-
-                        nextDirection = getRandom(0, 3);
-                        switch (nextDirection) {
-                            case direction.up:
-                                area.y += 1;
-                                break;
-                            case direction.down:
-                                area.y -= 1;
-                                break;
-                            case direction.left:
-                                area.x -= 1;
-                                break;
-                            case direction.right:
-                                area.y += 1;
-                                break;
-                        }
-
-                        areaAdded = addArea(area);
-                    }
-
-                    currentArea = area;
-                }
-
-                areaAdded = false;
-                while (!areaAdded && canHaveChildren(currentArea)) {
-                    // Create Ending Area
-                    endArea = {
-                        x: currentArea.x,
-                        y: currentArea.y,
-                        type: areaTypes.exit
-                    };
-
-                    nextDirection = getRandom(0, 3);
-                    switch (nextDirection) {
-                        case direction.up:
-                            endArea.y += 1;
-                            break;
-                        case direction.down:
-                            endArea.y -= 1;
-                            break;
-                        case direction.left:
-                            endArea.x -= 1;
-                            break;
-                        case direction.right:
-                            endArea.y += 1;
-                            break;
-                    }
-
-                    areaAdded = addArea(endArea);
-                }
-
-                console.log(startArea, endArea);
-
-                // Build other areas and attach them.
-                for (i = 0; i < totalAreas; i++) {
-                    areaAdded = false;
-
-                    while (!areaAdded) {
-                        area = {
-                            x: getRandom(0, maxAreas),
-                            y: getRandom(0, maxAreas),
-                            type: areaTypes.basic
-                        };
-
-                        areaAdded = addArea(area);
-                    }
-
-                    console.log(area);
-                }
-
-                console.log(areas);
+                // Steps to create map...
             }
 
             function showMap() {
