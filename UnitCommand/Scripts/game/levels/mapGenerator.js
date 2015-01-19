@@ -6,10 +6,10 @@
 };
 
 var direction = {
-    up: 0,
-    down: 1,
-    left: 2,
-    right: 3
+    north: 0,
+    east: 1,
+    south: 2,
+    west: 3
 };
 
 var areaClass = (function (extension) {
@@ -89,6 +89,12 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
+                buildMapGraph(null, difficulty);
+
+                //var startNode = buildMapGraph(null, maxAreas, maxAreas, 15);
+                //console.log(startNode);
+
+
                 // Build Max Allowed Counters
                 // Exit = 1 - We can only ever have 1 exit.
                 // Secrets = ?
@@ -111,6 +117,158 @@ var mapGenerator = (function (extension) {
                 // Map Grammar
                 // S -> R
                 // 
+            }
+
+            function buildMapGraph(startLoc, totalNodes) {
+                if (jsExtender.isUndefinedOrNull(startLoc)) {
+                    startLoc = {
+                        x: getRandom(0, maxAreas),
+                        y: getRandom(0, maxAreas),
+                        type: areaTypes.start
+                    };
+
+                    addArea(startLoc);
+                }
+
+                var currentLoc = startLoc;
+
+                for (var i = 0; i < totalNodes; i++) {
+                    var availableChildren = getAvailableLocations(currentLoc);
+                    var randVal = getRandom(0, availableChildren.length);
+                    var child = availableChildren[randVal];
+                    child.type = areaTypes.basic;
+                    currentLoc = child;
+                    addArea(child);
+                }
+            }
+
+            function getAvailableLocations(loc) {
+                var children = [],
+                    north = { x: loc.x, y: loc.y + 1 },
+                    south = { x: loc.x, y: loc.y - 1 },
+                    east = { x: loc.x + 1, y: loc.y },
+                    west = { x: loc.x - 1, y: loc.y }
+
+                if (isAreaInMapBoundry(north) && !areaExists(north.x, north.y))
+                    children.push(north);
+
+                if (isAreaInMapBoundry(south) && !areaExists(south.x, south.y))
+                    children.push(south);
+
+                if (isAreaInMapBoundry(east) && !areaExists(east.x, east.y))
+                    children.push(east);
+
+                if (isAreaInMapBoundry(west) && !areaExists(west.x, west.y))
+                    children.push(west);
+
+                return children;
+            }
+
+            function getChildrenLocations(loc) {
+                var children = [],
+                    north = { x: loc.x, y: loc.y + 1 },
+                    south = { x: loc.x, y: loc.y - 1 },
+                    east = { x: loc.x + 1, y: loc.y },
+                    west = { x: loc.x - 1, y: loc.y }
+
+                if (isAreaInMapBoundry(north) && areaExists(north.x, north.y))
+                    children.push(north);
+
+                if (isAreaInMapBoundry(south) && areaExists(south.x, south.y))
+                    children.push(south);
+
+                if (isAreaInMapBoundry(east) && areaExists(east.x, east.y))
+                    children.push(east);
+
+                if (isAreaInMapBoundry(west) && areaExists(west.x, west.y))
+                    children.push(west);
+
+                return children;
+            }
+
+            function addNodeRandomly(current, next) {
+                var randomDir = null;
+
+                while (true) {
+                    var availableDirs = getAvailableDirections(current);
+
+                    // Randomly choose a new current node if the current node has no room.
+                    if (availableDirs.length === 0) {
+                        randomDir = getRandomDirectionName();
+                        current = current[randomDir];
+                        continue;
+                    }
+
+                    var rand = getRandom(0, availableDirs.length),
+                        dirName = availableDirs[rand];
+                    current[dirName] = next;
+                    next[getReverseDirectionName(dirName)] = current;
+                    break;
+                }
+            }
+
+            function getRandomDirectionName() {
+                var randomVal = getRandom(0, 4);
+                return getDirectionName(randomVal);
+            }
+
+            function getDirectionName(dirNum) {
+                for (var d in direction) {
+                    if (direction[d] === dirNum)
+                        return d;
+                }
+
+                return null;
+            }
+
+            function getReverseDirectionName(directionName) {
+                if (directionName === 'north') {
+                    return 'south';
+                }
+
+                if (directionName === 'south') {
+                    return 'north';
+                }
+
+                if (directionName === 'east') {
+                    return 'west';
+                }
+
+                if (directionName === 'west') {
+                    return 'east';
+                }
+            }
+
+            function getAvailableDirections(node) {
+                var availableDirections = [];
+
+                if (node == null || node.north === null ) {
+                    availableDirections.push('north');
+                }
+
+                if (node == null || node.east === null) {
+                    availableDirections.push('east');
+                }
+
+                if (node == null || node.south === null) {
+                    availableDirections.push('south');
+                }
+
+                if (node == null || node.west === null) {
+                    availableDirections.push('west');
+                }
+
+                return availableDirections;
+            }
+
+            function createAreaNode(type) {
+                return {
+                    type: type,
+                    north: null,
+                    east: null,
+                    south: null,
+                    west: null
+                };
             }
 
             function showMap() {
