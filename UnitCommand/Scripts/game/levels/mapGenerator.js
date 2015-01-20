@@ -5,34 +5,133 @@
     exit: 3
 };
 
-var direction = {
+var directions = {
     north: 0,
     east: 1,
     south: 2,
     west: 3
 };
 
-var areaClass = (function (extension) {
-    var objects = [],
-        tiles = [],
-        enemies = [],
-        type = 0;
+var connectionTypes = {
+    unknown: 0,
+    attached: 1,
+    door: 2,
+    wall: 3,
+    bridge: 4
+};
 
-    var areaBaseClass = jsExtender({
-        constructor: function () {
+var connectionClass = jsExtender({
+    constructor: function (type) {
+        var proto = connectionClass.prototype;
 
-        },
-        draw: function (ctx) {
-            // draw tiles
-            // draw objects
-            // draw enemies
-        },
-        update: function (currentGameTime, dt) {
+        proto.appendFunctions({
+            getType: function() {
+                return type;
+            },
+            draw: function (ctx) {
 
+            },
+            update: function (currentGameTime, dt) {
+
+            }
+        });
+    }
+});
+
+var connectionCollectionClass = jsExtender({
+    constructor: function() {
+        var connectionArray = [null, null, null, null],
+            proto = connectionCollectionClass.prototype;
+
+        function isValidDirection(direction) {
+            return (direction >= 0 && direction < 4);
         }
-    });
 
-    return areaBaseClass.extend(extension);
+        proto.appendFunctions({
+            hasEmptyConnections: function() {
+                return this.getEmptyConnectionDirections().length > 0;
+            },
+            getEmptyConnectionDirections: function() {
+                var emptyConnections = [];
+                for (var i = 0; i < connectionArray.length; i++) {
+                    if (connectionArray[i] != null)
+                        continue;
+
+                    emptyConnections.push(i);
+                }
+
+                return emptyConnections;
+            },
+            hasConnections: function() {
+                return this.getConnectionDirections().length > 0;
+            },
+            getConnectionDirections: function() {
+                var emptyConnections = [];
+                for (var i = 0; i < connectionArray.length; i++) {
+                    if (connectionArray[i] == null)
+                        continue;
+
+                    emptyConnections.push(i);
+                }
+
+                return emptyConnections;
+            },
+            setConnection: function(direction, connection) {
+                if (!isValidDirection(direction))
+                    throw 'Invalid Direction: ' + direction;
+
+                connectionArray[direction] = connection;
+            },
+            getConnection: function (direction) {
+                if (!isValidDirection(direction))
+                    throw 'Invalid Direction: ' + direction;
+
+                return connectionArray[direction];
+            },
+            draw: function (ctx) {
+                var connections = this.getConnectionDirections();
+                for (var i = 0; i < connections.length; i++) {
+                    var direction = connections[i];
+                    connectionArray[direction].draw(ctx);
+                }
+            },
+            update: function (currentGameTime, dt) {
+                var connections = this.getConnectionDirections();
+                for (var i = 0; i < connections.length; i++) {
+                    var direction = connections[i];
+                    connectionArray[direction].update(currentGameTime, dt);
+                }
+            }
+        });
+    }
+});
+
+var areaClass = jsExtender({
+    constructor: function (type, x, y) {
+        var objects = [],
+            tiles = [],
+            enemies = [],
+            connections = connectionCollectionClass.create(),
+            proto = areaClass.prototype;
+
+        proto.appendFunctions({
+            getConnections: function() {
+                return connections;
+            },
+            getType: function() {
+                return type;
+            },
+            setType: function(areaType) {
+                type = areaType;
+            },
+            draw: function (ctx) {
+                connections.draw(ctx);
+            },
+            update: function(currentGameTime, dt) {
+                connections.update(currentGameTime, dt);
+            }
+        });
+    }
 });
 
 var mapGenerator = (function (extension) {
@@ -213,8 +312,8 @@ var mapGenerator = (function (extension) {
             }
 
             function getDirectionName(dirNum) {
-                for (var d in direction) {
-                    if (direction[d] === dirNum)
+                for (var d in directions) {
+                    if (directions[d] === dirNum)
                         return d;
                 }
 
