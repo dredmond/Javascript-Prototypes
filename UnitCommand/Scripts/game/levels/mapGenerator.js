@@ -21,9 +21,9 @@ var connectionTypes = {
 };
 
 var connectionClass = jsExtender({
-    constructor: function (type) {
+    constructor: function (type, direction, parentArea, childArea) {
         var proto = connectionClass.prototype;
-
+            
         proto.appendFunctions({
             getType: function() {
                 return type;
@@ -114,15 +114,13 @@ var areaClass = jsExtender({
             connections = connectionCollectionClass.create(),
             proto = areaClass.prototype;
 
+        this.x = x;
+        this.y = y;
+        this.type = type;
+
         proto.appendFunctions({
             getConnections: function() {
                 return connections;
-            },
-            getType: function() {
-                return type;
-            },
-            setType: function(areaType) {
-                type = areaType;
             },
             draw: function (ctx) {
                 connections.draw(ctx);
@@ -140,7 +138,8 @@ var mapGenerator = (function (extension) {
             var areas = [],
                 areaDisplaySize = 50,
                 maxAreas = 0,
-                proto = mapClass.prototype;
+                proto = mapClass.prototype,
+                areaId = 0;
 
             function getRandom(minVal, maxVal) {
                 return Math.floor(Math.min(Math.random() * maxVal + minVal, maxVal));
@@ -157,6 +156,7 @@ var mapGenerator = (function (extension) {
                 if (areaExists(area.x, area.y))
                     return false;
 
+                area.id = areaId++;
                 areas[area.x][area.y] = area;
                 return true;
             }
@@ -167,6 +167,46 @@ var mapGenerator = (function (extension) {
 
             function isAreaInMapBoundry(area) {
                 return inMapBoundry(area.x, area.y);
+            }
+
+            function createRandomNeighbor(parentArea) {
+                var neighbors = getAvailableNeighborLocations(parentArea);
+                if (neighbors.length == 0)
+                    return null;
+
+                var randVal = getRandom(0, neighbors.length);
+                var loc = neighbors[randVal];
+                var childArea = areaClass.create(areaTypes.basic, loc.x, loc.y);
+
+                return childArea;
+            }
+
+            function isAreaValid(area) {
+                return (isAreaInMapBoundry(area) && !areaExists(area.x, area.y));
+            }
+
+            function getAvailableNeighborLocations(area) {
+                var available = [];
+                var x = area.x,
+                    y = area.y;
+                    
+                var testArea = { x: x - 1, y: y };
+                for (; testArea.x <= x + 1; testArea.x += 2) {
+                    if (testArea.x == x || !isAreaValid(testArea))
+                        continue;
+
+                    available.push({ x: testArea.x, y: testArea.y });
+                }
+
+                testArea = { x: x, y: y - 1 };
+                for (; testArea.y <= y + 1; testArea.y+=2) {
+                    if (testArea.y == y || !isAreaValid(testArea))
+                        continue;
+
+                    available.push({ x: testArea.x, y: testArea.y });
+                }
+
+                return available;
             }
 
             function generateMap(totalAreas) {
@@ -188,12 +228,23 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
-                buildMapGraph(null, difficulty);
+                var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
+                addArea(startArea);
 
-                //var startNode = buildMapGraph(null, maxAreas, maxAreas, 15);
-                //console.log(startNode);
+                var currentArea = startArea;
+                for (var i = 0; i < difficulty; i++) {
+                    var nextArea = createRandomNeighbor(currentArea);
 
+                    if (!nextArea || !addArea(nextArea))
+                        break;
 
+                    currentArea = nextArea;
+                }
+
+                if (currentArea && currentArea !== startArea) {
+                    currentArea.type = areaTypes.exit;
+                }
+                
                 // Build Max Allowed Counters
                 // Exit = 1 - We can only ever have 1 exit.
                 // Secrets = ?
@@ -212,162 +263,6 @@ var mapGenerator = (function (extension) {
                 // 2. Check if rules allow that room type to exist in the chosen location. (Otherwise, Repeat Step 1)
                 // 3. Negate room counter for the selected type.
                 // 4. Return to Map Creation Step.
-
-                // Map Grammar
-                // S -> R
-                // 
-            }
-
-            function buildMapGraph(startLoc, totalNodes) {
-                if (jsExtender.isUndefinedOrNull(startLoc)) {
-                    startLoc = {
-                        x: getRandom(0, maxAreas),
-                        y: getRandom(0, maxAreas),
-                        type: areaTypes.start
-                    };
-
-                    addArea(startLoc);
-                }
-
-                var currentLoc = startLoc;
-
-                for (var i = 0; i < totalNodes; i++) {
-                    var availableChildren = getAvailableLocations(currentLoc);
-                    var randVal = getRandom(0, availableChildren.length);
-                    var child = availableChildren[randVal];
-                    child.type = areaTypes.basic;
-                    currentLoc = child;
-                    addArea(child);
-                }
-            }
-
-            function getAvailableLocations(loc) {
-                var children = [],
-                    north = { x: loc.x, y: loc.y + 1 },
-                    south = { x: loc.x, y: loc.y - 1 },
-                    east = { x: loc.x + 1, y: loc.y },
-                    west = { x: loc.x - 1, y: loc.y }
-
-                if (isAreaInMapBoundry(north) && !areaExists(north.x, north.y))
-                    children.push(north);
-
-                if (isAreaInMapBoundry(south) && !areaExists(south.x, south.y))
-                    children.push(south);
-
-                if (isAreaInMapBoundry(east) && !areaExists(east.x, east.y))
-                    children.push(east);
-
-                if (isAreaInMapBoundry(west) && !areaExists(west.x, west.y))
-                    children.push(west);
-
-                return children;
-            }
-
-            function getChildrenLocations(loc) {
-                var children = [],
-                    north = { x: loc.x, y: loc.y + 1 },
-                    south = { x: loc.x, y: loc.y - 1 },
-                    east = { x: loc.x + 1, y: loc.y },
-                    west = { x: loc.x - 1, y: loc.y }
-
-                if (isAreaInMapBoundry(north) && areaExists(north.x, north.y))
-                    children.push(north);
-
-                if (isAreaInMapBoundry(south) && areaExists(south.x, south.y))
-                    children.push(south);
-
-                if (isAreaInMapBoundry(east) && areaExists(east.x, east.y))
-                    children.push(east);
-
-                if (isAreaInMapBoundry(west) && areaExists(west.x, west.y))
-                    children.push(west);
-
-                return children;
-            }
-
-            function addNodeRandomly(current, next) {
-                var randomDir = null;
-
-                while (true) {
-                    var availableDirs = getAvailableDirections(current);
-
-                    // Randomly choose a new current node if the current node has no room.
-                    if (availableDirs.length === 0) {
-                        randomDir = getRandomDirectionName();
-                        current = current[randomDir];
-                        continue;
-                    }
-
-                    var rand = getRandom(0, availableDirs.length),
-                        dirName = availableDirs[rand];
-                    current[dirName] = next;
-                    next[getReverseDirectionName(dirName)] = current;
-                    break;
-                }
-            }
-
-            function getRandomDirectionName() {
-                var randomVal = getRandom(0, 4);
-                return getDirectionName(randomVal);
-            }
-
-            function getDirectionName(dirNum) {
-                for (var d in directions) {
-                    if (directions[d] === dirNum)
-                        return d;
-                }
-
-                return null;
-            }
-
-            function getReverseDirectionName(directionName) {
-                if (directionName === 'north') {
-                    return 'south';
-                }
-
-                if (directionName === 'south') {
-                    return 'north';
-                }
-
-                if (directionName === 'east') {
-                    return 'west';
-                }
-
-                if (directionName === 'west') {
-                    return 'east';
-                }
-            }
-
-            function getAvailableDirections(node) {
-                var availableDirections = [];
-
-                if (node == null || node.north === null ) {
-                    availableDirections.push('north');
-                }
-
-                if (node == null || node.east === null) {
-                    availableDirections.push('east');
-                }
-
-                if (node == null || node.south === null) {
-                    availableDirections.push('south');
-                }
-
-                if (node == null || node.west === null) {
-                    availableDirections.push('west');
-                }
-
-                return availableDirections;
-            }
-
-            function createAreaNode(type) {
-                return {
-                    type: type,
-                    north: null,
-                    east: null,
-                    south: null,
-                    west: null
-                };
             }
 
             function showMap() {
@@ -380,11 +275,12 @@ var mapGenerator = (function (extension) {
                             continue;
 
                         var area = $('<div>');
-                        area.addClass('map-area').css('top', y * areaDisplaySize).css('left', x * areaDisplaySize);
+                        area.addClass('map-area').css('top', y * (areaDisplaySize + 2)).css('left', x * (areaDisplaySize + 2));
 
                         switch (areas[x][y].type) {
                             case areaTypes.basic:
                                 area.css('background-color', 'white');
+                                area.html(areas[x][y].id);
                                 break;
                             case areaTypes.start:
                                 area.css('background-color', 'green');
