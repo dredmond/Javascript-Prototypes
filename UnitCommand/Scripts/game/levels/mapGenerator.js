@@ -228,23 +228,8 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
-                var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
-                addArea(startArea);
+                createLinearMap();
 
-                var currentArea = startArea;
-                for (var i = 0; i < difficulty; i++) {
-                    var nextArea = createRandomNeighbor(currentArea);
-
-                    if (!nextArea || !addArea(nextArea))
-                        break;
-
-                    currentArea = nextArea;
-                }
-
-                if (currentArea && currentArea !== startArea) {
-                    currentArea.type = areaTypes.exit;
-                }
-                
                 // Build Max Allowed Counters
                 // Exit = 1 - We can only ever have 1 exit.
                 // Secrets = ?
@@ -263,6 +248,47 @@ var mapGenerator = (function (extension) {
                 // 2. Check if rules allow that room type to exist in the chosen location. (Otherwise, Repeat Step 1)
                 // 3. Negate room counter for the selected type.
                 // 4. Return to Map Creation Step.
+            }
+
+            function createLinearMap() {
+                var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
+                addArea(startArea);
+
+                var currentArea = startArea;
+                for (var i = 0; i < difficulty; i++) {
+                    var nextArea = createRandomNeighbor(currentArea);
+
+                    if (!nextArea || !addArea(nextArea))
+                        break;
+
+                    currentArea = nextArea;
+                }
+
+                if (currentArea && currentArea !== startArea) {
+                    currentArea.type = areaTypes.exit;
+                }
+            }
+
+            function createCellularAutomataMap(totalAreas, steps) {
+                var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
+                addArea(startArea);
+                var areaStack = [];
+
+                var currentArea = startArea;
+
+
+
+                //while (steps > 0) {
+
+
+                //    steps--;
+                //}
+
+                // Rules:
+                // Start with all cells around starting cell as off.
+                // If cell has 1 neighbor active then it is also active.
+                // If cell has 4 neighbors active than it is not active.
+                // If cell has 3 neighbors active than it 
             }
 
             function showMap() {
