@@ -136,7 +136,7 @@ var mapGenerator = (function (extension) {
     var mapClass = jsExtender({
         constructor: function (difficulty) {
             var areas = [],
-                areaDisplaySize = 50,
+                areaDisplaySize = 40,
                 maxAreas = 0,
                 proto = mapClass.prototype,
                 areaId = 0;
