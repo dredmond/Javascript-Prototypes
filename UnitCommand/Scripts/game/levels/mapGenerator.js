@@ -192,18 +192,21 @@ var mapGenerator = (function (extension) {
                 return childArea;
             }
 
-            function getRandomNeighbor(parentArea) {
-                var neighbors = getAllNeighborLocations(parentArea);
-                if (neighbors.length == 0)
-                    return null;
+            function getRandomNeighbor(areaStack) {
+                var childArea = null;
 
-                var randVal = getRandom(0, neighbors.length);
-                var loc = neighbors[randVal];
+                while (areaStack.length > 0) {
+                    var randVal = getRandom(0, areaStack.length);
+                    var loc = areaStack[randVal];
+                    areaStack.splice(randVal, 1);
 
-                if (areaExists(loc.x, loc.y))
-                    return areas[loc.x][loc.y];
+                    if (areaExists(loc.x, loc.y))
+                        continue;
 
-                var childArea = areaClass.create(areaTypes.basic, loc.x, loc.y);
+                    childArea = areaClass.create(areaTypes.basic, loc.x, loc.y);
+                    break;
+                }
+
                 return childArea;
             }
 
@@ -322,12 +325,12 @@ var mapGenerator = (function (extension) {
             }
 
             function createCellularAutomataMap(totalAreas, steps) {
-                var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
+                var startLoc = { x: getRandom(0, maxAreas), y: getRandom(0, maxAreas) };
+                var startArea = areaClass.create(areaTypes.start, startLoc.x, startLoc.y);
                 addArea(startArea);
 
                 var areaStack = [];
 
-                areaStack.push(startArea);
                 startArea.dist = 0;
                 var currentArea = startArea;
                 var i = 0;
@@ -349,10 +352,11 @@ var mapGenerator = (function (extension) {
 
                     i++;
 
-                    var nextArea = createRandomNeighbor(currentArea);
-                    var availableNeighbors = getAvailableNeighborLocations(nextArea);
+                    var availableNeighbors = getAvailableNeighborLocations(currentArea);
+                    areaStack.push.apply(areaStack, availableNeighbors);
 
-                    
+                    var nextArea = getRandomNeighbor(areaStack);
+                    availableNeighbors = getAvailableNeighborLocations(nextArea);
 
                     // Remove area's with too many neighbors or with no neighbors.
                     //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
@@ -366,20 +370,18 @@ var mapGenerator = (function (extension) {
                         //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
                         //    // removeArea(nextArea);
                         //} else {
-                        if (availableNeighbors.length > 2) {
-                            addArea(nextArea);
-                            areaStack.push(nextArea);
-                            currentArea = nextArea;
-                            dist++;
-                            nextArea.dist = dist;
-                        } else {
-                            currentArea = areaStack.pop();
-                            dist--;
-                        }
+                    if (availableNeighbors.length >= 2) {
+                        addArea(nextArea);
+                        currentArea = nextArea;
+                        nextArea.dist = dist;
+                        dist++;
+                    } else {
+                        dist--;
+                    }
 
-                        if (farthestArea == null || dist >= farthestArea.dist) {
-                            farthestArea = currentArea;
-                        }
+                    if (farthestArea == null || dist >= farthestArea.dist) {
+                        farthestArea = currentArea;
+                    }
 
                         //}
                     //}
