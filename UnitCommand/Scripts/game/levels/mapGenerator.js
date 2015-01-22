@@ -161,6 +161,17 @@ var mapGenerator = (function (extension) {
                 return true;
             }
 
+            function removeArea(area) {
+                if (area.x < 0 || area.y < 0 || area.x >= maxAreas || area.y >= maxAreas)
+                    return false;
+
+                if (!areaExists(area.x, area.y))
+                    return false;
+
+                areas[area.x][area.y] = null;
+                return true;
+            }
+
             function inMapBoundry(x, y) {
                 return (x >= 0 && x < maxAreas && y >= 0 && y < maxAreas);
             }
@@ -178,6 +189,21 @@ var mapGenerator = (function (extension) {
                 var loc = neighbors[randVal];
                 var childArea = areaClass.create(areaTypes.basic, loc.x, loc.y);
 
+                return childArea;
+            }
+
+            function getRandomNeighbor(parentArea) {
+                var neighbors = getAllNeighborLocations(parentArea);
+                if (neighbors.length == 0)
+                    return null;
+
+                var randVal = getRandom(0, neighbors.length);
+                var loc = neighbors[randVal];
+
+                if (areaExists(loc.x, loc.y))
+                    return areas[loc.x][loc.y];
+
+                var childArea = areaClass.create(areaTypes.basic, loc.x, loc.y);
                 return childArea;
             }
 
@@ -209,6 +235,30 @@ var mapGenerator = (function (extension) {
                 return available;
             }
 
+            function getAllNeighborLocations(area) {
+                var available = [];
+                var x = area.x,
+                    y = area.y;
+
+                var testArea = { x: x - 1, y: y };
+                for (; testArea.x <= x + 1; testArea.x += 2) {
+                    if (testArea.x == x || !isAreaInMapBoundry(testArea))
+                        continue;
+
+                    available.push({ x: testArea.x, y: testArea.y });
+                }
+
+                testArea = { x: x, y: y - 1 };
+                for (; testArea.y <= y + 1; testArea.y += 2) {
+                    if (testArea.y == y || !isAreaInMapBoundry(testArea))
+                        continue;
+
+                    available.push({ x: testArea.x, y: testArea.y });
+                }
+
+                return available;
+            }
+
             function generateMap(totalAreas) {
                 // Get total map size.
                 if (!totalAreas || totalAreas < difficulty) {
@@ -228,7 +278,9 @@ var mapGenerator = (function (extension) {
 
                 console.log(areas);
 
-                createLinearMap();
+                //createLinearMap();
+                createCellularAutomataMap(totalAreas, 0);
+
 
                 // Build Max Allowed Counters
                 // Exit = 1 - We can only ever have 1 exit.
@@ -272,11 +324,48 @@ var mapGenerator = (function (extension) {
             function createCellularAutomataMap(totalAreas, steps) {
                 var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
                 addArea(startArea);
-                var areaStack = [];
 
                 var currentArea = startArea;
+                var i = 0;
 
+                var fn = function () {
+                    if (i >= totalAreas) {
+                        if (steps > 0) {
+                            currentArea = startArea;
+                            i = 0;
+                            steps--;
+                        } else {
+                            currentArea.type = areaTypes.exit;
+                            showMap();
+                            return;
+                        }
+                    }
 
+                    i++;
+
+                    var nextArea = getRandomNeighbor(currentArea);
+                    var availableNeighbors = getAvailableNeighborLocations(currentArea);
+
+                    // Remove area's with too many neighbors or with no neighbors.
+                    if ((availableNeighbors.length == 0 || availableNeighbors.length == 4) && currentArea.type !== areaTypes.start) {
+                        // Too many neigbors so remove
+                        removeArea(currentArea);
+                    } else {
+                        availableNeighbors = getAvailableNeighborLocations(nextArea);
+
+                        if ((availableNeighbors.length == 0 || availableNeighbors.length == 4) && nextArea.type !== areaTypes.start) {
+                            removeArea(nextArea);
+                        } else {
+                            addArea(nextArea);
+                            currentArea = nextArea;
+                        }
+                    }
+
+                    setTimeout(fn, 500);
+                    showMap();
+                };
+
+                setTimeout(fn, 500);
 
                 //while (steps > 0) {
 
@@ -297,24 +386,24 @@ var mapGenerator = (function (extension) {
 
                 for (var x = 0; x < areas.length; x++) {
                     for (var y = 0; y < areas[x].length; y++) {
-                        if (!areaExists(x, y))
-                            continue;
-
                         var area = $('<div>');
-                        area.addClass('map-area').css('top', y * (areaDisplaySize + 2)).css('left', x * (areaDisplaySize + 2));
 
-                        switch (areas[x][y].type) {
+                        if (!areaExists(x, y)) {
+                            displayArea(map, { x: x, y: y }, 'orange', '');
+                            continue;
+                        }
+
+                        var areaTmp = areas[x][y];
+
+                        switch (areaTmp.type) {
                             case areaTypes.basic:
-                                area.css('background-color', 'white');
-                                area.html(areas[x][y].id);
+                                displayArea(map, areaTmp, 'white', areaTmp.id);
                                 break;
                             case areaTypes.start:
-                                area.css('background-color', 'green');
-                                area.html('START');
+                                displayArea(map, areaTmp, 'green', 'START');
                                 break;
                             case areaTypes.exit:
-                                area.css('background-color', 'red');
-                                area.html('END');
+                                displayArea(map, areaTmp, 'red', 'END');
                                 break;
                             default:
                                 break;
@@ -323,6 +412,16 @@ var mapGenerator = (function (extension) {
                         map.append(area);
                     }
                 }
+            }
+
+            function displayArea(map, loc, color, text) {
+                var area = $('<div>');
+                area.addClass('map-area').css('top', loc.y * (areaDisplaySize + 2)).css('left', loc.x * (areaDisplaySize + 2));
+                area.css('background-color', color);
+                area.html(text);
+                map.append(area);
+
+                return area;
             }
 
             proto.appendFunctions({
