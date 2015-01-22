@@ -282,7 +282,7 @@ var mapGenerator = (function (extension) {
                 console.log(areas);
 
                 //createLinearMap();
-                createCellularAutomataMap(totalAreas, 0);
+                createCellularAutomataMap(totalAreas, 2);
 
 
                 // Build Max Allowed Counters
