@@ -325,17 +325,23 @@ var mapGenerator = (function (extension) {
                 var startArea = areaClass.create(areaTypes.start, getRandom(0, maxAreas), getRandom(0, maxAreas));
                 addArea(startArea);
 
+                var areaStack = [];
+
+                areaStack.push(startArea);
+                startArea.dist = 0;
                 var currentArea = startArea;
                 var i = 0;
+                var farthestArea = null,
+                    dist = 0;
 
                 var fn = function () {
-                    if (i >= totalAreas) {
-                        if (steps > 0) {
+                    if (i >= totalAreas || currentArea == null) {
+                        if (steps > 0 && currentArea !== null) {
                             currentArea = startArea;
                             i = 0;
                             steps--;
                         } else {
-                            currentArea.type = areaTypes.exit;
+                            farthestArea.type = areaTypes.exit;
                             showMap();
                             return;
                         }
@@ -343,35 +349,46 @@ var mapGenerator = (function (extension) {
 
                     i++;
 
-                    var nextArea = getRandomNeighbor(currentArea);
-                    var availableNeighbors = getAvailableNeighborLocations(currentArea);
+                    var nextArea = createRandomNeighbor(currentArea);
+                    var availableNeighbors = getAvailableNeighborLocations(nextArea);
+
+                    
 
                     // Remove area's with too many neighbors or with no neighbors.
-                    if ((availableNeighbors.length == 0 || availableNeighbors.length == 4) && currentArea.type !== areaTypes.start) {
-                        // Too many neigbors so remove
-                        removeArea(currentArea);
-                    } else {
-                        availableNeighbors = getAvailableNeighborLocations(nextArea);
+                    //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
+                        //currentArea = areaStack.pop();
 
-                        if ((availableNeighbors.length == 0 || availableNeighbors.length == 4) && nextArea.type !== areaTypes.start) {
-                            removeArea(nextArea);
-                        } else {
+                        // Too many neigbors so remove
+                        // removeArea(currentArea);
+                    //} else {
+
+
+                        //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
+                        //    // removeArea(nextArea);
+                        //} else {
+                        if (availableNeighbors.length > 2) {
                             addArea(nextArea);
+                            areaStack.push(nextArea);
                             currentArea = nextArea;
+                            dist++;
+                            nextArea.dist = dist;
+                        } else {
+                            currentArea = areaStack.pop();
+                            dist--;
                         }
-                    }
+
+                        if (farthestArea == null || dist >= farthestArea.dist) {
+                            farthestArea = currentArea;
+                        }
+
+                        //}
+                    //}
 
                     setTimeout(fn, 500);
                     showMap();
                 };
 
                 setTimeout(fn, 500);
-
-                //while (steps > 0) {
-
-
-                //    steps--;
-                //}
 
                 // Rules:
                 // Start with all cells around starting cell as off.
