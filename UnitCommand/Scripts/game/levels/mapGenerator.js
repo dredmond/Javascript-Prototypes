@@ -136,6 +136,7 @@ var mapGenerator = (function (extension) {
     var mapClass = jsExtender({
         constructor: function (difficulty) {
             var areas = [],
+                areaList = [],
                 areaDisplaySize = 40,
                 maxAreas = 0,
                 proto = mapClass.prototype,
@@ -158,6 +159,7 @@ var mapGenerator = (function (extension) {
 
                 area.id = areaId++;
                 areas[area.x][area.y] = area;
+                areaList.push(area);
                 return true;
             }
 
@@ -238,6 +240,78 @@ var mapGenerator = (function (extension) {
                 return available;
             }
 
+            function getDirectionLocation(direction, area) {
+                var offset = { x: area.x, y: area.y };
+
+                switch (direction) {
+                    case directions.north:
+                        offset.x++;
+                        break;
+                    case directions.south:
+                        offset.x--;
+                        break;
+                    case directions.east:
+                        offset.y++;
+                        break;
+                    case directions.west:
+                        offset.y--;
+                        break;
+                }
+
+                return offset;
+            }
+
+            function getNeighborLookup(area) {
+                var neighbors = [];
+
+                // north = x, y + 1
+                // south = x, y - 1
+                // east = x + 1, y
+                // west = x - 1, y
+
+                for (var d in directions) {
+                    var direction = directions[d];
+                    var loc = getDirectionLocation(direction, area);
+
+                    if (!isAreaInMapBoundry(loc))
+                        neighbors[direction] = -1;
+                    else if (areaExists(loc.x, loc.y)) {
+                        neighbors[direction] = 1;
+                    } else {
+                        neighbors[direction] = 0;
+                    }
+                }
+
+                return neighbors;
+            }
+
+            function isAreaAllowed(area) {
+                var neighbors = getNeighborLookup(area),
+                    totalNeighbors = 0;
+
+                for (var i = 0; i < neighbors.length; i++) {
+                    if (neighbors[i] == 1)
+                        totalNeighbors++;
+                }
+
+                switch (area.type) {
+                    case areaTypes.start:
+                    case areaTypes.basic:
+                        if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && neighbors[directions.east] == 1)
+                            return false;
+                        if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && neighbors[directions.west] == 1)
+                            return false;
+                        break;
+
+                    case areaTypes.exit:
+                        if (totalNeighbors > 1)
+                            return false;
+                        break;
+                }
+
+                return true;
+            }
+
             function getAllNeighborLocations(area) {
                 var available = [];
                 var x = area.x,
@@ -263,6 +337,9 @@ var mapGenerator = (function (extension) {
             }
 
             function generateMap(totalAreas) {
+                areas = [];
+                areaList = [];
+
                 // Get total map size.
                 if (!totalAreas || totalAreas < difficulty) {
                     totalAreas = getRandom(difficulty, difficulty * 3);
@@ -282,7 +359,7 @@ var mapGenerator = (function (extension) {
                 console.log(areas);
 
                 //createLinearMap();
-                createCellularAutomataMap(totalAreas, 2);
+                createCellularAutomataMap(totalAreas, 1);
 
 
                 // Build Max Allowed Counters
@@ -334,8 +411,6 @@ var mapGenerator = (function (extension) {
                 startArea.dist = 0;
                 var currentArea = startArea;
                 var i = 0;
-                var farthestArea = null,
-                    dist = 0;
 
                 var fn = function () {
                     if (i >= totalAreas || currentArea == null) {
@@ -344,7 +419,24 @@ var mapGenerator = (function (extension) {
                             i = 0;
                             steps--;
                         } else {
-                            farthestArea.type = areaTypes.exit;
+                            var exitLoc = null;
+                            areaStack = [];
+
+                            for (i = areaList.length - 1; i >= 0; i--) {
+                                availableNeighbors = getAvailableNeighborLocations(areaList[i]);
+                                areaStack.push.apply(areaStack, availableNeighbors);
+                            }
+
+                            while (areaStack.length > 0) {
+                                exitLoc = getRandomNeighbor(areaStack);
+                                exitLoc.type = areaTypes.exit;
+
+                                if (isAreaAllowed(exitLoc)) {
+                                    addArea(exitLoc);
+                                    break;
+                                }
+                            }
+
                             showMap();
                             return;
                         }
@@ -356,35 +448,15 @@ var mapGenerator = (function (extension) {
                     areaStack.push.apply(areaStack, availableNeighbors);
 
                     var nextArea = getRandomNeighbor(areaStack);
-                    availableNeighbors = getAvailableNeighborLocations(nextArea);
 
-                    // Remove area's with too many neighbors or with no neighbors.
-                    //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
-                        //currentArea = areaStack.pop();
+                    // Break out of loop since we didn't find any more areas.
+                    if (nextArea == null)
+                        currentArea = null;
 
-                        // Too many neigbors so remove
-                        // removeArea(currentArea);
-                    //} else {
-
-
-                        //if (availableNeighbors.length == 0 || availableNeighbors.length == 4) {
-                        //    // removeArea(nextArea);
-                        //} else {
-                    if (availableNeighbors.length >= 2) {
+                    if (nextArea && isAreaAllowed(nextArea)) {
                         addArea(nextArea);
                         currentArea = nextArea;
-                        nextArea.dist = dist;
-                        dist++;
-                    } else {
-                        dist--;
                     }
-
-                    if (farthestArea == null || dist >= farthestArea.dist) {
-                        farthestArea = currentArea;
-                    }
-
-                        //}
-                    //}
 
                     setTimeout(fn, 500);
                     showMap();
