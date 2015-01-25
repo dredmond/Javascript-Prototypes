@@ -2,7 +2,9 @@
     empty: 0,
     basic: 1,
     start: 2,
-    exit: 3
+    exit: 3,
+    queued: 4,
+    invalid: 5
 };
 
 var directions = {
@@ -163,17 +165,6 @@ var mapGenerator = (function (extension) {
                 return true;
             }
 
-            function removeArea(area) {
-                if (area.x < 0 || area.y < 0 || area.x >= maxAreas || area.y >= maxAreas)
-                    return false;
-
-                if (!areaExists(area.x, area.y))
-                    return false;
-
-                areas[area.x][area.y] = null;
-                return true;
-            }
-
             function inMapBoundry(x, y) {
                 return (x >= 0 && x < maxAreas && y >= 0 && y < maxAreas);
             }
@@ -264,11 +255,6 @@ var mapGenerator = (function (extension) {
             function getNeighborLookup(area) {
                 var neighbors = [];
 
-                // north = x, y + 1
-                // south = x, y - 1
-                // east = x + 1, y
-                // west = x - 1, y
-
                 for (var d in directions) {
                     var direction = directions[d];
                     var loc = getDirectionLocation(direction, area);
@@ -297,9 +283,7 @@ var mapGenerator = (function (extension) {
                 switch (area.type) {
                     case areaTypes.start:
                     case areaTypes.basic:
-                        if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && neighbors[directions.east] == 1)
-                            return false;
-                        if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && neighbors[directions.west] == 1)
+                        if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && (neighbors[directions.east] == 1 || neighbors[directions.west] == 1))
                             return false;
                         break;
 
@@ -310,30 +294,6 @@ var mapGenerator = (function (extension) {
                 }
 
                 return true;
-            }
-
-            function getAllNeighborLocations(area) {
-                var available = [];
-                var x = area.x,
-                    y = area.y;
-
-                var testArea = { x: x - 1, y: y };
-                for (; testArea.x <= x + 1; testArea.x += 2) {
-                    if (testArea.x == x || !isAreaInMapBoundry(testArea))
-                        continue;
-
-                    available.push({ x: testArea.x, y: testArea.y });
-                }
-
-                testArea = { x: x, y: y - 1 };
-                for (; testArea.y <= y + 1; testArea.y += 2) {
-                    if (testArea.y == y || !isAreaInMapBoundry(testArea))
-                        continue;
-
-                    available.push({ x: testArea.x, y: testArea.y });
-                }
-
-                return available;
             }
 
             function generateMap(totalAreas) {
@@ -356,11 +316,8 @@ var mapGenerator = (function (extension) {
                     }
                 }
 
-                console.log(areas);
-
                 //createLinearMap();
                 createCellularAutomataMap(totalAreas, 1);
-
 
                 // Build Max Allowed Counters
                 // Exit = 1 - We can only ever have 1 exit.
@@ -477,8 +434,6 @@ var mapGenerator = (function (extension) {
 
                 for (var x = 0; x < areas.length; x++) {
                     for (var y = 0; y < areas[x].length; y++) {
-                        var area = $('<div>');
-
                         if (!areaExists(x, y)) {
                             displayArea(map, { x: x, y: y }, 'orange', '');
                             continue;
@@ -499,8 +454,6 @@ var mapGenerator = (function (extension) {
                             default:
                                 break;
                         }
-
-                        map.append(area);
                     }
                 }
             }
