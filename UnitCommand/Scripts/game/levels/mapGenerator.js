@@ -8,10 +8,14 @@
 };
 
 var directions = {
-    north: 0,
-    east: 1,
-    south: 2,
-    west: 3
+    north: 1,
+    east: 2,
+    northEast: 3,
+    south: 4,
+    southEast: 6,
+    west: 8,
+    northWest: 9,
+    southWest: 12
 };
 
 var connectionTypes = {
@@ -217,15 +221,15 @@ var mapGenerator = (function (extension) {
                     if (testArea.x == x || !isAreaValid(testArea))
                         continue;
 
-                    available.push({ x: testArea.x, y: testArea.y });
+                    available.push({ x: testArea.x, y: testArea.y, type: areaTypes.queued });
                 }
 
                 testArea = { x: x, y: y - 1 };
-                for (; testArea.y <= y + 1; testArea.y+=2) {
+                for (; testArea.y <= y + 1; testArea.y += 2) {
                     if (testArea.y == y || !isAreaValid(testArea))
                         continue;
 
-                    available.push({ x: testArea.x, y: testArea.y });
+                    available.push({ x: testArea.x, y: testArea.y, type: areaTypes.queued });
                 }
 
                 return available;
@@ -234,19 +238,20 @@ var mapGenerator = (function (extension) {
             function getDirectionLocation(direction, area) {
                 var offset = { x: area.x, y: area.y };
 
-                switch (direction) {
-                    case directions.north:
-                        offset.x++;
-                        break;
-                    case directions.south:
-                        offset.x--;
-                        break;
-                    case directions.east:
-                        offset.y++;
-                        break;
-                    case directions.west:
-                        offset.y--;
-                        break;
+                if ((direction & directions.north) == directions.north) {
+                    offset.y++;
+                }
+
+                if ((direction & directions.south) == directions.south) {
+                    offset.y--;
+                }
+
+                if ((direction & directions.east) == directions.east) {
+                    offset.x++;
+                }
+
+                if ((direction & directions.west) == directions.west) {
+                    offset.x--;
                 }
 
                 return offset;
@@ -259,9 +264,9 @@ var mapGenerator = (function (extension) {
                     var direction = directions[d];
                     var loc = getDirectionLocation(direction, area);
 
-                    if (!isAreaInMapBoundry(loc))
+                    if (!isAreaInMapBoundry(loc)) {
                         neighbors[direction] = -1;
-                    else if (areaExists(loc.x, loc.y)) {
+                    } else if (areaExists(loc.x, loc.y)) {
                         neighbors[direction] = 1;
                     } else {
                         neighbors[direction] = 0;
@@ -283,11 +288,40 @@ var mapGenerator = (function (extension) {
                 switch (area.type) {
                     case areaTypes.start:
                     case areaTypes.basic:
+                        /*  sR -> [[ NW,  N, NE ]
+                                   [  W,  R,  E ]
+                                   [ SW,  S, SE ]]
+
+                            R -> E
+                            R -> N
+                            R -> S
+                            R -> W
+                            
+
+                            North && ((NorthWest && West) || (NorthEast && East))
+                            1 1 0 = 0
+                            1 x 0
+                            0 0 0
+
+                            0 1 1 = 0
+                            0 x 1
+                            0 0 0
+
+                            South && ((SouthWest && West) || (SouthEast && East))
+                            0 0 0 = 0
+                            0 x 1
+                            0 1 1
+
+                            0 0 0 = 0
+                            1 x 0
+                            1 1 0
+                         */
                         if ((neighbors[directions.north] == 1 || neighbors[directions.south] == 1) && (neighbors[directions.east] == 1 || neighbors[directions.west] == 1))
                             return false;
                         break;
 
                     case areaTypes.exit:
+
                         if (totalNeighbors > 1)
                             return false;
                         break;
@@ -363,7 +397,8 @@ var mapGenerator = (function (extension) {
                 var startArea = areaClass.create(areaTypes.start, startLoc.x, startLoc.y);
                 addArea(startArea);
 
-                var areaStack = [];
+                var areaStack = [],
+                    invalidStack = [];
 
                 startArea.dist = 0;
                 var currentArea = startArea;
@@ -381,20 +416,25 @@ var mapGenerator = (function (extension) {
 
                             for (i = areaList.length - 1; i >= 0; i--) {
                                 availableNeighbors = getAvailableNeighborLocations(areaList[i]);
-                                areaStack.push.apply(areaStack, availableNeighbors);
+                                pushCells(areaStack, availableNeighbors);
                             }
 
                             while (areaStack.length > 0) {
                                 exitLoc = getRandomNeighbor(areaStack);
                                 exitLoc.type = areaTypes.exit;
 
-                                if (isAreaAllowed(exitLoc)) {
+                                if (exitLoc && isAreaAllowed(exitLoc)) {
                                     addArea(exitLoc);
                                     break;
+                                } else if (exitLoc) {
+                                    //exitLoc.type = areaTypes.invalid;
+                                    //invalidStack.push(exitLoc);
                                 }
                             }
 
                             showMap();
+                            showCells(areaStack);
+                            showCells(invalidStack);
                             return;
                         }
                     }
@@ -402,7 +442,7 @@ var mapGenerator = (function (extension) {
                     i++;
 
                     var availableNeighbors = getAvailableNeighborLocations(currentArea);
-                    areaStack.push.apply(areaStack, availableNeighbors);
+                    pushCells(areaStack, availableNeighbors);
 
                     var nextArea = getRandomNeighbor(areaStack);
 
@@ -413,19 +453,65 @@ var mapGenerator = (function (extension) {
                     if (nextArea && isAreaAllowed(nextArea)) {
                         addArea(nextArea);
                         currentArea = nextArea;
+                    } else if (nextArea) {
+                        nextArea.type = areaTypes.invalid;
+                        pushCell(invalidStack, nextArea);
                     }
 
-                    setTimeout(fn, 250);
+                    setTimeout(fn, 500);
                     showMap();
+                    showCells(areaStack);
+                    showCells(invalidStack);
                 };
 
-                setTimeout(fn, 250);
+                setTimeout(fn, 500);
 
                 // Rules:
                 // Start with all cells around starting cell as off.
                 // If cell has 1 neighbor active then it is also active.
                 // If cell has 4 neighbors active than it is not active.
                 // If cell has 3 neighbors active than it 
+            }
+
+            function pushCell(stack, cell) {
+                if (!cellExists(stack, cell)) {
+                    stack.push(cell);
+                }
+            }
+
+            function pushCells(stack, cells) {
+                for (var i = 0; i < cells.length; i++) {
+                    if (!cellExists(stack, cells[i])) {
+                        stack.push(cells[i]);
+                    }
+                }
+            }
+
+            function cellExists(stack, cell) {
+                for (var i = 0; i < stack.length; i++) {
+                    if (stack[i].x == cell.x && stack[i].y == cell.y) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            function showCells(cellList) {
+                var map = $('#mapArea');
+
+                for (var i = 0; i < cellList.length; i++) {
+                    var cell = cellList[i];
+
+                    switch(cell.type) {
+                        case areaTypes.queued:
+                            displayArea(map, cell, 'gray', '');
+                            break;
+                        case areaTypes.invalid:
+                            displayArea(map, cell, 'black', '');
+                            break;
+                    }
+                }
             }
 
             function showMap() {
