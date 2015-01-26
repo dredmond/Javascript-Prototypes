@@ -415,11 +415,11 @@ var mapGenerator = (function (extension) {
                         currentArea = nextArea;
                     }
 
-                    setTimeout(fn, 500);
+                    setTimeout(fn, 250);
                     showMap();
                 };
 
-                setTimeout(fn, 500);
+                setTimeout(fn, 250);
 
                 // Rules:
                 // Start with all cells around starting cell as off.
