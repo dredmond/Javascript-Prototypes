@@ -353,24 +353,11 @@ var mapGenerator = (function (extension) {
                 //createLinearMap();
                 createCellularAutomataMap(totalAreas, 1);
 
-                // Build Max Allowed Counters
-                // Exit = 1 - We can only ever have 1 exit.
-                // Secrets = ?
-                // Keys = ?
-                // Doors = ?
-                // Shops = ?
-
-                // Steps to Create Map
-                // 1. Select random cell for starting area.
-                // 2. Get neighbor cells and select one randomly.
-                // 3. If cell doesn't exist create it. (Repeat step 2)
-                // 4. Increment cell count and distance from starting cell.
-
-                // Cell Creation Steps
-                // 1. Randomly decide on area type. (Normal, Secret, Key, Shop, Exit, etc.)
-                // 2. Check if rules allow that room type to exist in the chosen location. (Otherwise, Repeat Step 1)
-                // 3. Negate room counter for the selected type.
-                // 4. Return to Map Creation Step.
+                // Get list of cells (Neighbors) (Different for random tiles)
+                // Add to queue
+                // Pull randomly from queue
+                // Check requirements for cell   (Different for all algorithms)
+                // Add cell.
             }
 
             function createLinearMap() {
