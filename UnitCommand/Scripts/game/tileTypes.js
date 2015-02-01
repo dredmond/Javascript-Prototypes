@@ -5,5 +5,6 @@
     water: 3,
     trees: 4,
     door: 5,
-    lockedDoor: 6
+    lockedDoor: 6,
+    wall: 7
 };

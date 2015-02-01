@@ -4,6 +4,7 @@
 
 @section scripts {
     <script src="/Scripts/jsExtender/jsExtender.js"></script>
+    <script src="/Scripts/game/tileTypes.js"></script>
     <script src="/Scripts/game/levels/mapGenerator.js"></script>
 }
 
@@ -20,14 +21,24 @@
 
     .map-area {
         position: absolute;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         font-weight: bold;
         background-color: gray;
         vertical-align: middle;
         text-align: center;
-        line-height: 40px;
+        line-height: 44px;
         font-size: 12px;
+    }
+
+    .area-tile {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        font-weight: bold;
+        background-color: gray;
+        vertical-align: middle;
+        text-align: center;
     }
 </style>
 <h2>MapGenTest</h2>

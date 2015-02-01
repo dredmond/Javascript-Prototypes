@@ -124,16 +124,36 @@ var areaClass = jsExtender({
         this.y = y;
         this.type = type;
 
-        proto.appendFunctions({
-            getConnections: function() {
-                return connections;
-            },
-            draw: function (ctx) {
-                connections.draw(ctx);
-            },
-            update: function(currentGameTime, dt) {
-                connections.update(currentGameTime, dt);
+        function getTiles() {
+            return tiles;
+        }
+
+        function setTiles(tileX, tileY, tile) {
+            if (jsExtender.isUndefinedOrNull(tiles[tileX])) {
+                tiles[tileX] = [];
             }
+
+            tiles[tileX][tileY] = tile;
+        }
+
+        function getConnections() {
+            return connections;
+        }
+
+        function draw(ctx) {
+            connections.draw(ctx);
+        }
+
+        function update(currentGameTime, dt) {
+            connections.update(currentGameTime, dt);
+        }
+
+        proto.appendFunctions({
+            getTiles: getTiles,
+            setTile: setTiles,
+            getConnections: getConnections,
+            draw: draw,
+            update: update
         });
     }
 });
@@ -143,7 +163,8 @@ var mapGenerator = (function (extension) {
         constructor: function (difficulty) {
             var areas = [],
                 areaList = [],
-                areaDisplaySize = 40,
+                areaDisplaySize = 44,
+                tileSize = 4,
                 maxAreas = 0,
                 proto = mapClass.prototype,
                 areaId = 0;
@@ -413,10 +434,11 @@ var mapGenerator = (function (extension) {
                                 if (exitLoc && isAreaAllowed(exitLoc)) {
                                     addArea(exitLoc);
                                     break;
-                                } else if (exitLoc) {
-                                    //exitLoc.type = areaTypes.invalid;
-                                    //invalidStack.push(exitLoc);
                                 }
+                            }
+
+                            for (i = areaList.length - 1; i >= 0; i--) {
+                                createAreaCells(areaList[i]);
                             }
 
                             showMap();
@@ -445,19 +467,36 @@ var mapGenerator = (function (extension) {
                         pushCell(invalidStack, nextArea);
                     }
 
-                    setTimeout(fn, 500);
+                    setTimeout(fn, 250);
                     showMap();
                     showCells(areaStack);
                     showCells(invalidStack);
                 };
 
-                setTimeout(fn, 500);
+                setTimeout(fn, 250);
+            }
 
-                // Rules:
-                // Start with all cells around starting cell as off.
-                // If cell has 1 neighbor active then it is also active.
-                // If cell has 4 neighbors active than it is not active.
-                // If cell has 3 neighbors active than it 
+            function createAreaCells(area) {
+                var size = 11,
+                    neighbors = getNeighborLookup(area);
+
+                for (var x = 0; x < size; x++) {
+                    for (var y = 0; y < size; y++) {
+                        var tile = {
+                            type: tileTypes.none
+                        };
+
+                        if (x == 0 || x == size - 1 || y == 0 || y == size - 1) {
+                            tile.type = tileTypes.wall;
+
+                            if (x == 0 && y == 5 && neighbors[directions.west] == 1) {
+                                tile.type = tileTypes.door;
+                            }
+                        }
+
+                        area.setTile(x, y, tile);
+                    }
+                }
             }
 
             function pushCell(stack, cell) {
@@ -512,20 +551,47 @@ var mapGenerator = (function (extension) {
                             continue;
                         }
 
-                        var areaTmp = areas[x][y];
+                        var areaTmp = areas[x][y],
+                            area = null;
 
                         switch (areaTmp.type) {
                             case areaTypes.basic:
-                                displayArea(map, areaTmp, 'white', areaTmp.id);
+                                area = displayArea(map, areaTmp, 'white', areaTmp.id);
                                 break;
                             case areaTypes.start:
-                                displayArea(map, areaTmp, 'green', 'START');
+                                area = displayArea(map, areaTmp, 'green', 'START');
                                 break;
                             case areaTypes.exit:
-                                displayArea(map, areaTmp, 'red', 'END');
+                                area = displayArea(map, areaTmp, 'red', 'END');
                                 break;
                             default:
                                 break;
+                        }
+
+                        if (area == null)
+                            continue;
+
+                        var tiles = areaTmp.getTiles();
+
+                        if (tiles.length > 0) {
+                            for (var tileX = 0; tileX < tiles.length; tileX++) {
+                                for (var tileY = 0; tileY < tiles[tileX].length; tileY++) {
+                                    var tile = tiles[tileX][tileY];
+                                    var tileDiv = $('<div class="area-tile">').css('top', tileY * tileSize).css('left', tileX * tileSize);
+                                    switch (tile.type) {
+                                        case tileTypes.none:
+                                            tileDiv.css('background-color', 'white');
+                                            break;
+                                        case tileTypes.wall:
+                                            tileDiv.css('background-color', 'black');
+                                            break;
+                                        case tileTypes.door:
+                                            tileDiv.css('background-color', 'brown');
+                                            break;
+                                    }
+                                    area.append(tileDiv);
+                                }
+                            }
                         }
                     }
                 }
@@ -541,13 +607,17 @@ var mapGenerator = (function (extension) {
                 return area;
             }
 
+            function test() {
+                console.log('this is a test');
+            }
+
+            function test2() {
+                console.log('test2 from mapClass.');
+            }
+
             proto.appendFunctions({
-                test: function () {
-                    console.log('this is a test');
-                },
-                test2: function() {
-                    console.log('test2 from mapClass.');
-                }
+                test: test,
+                test2: test2
             });
 
             if (!proto.generateMap)
