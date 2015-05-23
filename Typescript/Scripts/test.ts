@@ -1,4 +1,4 @@
-﻿ class Test {
+﻿ export class Test1 {
      private _testVal: string;
      constructor() { }
 
@@ -9,4 +9,8 @@
      set testVal(newVal: string) {
          this._testVal = newVal;
      }
+ }
+
+ export interface ISomething {
+     blah: string;
  }
