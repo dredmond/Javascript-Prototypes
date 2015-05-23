@@ -1,0 +1,12 @@
+﻿ class Test {
+     private _testVal: string;
+     constructor() { }
+
+     get testVal(): string {
+         return this._testVal;
+     }
+
+     set testVal(newVal: string) {
+         this._testVal = newVal;
+     }
+ }
