@@ -297,6 +297,11 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\Circuits\battery.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\connection.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\led.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\resistor.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\wire.ts" />
     <TypeScriptCompile Include="Scripts\scriptLearning.ts" />
     <TypeScriptCompile Include="Scripts\test.ts" />
   </ItemGroup>
@@ -307,7 +312,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>
-    <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
   </PropertyGroup>
