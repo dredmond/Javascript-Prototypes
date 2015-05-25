@@ -303,8 +303,9 @@
     <TypeScriptCompile Include="Scripts\Circuits\circuitTest.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\component.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\led.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\light.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\resistor.ts" />
-    <TypeScriptCompile Include="Scripts\Circuits\wire.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\pin.ts" />
     <TypeScriptCompile Include="Scripts\scriptLearning.ts" />
     <TypeScriptCompile Include="Scripts\test.ts" />
   </ItemGroup>

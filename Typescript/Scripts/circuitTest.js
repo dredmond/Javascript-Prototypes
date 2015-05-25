@@ -10,31 +10,57 @@
 /// <reference path="component.ts"/>
 var Circuits;
 (function (Circuits) {
-    var Wire = (function () {
-        function Wire(c) {
-            this.c = c;
+    var Pin = (function () {
+        function Pin(component) {
+            this.component = component;
         }
-        return Wire;
+        return Pin;
     })();
-    Circuits.Wire = Wire;
+    Circuits.Pin = Pin;
 })(Circuits || (Circuits = {}));
 //var w = new Wire(0, 0, 1, 1);
 //console.log(w);
 /*
-Battery (5v) (+) -> connection -> wire (5v) -> connection -> light (2v drop) -> connection -> wire (0v) -> connection -> Battery (0v) (-)
+Battery (5v) (+) -> pin (5v) -> light (2v drop) -> pin (0v) -> Battery (0v) (-)
 W / V^2 = 1 / R
 */
-/// <reference path="wire.ts"/>
-var Battery = (function () {
-    function Battery(voltage) {
-        this.voltage = voltage;
-    }
-    return Battery;
-})();
 /// <reference path="component.ts"/>
-/// <reference path="wire.ts"/>
+/// <reference path="pin.ts"/>
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Circuits;
+(function (Circuits) {
+    var Battery = (function (_super) {
+        __extends(Battery, _super);
+        function Battery(voltage) {
+            _super.call(this);
+            this.voltage = voltage;
+        }
+        return Battery;
+    })(Circuits.Component);
+    Circuits.Battery = Battery;
+})(Circuits || (Circuits = {}));
+/// <reference path="component.ts"/>
+/// <reference path="pin.ts"/>
 //import Component = require('component');
 //import Wire = require('wire');
 var s = new Circuits.Component();
-var w = new Circuits.Wire(s);
+var w = new Circuits.Pin(s);
+/// <reference path="component.ts"/>
+/// <reference path="pin.ts"/>
+var Circuits;
+(function (Circuits) {
+    var Light = (function (_super) {
+        __extends(Light, _super);
+        function Light() {
+            _super.call(this);
+        }
+        return Light;
+    })(Circuits.Component);
+    Circuits.Light = Light;
+})(Circuits || (Circuits = {}));
 //# sourceMappingURL=circuitTest.js.map

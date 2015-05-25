@@ -1,10 +1,13 @@
-﻿/// <reference path="wire.ts"/>
+﻿/// <reference path="component.ts"/>
+/// <reference path="pin.ts"/>
 
-class Battery {
-    public positive: Circuits.Wire;
-    public negative: Circuits.Wire;
+module Circuits {
+    export class Battery extends Component {
+        public positive: Pin;
+        public negative: Pin;
 
-    constructor(public voltage: number) {
-        
+        constructor(public voltage: number) {
+            super();
+        }
     }
 }
