@@ -1,5 +1,5 @@
 ﻿/// <reference path="test.ts"/>
-import Test = require('./test')
+import Test = require('test')
 
 class Animal {
      private name: string;
@@ -23,11 +23,11 @@ console.log(animal);
 console.log(rhino);
 console.log(employee);
 
-var blah = new Test.Test1();
+var blah = new Test.Test.Test1();
 blah.testVal = "test";
 console.log(blah);
 console.log(blah.testVal);
 
 // Create a new object that uses the ISomething interface.
-var blah1 = <Test.ISomething>{};
+var blah1 = <Test.Test.ISomething>{};
 blah1.blah = "test";

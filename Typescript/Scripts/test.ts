@@ -1,16 +1,19 @@
-﻿ export class Test1 {
-     private _testVal: string;
-     constructor() { }
+﻿export module Test {
+    export class Test1 {
+        private _testVal: string;
 
-     get testVal(): string {
-         return this._testVal;
-     }
+        constructor() {}
 
-     set testVal(newVal: string) {
-         this._testVal = newVal;
-     }
- }
+        get testVal(): string {
+            return this._testVal;
+        }
 
- export interface ISomething {
-     blah: string;
- }
+        set testVal(newVal: string) {
+            this._testVal = newVal;
+        }
+    }
+
+    export interface ISomething {
+        blah: string;
+    }
+}

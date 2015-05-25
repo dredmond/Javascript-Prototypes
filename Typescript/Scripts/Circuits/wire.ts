@@ -1,12 +1,23 @@
-﻿import conn = require('./connection')
-import Connection = conn.Connection;
+﻿/// <reference path="component.ts"/>
 
+module Circuits {
+    export class Wire {
+        voltage: number;
 
-class Wire {
-    voltage: number;
-    connections: Connection[];
-    constructor(public x1: number, public y1: number, public x2: number, public y2: number) { }
+        constructor(public c: Component) {
+
+        }
+    }
 }
 
-var w = new Wire(0, 0, 1, 1);
-console.log(w);
+//var w = new Wire(0, 0, 1, 1);
+//console.log(w);
+
+
+/*
+    
+    Battery (5v) (+) -> connection -> wire (5v) -> connection -> light (2v drop) -> connection -> wire (0v) -> connection -> Battery (0v) (-)
+
+    W / V^2 = 1 / R 
+     
+*/

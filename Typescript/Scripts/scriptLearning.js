@@ -4,7 +4,7 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './test'], function(require, exports, Test) {
+define(["require", "exports", 'test'], function(require, exports, Test) {
     var Animal = (function () {
         function Animal(theName) {
             this.name = theName;
@@ -35,7 +35,7 @@ define(["require", "exports", './test'], function(require, exports, Test) {
     console.log(rhino);
     console.log(employee);
 
-    var blah = new Test.Test1();
+    var blah = new Test.Test.Test1();
     blah.testVal = "test";
     console.log(blah);
     console.log(blah.testVal);

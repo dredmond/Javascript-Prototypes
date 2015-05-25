@@ -1,9 +1,8 @@
-﻿import conn = require('./connection')
-import Connection = conn.Connection;
+﻿/// <reference path="wire.ts"/>
 
 class Battery {
-    public positive: Connection;
-    public negative: Connection;
+    public positive: Circuits.Wire;
+    public negative: Circuits.Wire;
 
     constructor(public voltage: number) {
         

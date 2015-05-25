@@ -298,7 +298,8 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\Circuits\battery.ts" />
-    <TypeScriptCompile Include="Scripts\Circuits\connection.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\circuitTest.ts" />
+    <TypeScriptCompile Include="Scripts\Circuits\component.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\led.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\resistor.ts" />
     <TypeScriptCompile Include="Scripts\Circuits\wire.ts" />
@@ -315,6 +316,7 @@
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptOutFile>Scripts/circuitTest.js</TypeScriptOutFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
