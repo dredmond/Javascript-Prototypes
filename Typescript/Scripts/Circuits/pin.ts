@@ -1,10 +1,17 @@
 ﻿/// <reference path="component.ts"/>
 
 module Circuits {
+    export interface ILocation {
+        x: number;
+        y: number;
+    }
+
     export class Pin {
+        name: string;
+        location: ILocation;
         voltage: number;
 
-        constructor(public component: Component) {
+        constructor() {
 
         }
     }

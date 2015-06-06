@@ -11,8 +11,7 @@
 var Circuits;
 (function (Circuits) {
     var Pin = (function () {
-        function Pin(component) {
-            this.component = component;
+        function Pin() {
         }
         return Pin;
     })();
