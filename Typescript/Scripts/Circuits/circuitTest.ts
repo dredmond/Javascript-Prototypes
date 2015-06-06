@@ -3,5 +3,5 @@
 //import Component = require('component');
 //import Wire = require('wire');
 
-var s = new Circuits.Component();
-var w = new Circuits.Pin(s);
+var s = new Circuits.Component(0);
+var w = new Circuits.Pin();
