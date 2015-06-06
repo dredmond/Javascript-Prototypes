@@ -3,11 +3,16 @@
 
 module Circuits {
     export class Battery extends Component {
-        public positive: Pin;
-        public negative: Pin;
-
         constructor(public voltage: number) {
-            super();
+            super(0);
+        }
+
+        initializePins(): void {
+            super.initializePins();
+        }
+
+        simulate(): void {
+            super.simulate();
         }
     }
 }

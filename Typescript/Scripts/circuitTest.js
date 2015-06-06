@@ -1,8 +1,21 @@
 ﻿var Circuits;
 (function (Circuits) {
     var Component = (function () {
-        function Component() {
+        function Component(additionalPins) {
+            // 2 Pins are always required for a component.
+            // How they are used are up to the component's implementation.
+            this.pins.push(new Circuits.Pin());
+            this.pins.push(new Circuits.Pin());
+
+            for (var i = 0; i < additionalPins; i++) {
+                this.pins.push(new Circuits.Pin());
+            }
         }
+        Component.prototype.initializePins = function () {
+        };
+
+        Component.prototype.simulate = function () {
+        };
         return Component;
     })();
     Circuits.Component = Component;
@@ -36,9 +49,16 @@ var Circuits;
     var Battery = (function (_super) {
         __extends(Battery, _super);
         function Battery(voltage) {
-            _super.call(this);
+            _super.call(this, 0);
             this.voltage = voltage;
         }
+        Battery.prototype.initializePins = function () {
+            _super.prototype.initializePins.call(this);
+        };
+
+        Battery.prototype.simulate = function () {
+            _super.prototype.simulate.call(this);
+        };
         return Battery;
     })(Circuits.Component);
     Circuits.Battery = Battery;
