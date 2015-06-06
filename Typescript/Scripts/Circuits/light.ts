@@ -3,6 +3,6 @@
 
 module Circuits {
     export class Light extends Component {
-        constructor() { super(); }
+        constructor() { super(0); }
     }
 }

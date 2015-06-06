@@ -8,6 +8,8 @@ module Circuits {
         }
 
         initializePins(): void {
+            console.log('initialized from Battery.');
+
             super.initializePins();
         }
 

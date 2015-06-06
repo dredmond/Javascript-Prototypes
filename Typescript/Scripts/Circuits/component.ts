@@ -7,7 +7,7 @@
     }
 
     export class Component implements IComponent {
-        pins: Pin[];
+        pins: Pin[] = [];
 
         constructor(additionalPins: number) {
             // 2 Pins are always required for a component.
@@ -18,10 +18,12 @@
             for (var i: number = 0; i < additionalPins; i++) {
                 this.pins.push(new Pin());
             }
+
+            this.initializePins();
         }
 
         initializePins(): void {
-            
+            console.log('initialized from Component');
         }
 
         simulate(): void {
