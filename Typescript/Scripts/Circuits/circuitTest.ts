@@ -3,6 +3,16 @@
 //import Component = require('component');
 //import Wire = require('wire');
 
-var b = new Circuits.Battery(1);
-var s = new Circuits.Component(0);
-var w = new Circuits.Pin();
+module Circuits {
+    export class Game {
+        canvas: HTMLCanvasElement;
+        ctx: CanvasRenderingContext2D;
+        
+        constructor() {
+            this.canvas = <HTMLCanvasElement>document.getElementById('circuits');
+            this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
+
+
+        }
+    }
+}

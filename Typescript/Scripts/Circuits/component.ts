@@ -1,6 +1,7 @@
 ﻿module Circuits {
     export interface IComponent {
         pins: Pin[];
+        location: ILocation;
 
         initializePins(): void;
         simulate(): void;
@@ -8,6 +9,7 @@
 
     export class Component implements IComponent {
         pins: Pin[] = [];
+        location: ILocation;
 
         constructor(additionalPins: number) {
             // 2 Pins are always required for a component.
