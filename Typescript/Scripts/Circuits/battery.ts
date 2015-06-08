@@ -10,11 +10,11 @@ module Circuits {
         initializePins(): void {
             console.log('initialized from Battery.');
 
-            super.initializePins();
+            super.initialize();
         }
 
         simulate(): void {
-            super.simulate();
+            //super.simulate();
         }
     }
 }
