@@ -1,6 +1,4 @@
-﻿/// <reference path="component.ts"/>
-
-module Circuits {
+﻿module Circuits {
     export class Pin {
         name: string;
         location: ILocation;

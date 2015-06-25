@@ -1,4 +1,6 @@
-﻿module Circuits {
+﻿/// <reference path="pin.ts"/>
+
+module Circuits {
     export interface ISize {
         height: number;
         width: number;
@@ -15,7 +17,7 @@
         size: ISize;
 
         initialize(): void;
-        draw(): void;
+        draw(ctx: CanvasRenderingContext2D): void;
         simulate(): void;
         update(): void;
     }
@@ -50,7 +52,7 @@
             console.log('initialized from Component');
         }
 
-        draw(): void {
+        draw(ctx: CanvasRenderingContext2D): void {
             
         }
 
