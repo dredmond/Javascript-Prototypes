@@ -12,6 +12,7 @@ module Circuits {
         constructor() {
             this.canvas = <HTMLCanvasElement>document.getElementById("circuits");
             this.ctx = <CanvasRenderingContext2D>this.canvas.getContext("2d");
+
             //this.ctx.scale(1, 1);
             let battery = new Battery(0);
             battery.location = { x: 0, y: 1 };
@@ -56,9 +57,9 @@ module Circuits {
             this.ctx.globalAlpha = 1.0;
             this.ctx.fillStyle = "#000000";
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-
+ 
             this.ctx.save();
+            this.ctx.translate((this.canvas.width - 1) / 2, (this.canvas.height - 1) / 2);
 
             // Draw the scene.
             var components = this.components;

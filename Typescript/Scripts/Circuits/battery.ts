@@ -15,9 +15,12 @@ module Circuits {
         draw(ctx: CanvasRenderingContext2D): void {
             ctx.save();
             ctx.translate(this.location.x, this.location.y);
-            ctx.lineWidth = 1;
+
+            ctx.beginPath();
+            ctx.lineWidth = 3;
             ctx.strokeStyle = "#FF0000";
-            ctx.strokeRect(0, 0, 50, 20);
+            ctx.rect(0, 0, 50, 20);
+            ctx.stroke();
 
             ctx.beginPath();
             ctx.moveTo(0, 20);
